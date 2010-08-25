@@ -1,0 +1,112 @@
+
+R version 2.11.1 (2010-05-31)
+Copyright (C) 2010 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> library( censReg )
+Loading required package: maxLik
+Loading required package: miscTools
+> library( plm )
+Loading required package: kinship
+Loading required package: survival
+Loading required package: splines
+Loading required package: nlme
+Loading required package: lattice
+[1] "kinship is loaded"
+Loading required package: Formula
+Loading required package: MASS
+Loading required package: sandwich
+Loading required package: zoo
+> 
+> nId <- 100
+> nTime <- 3
+> 
+> set.seed( 123 )
+> pData <- data.frame(
++    id = rep( paste( "F", 1:nId, sep = "_" ), each = nTime ),
++    time = rep( 1980 + 1:nTime, nId ) )
+> pData$ui <- rep( rnorm( nId ), each = nTime )
+> pData$x1 <- rnorm( nId * nTime )
+> pData$x2 <- runif( nId * nTime )
+> pData$ys <- -1 + pData$ui + 2 * pData$x1 + 3 * pData$x2 + rnorm( nId * nTime )
+> pData$y <- ifelse( pData$ys > 0, pData$ys, 0 )
+> pData <- pdata.frame( pData, c( "id", "time" ) )
+> 
+> 
+> # ## Newton-Raphson method
+> # randEff <- censReg( y ~ x1 + x2, data = pData )
+> # maxLik:::summary.maxLik( randEff )
+> 
+> ## BHHH method
+> randEffBhhh <- censReg( y ~ x1 + x2, data = pData, method = "BHHH" )
+> maxLik:::summary.maxLik( randEffBhhh )
+--------------------------------------------
+Maximum Likelihood estimation
+BHHH maximisation, 15 iterations
+Return code 2: successive function values within tolerance limit
+Log-Likelihood: -330.5222 
+5  free parameters
+Estimates:
+             Estimate Std. error t value   Pr(> t)    
+(Intercept) -1.086693   0.234624 -4.6316 3.628e-06 ***
+x1           2.069550   0.092324 22.4161 < 2.2e-16 ***
+x2           3.115095   0.370082  8.4173 < 2.2e-16 ***
+logSigmaMu  -0.105561   0.128939 -0.8187    0.4130    
+logSigmaNu   0.025600   0.064679  0.3958    0.6922    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+--------------------------------------------
+> 
+> ## BFGS method (optim)
+> randEffBfgs <- censReg( y ~ x1 + x2, data = pData, method = "BFGS" )
+> maxLik:::summary.maxLik( randEffBfgs )
+--------------------------------------------
+Maximum Likelihood estimation
+BFGS maximisation, 29 iterations
+Return code 0: successful convergence 
+Log-Likelihood: -330.5222 
+5  free parameters
+Estimates:
+             Estimate Std. error t value   Pr(> t)    
+(Intercept) -1.086729   0.226324 -4.8017 1.574e-06 ***
+x1           2.069572   0.096850 21.3689 < 2.2e-16 ***
+x2           3.115190   0.326639  9.5371 < 2.2e-16 ***
+logSigmaMu  -0.105506   0.130941 -0.8058    0.4204    
+logSigmaNu   0.025538   0.069589  0.3670    0.7136    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+--------------------------------------------
+> 
+> ## BFGS method (R)
+> randEffBfgsr <- censReg( y ~ x1 + x2, data = pData, method = "BFGSR" )
+> maxLik:::summary.maxLik( randEffBfgsr )
+--------------------------------------------
+Maximum Likelihood estimation
+BFGS-YC maximization, 15 iterations
+Return code 2: successive function values within tolerance limit
+Log-Likelihood: -330.5222 
+5  free parameters
+Estimates:
+             Estimate Std. error t value   Pr(> t)    
+(Intercept) -1.086695   0.226326 -4.8015 1.575e-06 ***
+x1           2.069552   0.096853 21.3679 < 2.2e-16 ***
+x2           3.115097   0.326649  9.5365 < 2.2e-16 ***
+logSigmaMu  -0.105561   0.130954 -0.8061    0.4202    
+logSigmaNu   0.025601   0.069593  0.3679    0.7130    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+--------------------------------------------
+> 
+> 
