@@ -36,6 +36,12 @@ censReg <- function( formula, left = 0, right = Inf,
    mf$na.action <- na.pass
    mf[[ 1 ]] <- as.name( "model.frame" )
    mf <- eval( mf, parent.frame() )
+   # remove unused levels
+   for( i in 1:ncol( mf ) ) {
+      if( is.factor( mf[[ i ]] ) ) {
+         mf[[ i ]] <- factor( mf[[ i ]] )
+      }
+   }
    mt <- attr( mf, "terms" )
    xMat <- model.matrix( mt, mf )
    xNames <- colnames( xMat )
@@ -238,11 +244,17 @@ censReg <- function( formula, left = 0, right = Inf,
    # save and return the call
    result$call <- match.call()
 
+   # return the model terms
+   result$terms <- mt
+
    # save and return the number of oservations (in each category)
    result$nObs <- c( sum( obsBelow ), sum( obsBetween ), sum( obsAbove ) )
    result$nObs <- c( sum( result$nObs ), result$nObs )
    names( result$nObs ) <- c( "Total", "Left-censored", "Uncensored",
       "Right-censored" )
+
+   # return the degrees of freedom of the residuals
+   result$df.residual <- unname( result$nObs[ 1 ] - length( coef( result ) ) )
 
    class( result ) <- c( "censReg", class( result ) )
    return( result )

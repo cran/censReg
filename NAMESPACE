@@ -1,9 +1,14 @@
 export( "censReg" )
 
 importFrom( "glmmML", "ghq" )
+importFrom( "sandwich", "estfun" )
 
 S3method( "coef", "censReg" )
+S3method( "estfun", "censReg" )
+S3method( "extractAIC", "censReg" )
+S3method( "formula", "censReg" )
 S3method( "logLik", "censReg" )
+S3method( "model.frame", "censReg" )
 S3method( "print", "censReg" )
 S3method( "summary", "censReg" )
 S3method( "vcov", "censReg" )

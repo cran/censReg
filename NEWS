@@ -5,6 +5,26 @@ A full ChangeLog is available in the log messages of the SVN repository
 on R-Forge.
 
 
-            CHANGES IN VERSION 0.1-0
+            CHANGES IN VERSION 0.5-4  (2011-05-17)
 
-* initial release of the censReg package
+* fixed bug that occured when a factor had "empty" levels
+(many thanks to Ulrich Morawetz for reporting this bug!)
+
+* censReg() now additionally returns the model terms and 
+the degrees of freedom of the residuals
+
+* added a model.frame() method for objects of class "censReg"
+
+* added a formula() method for objects of class "censReg"
+
+* added extractAIC() method for objects of class "censReg"
+
+* added estfun() method for objects of class "censReg" 
+that has an argument "includeSigma" (defaults to TRUE), 
+which determines whether the derivative with respect to the 
+logarithm of the variance parameter should be included
+
+
+            CHANGES IN VERSION 0.5-2  (2010-08-25)
+
+* initial public release of the censReg package

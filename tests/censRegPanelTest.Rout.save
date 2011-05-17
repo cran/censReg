@@ -1,7 +1,8 @@
 
-R version 2.11.1 (2010-05-31)
-Copyright (C) 2010 The R Foundation for Statistical Computing
+R version 2.13.0 (2011-04-13)
+Copyright (C) 2011 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
+Platform: i686-pc-linux-gnu (32-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -19,12 +20,8 @@ Type 'q()' to quit R.
 Loading required package: maxLik
 Loading required package: miscTools
 > library( plm )
-Loading required package: kinship
-Loading required package: survival
-Loading required package: splines
+Loading required package: bdsmatrix
 Loading required package: nlme
-Loading required package: lattice
-[1] "kinship is loaded"
 Loading required package: Formula
 Loading required package: MASS
 Loading required package: sandwich
@@ -165,6 +162,8 @@ sigmaMu      0.8784933  0.2267131  3.8749120 1.066632e-04
 sigmaNu      0.9876686  0.1280905  7.7107072 1.251225e-14
 > logLik( randEff )
 'log Lik.' -73.19882 (df=5)
+> extractAIC( randEff )
+[1] -40.0000 156.3976
 > print.default( randEff )
 $maximum
 [1] -73.19882
@@ -225,9 +224,37 @@ $gradientObs
 $call
 censReg(formula = y ~ x1 + x2, data = pData)
 
+$terms
+y ~ x1 + x2
+attr(,"variables")
+list(y, x1, x2)
+attr(,"factors")
+   x1 x2
+y   0  0
+x1  1  0
+x2  0  1
+attr(,"term.labels")
+[1] "x1" "x2"
+attr(,"order")
+[1] 1 1
+attr(,"intercept")
+[1] 1
+attr(,"response")
+[1] 1
+attr(,".Environment")
+<environment: R_GlobalEnv>
+attr(,"predvars")
+list(y, x1, x2)
+attr(,"dataClasses")
+        y        x1        x2 
+"numeric" "numeric" "numeric" 
+
 $nObs
          Total  Left-censored     Uncensored Right-censored 
             60             20             40              0 
+
+$df.residual
+[1] 55
 
 attr(,"class")
 [1] "censReg" "maxLik"  "maxim"   "list"   
@@ -242,7 +269,7 @@ censReg(formula = y ~ x1 + x2, data = pData, method = "BHHH")
 
 Coefficients:
 (Intercept)          x1          x2  logSigmaMu  logSigmaNu 
-   -0.36563     1.68002     2.24056    -0.12957    -0.01240 
+    -0.3656      1.6800      2.2406     -0.1296     -0.0124 
 
 > maxLik:::summary.maxLik( randEffBhhh )
 --------------------------------------------
@@ -346,9 +373,37 @@ $gradientObs
 $call
 censReg(formula = y ~ x1 + x2, data = pData, method = "BHHH")
 
+$terms
+y ~ x1 + x2
+attr(,"variables")
+list(y, x1, x2)
+attr(,"factors")
+   x1 x2
+y   0  0
+x1  1  0
+x2  0  1
+attr(,"term.labels")
+[1] "x1" "x2"
+attr(,"order")
+[1] 1 1
+attr(,"intercept")
+[1] 1
+attr(,"response")
+[1] 1
+attr(,".Environment")
+<environment: R_GlobalEnv>
+attr(,"predvars")
+list(y, x1, x2)
+attr(,"dataClasses")
+        y        x1        x2 
+"numeric" "numeric" "numeric" 
+
 $nObs
          Total  Left-censored     Uncensored Right-censored 
             60             20             40              0 
+
+$df.residual
+[1] 55
 
 attr(,"class")
 [1] "censReg" "maxLik"  "maxim"   "list"   
@@ -469,9 +524,37 @@ $gradientObs
 $call
 censReg(formula = y ~ x1 + x2, data = pData, method = "BFGS")
 
+$terms
+y ~ x1 + x2
+attr(,"variables")
+list(y, x1, x2)
+attr(,"factors")
+   x1 x2
+y   0  0
+x1  1  0
+x2  0  1
+attr(,"term.labels")
+[1] "x1" "x2"
+attr(,"order")
+[1] 1 1
+attr(,"intercept")
+[1] 1
+attr(,"response")
+[1] 1
+attr(,".Environment")
+<environment: R_GlobalEnv>
+attr(,"predvars")
+list(y, x1, x2)
+attr(,"dataClasses")
+        y        x1        x2 
+"numeric" "numeric" "numeric" 
+
 $nObs
          Total  Left-censored     Uncensored Right-censored 
             60             20             40              0 
+
+$df.residual
+[1] 55
 
 attr(,"class")
 [1] "censReg" "maxLik"  "maxim"  
@@ -491,7 +574,7 @@ Coefficients:
 > maxLik:::summary.maxLik( randEffBfgsr )
 --------------------------------------------
 Maximum Likelihood estimation
-BFGS-YC maximization, 10 iterations
+BFGSR maximization, 10 iterations
 Return code 2: successive function values within tolerance limit
 Log-Likelihood: -73.19882 
 5  free parameters
@@ -524,7 +607,7 @@ logSigmaNu  -0.01241    0.12969  -0.096 0.923779
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
 
-BFGS-YC maximization, 10 iterations
+BFGSR maximization, 10 iterations
 Return code 2: successive function values within tolerance limit
 Log-likelihood: -73.19882 on 5 Df
 
@@ -565,7 +648,7 @@ $iterations
 [1] 10
 
 $type
-[1] "BFGS-YC maximization"
+[1] "BFGSR maximization"
 
 $gradientObs
       (Intercept)          x1          x2 logSigmaMu logSigmaNu
@@ -588,9 +671,37 @@ $gradientObs
 $call
 censReg(formula = y ~ x1 + x2, data = pData, method = "BFGSR")
 
+$terms
+y ~ x1 + x2
+attr(,"variables")
+list(y, x1, x2)
+attr(,"factors")
+   x1 x2
+y   0  0
+x1  1  0
+x2  0  1
+attr(,"term.labels")
+[1] "x1" "x2"
+attr(,"order")
+[1] 1 1
+attr(,"intercept")
+[1] 1
+attr(,"response")
+[1] 1
+attr(,".Environment")
+<environment: R_GlobalEnv>
+attr(,"predvars")
+list(y, x1, x2)
+attr(,"dataClasses")
+        y        x1        x2 
+"numeric" "numeric" "numeric" 
+
 $nObs
          Total  Left-censored     Uncensored Right-censored 
             60             20             40              0 
+
+$df.residual
+[1] 55
 
 attr(,"class")
 [1] "censReg" "maxLik"  "maxim"   "list"   
@@ -611,7 +722,7 @@ Coefficients:
 > maxLik:::summary.maxLik( randEffAdd )
 --------------------------------------------
 Maximum Likelihood estimation
-BFGS-YC maximization, 10 iterations
+BFGSR maximization, 10 iterations
 Return code 2: successive function values within tolerance limit
 Log-Likelihood: -73.19882 
 5  free parameters
@@ -644,7 +755,7 @@ logSigmaNu  -0.01241    0.12969  -0.096 0.923779
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
 
-BFGS-YC maximization, 10 iterations
+BFGSR maximization, 10 iterations
 Return code 2: successive function values within tolerance limit
 Log-likelihood: -73.19882 on 5 Df
 
@@ -670,6 +781,8 @@ sigmaMu     -0.020929371  0.011775397  0.015092122  0.051398836 -0.002289647
 sigmaNu     -0.002937284  0.002933333  0.001486879 -0.002289647  0.016407191
 > logLik( randEffAdd )
 'log Lik.' -73.19882 (df=5)
+> extractAIC( randEffAdd )
+[1] -40.0000 156.3976
 > print.default( randEffAdd )
 $maximum
 [1] -73.19882
@@ -707,7 +820,7 @@ $iterations
 [1] 10
 
 $type
-[1] "BFGS-YC maximization"
+[1] "BFGSR maximization"
 
 $gradientObs
       (Intercept)          x1          x2 logSigmaMu logSigmaNu
@@ -730,9 +843,37 @@ $gradientObs
 $call
 censReg(formula = yAdd ~ x1 + x2, left = 5, data = pData, method = "BFGSR")
 
+$terms
+yAdd ~ x1 + x2
+attr(,"variables")
+list(yAdd, x1, x2)
+attr(,"factors")
+     x1 x2
+yAdd  0  0
+x1    1  0
+x2    0  1
+attr(,"term.labels")
+[1] "x1" "x2"
+attr(,"order")
+[1] 1 1
+attr(,"intercept")
+[1] 1
+attr(,"response")
+[1] 1
+attr(,".Environment")
+<environment: R_GlobalEnv>
+attr(,"predvars")
+list(yAdd, x1, x2)
+attr(,"dataClasses")
+     yAdd        x1        x2 
+"numeric" "numeric" "numeric" 
+
 $nObs
          Total  Left-censored     Uncensored Right-censored 
             60             20             40              0 
+
+$df.residual
+[1] 55
 
 attr(,"class")
 [1] "censReg" "maxLik"  "maxim"   "list"   
@@ -755,7 +896,7 @@ Coefficients:
 > maxLik:::summary.maxLik( randEffNeg )
 --------------------------------------------
 Maximum Likelihood estimation
-BFGS-YC maximization, 10 iterations
+BFGSR maximization, 10 iterations
 Return code 2: successive function values within tolerance limit
 Log-Likelihood: -73.19882 
 5  free parameters
@@ -789,7 +930,7 @@ logSigmaNu  -0.01241    0.12969  -0.096 0.923779
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
 
-BFGS-YC maximization, 10 iterations
+BFGSR maximization, 10 iterations
 Return code 2: successive function values within tolerance limit
 Log-likelihood: -73.19882 on 5 Df
 
@@ -815,6 +956,8 @@ sigmaMu      0.020929371 -0.011775397 -0.015092122  0.051398836 -0.002289647
 sigmaNu      0.002937284 -0.002933333 -0.001486879 -0.002289647  0.016407191
 > logLik( randEffNeg )
 'log Lik.' -73.19882 (df=5)
+> extractAIC( randEffNeg )
+[1] -40.0000 156.3976
 > print.default( randEffNeg )
 $maximum
 [1] -73.19882
@@ -852,7 +995,7 @@ $iterations
 [1] 10
 
 $type
-[1] "BFGS-YC maximization"
+[1] "BFGSR maximization"
 
 $gradientObs
       (Intercept)          x1          x2 logSigmaMu logSigmaNu
@@ -876,9 +1019,37 @@ $call
 censReg(formula = yNeg ~ x1 + x2, left = -Inf, right = 0, data = pData, 
     method = "BFGSR")
 
+$terms
+yNeg ~ x1 + x2
+attr(,"variables")
+list(yNeg, x1, x2)
+attr(,"factors")
+     x1 x2
+yNeg  0  0
+x1    1  0
+x2    0  1
+attr(,"term.labels")
+[1] "x1" "x2"
+attr(,"order")
+[1] 1 1
+attr(,"intercept")
+[1] 1
+attr(,"response")
+[1] 1
+attr(,".Environment")
+<environment: R_GlobalEnv>
+attr(,"predvars")
+list(yNeg, x1, x2)
+attr(,"dataClasses")
+     yNeg        x1        x2 
+"numeric" "numeric" "numeric" 
+
 $nObs
          Total  Left-censored     Uncensored Right-censored 
             60              0             40             20 
+
+$df.residual
+[1] 55
 
 attr(,"class")
 [1] "censReg" "maxLik"  "maxim"   "list"   
@@ -901,7 +1072,7 @@ Coefficients:
 > maxLik:::summary.maxLik( randEffAddNeg )
 --------------------------------------------
 Maximum Likelihood estimation
-BFGS-YC maximization, 10 iterations
+BFGSR maximization, 10 iterations
 Return code 2: successive function values within tolerance limit
 Log-Likelihood: -73.19882 
 5  free parameters
@@ -935,7 +1106,7 @@ logSigmaNu  -0.01241    0.12969  -0.096 0.923779
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
 
-BFGS-YC maximization, 10 iterations
+BFGSR maximization, 10 iterations
 Return code 2: successive function values within tolerance limit
 Log-likelihood: -73.19882 on 5 Df
 
@@ -961,6 +1132,8 @@ sigmaMu      0.020929371 -0.011775397 -0.015092122  0.051398836 -0.002289647
 sigmaNu      0.002937284 -0.002933333 -0.001486879 -0.002289647  0.016407191
 > logLik( randEffAddNeg )
 'log Lik.' -73.19882 (df=5)
+> extractAIC( randEffAddNeg )
+[1] -40.0000 156.3976
 > print.default( randEffAddNeg )
 $maximum
 [1] -73.19882
@@ -998,7 +1171,7 @@ $iterations
 [1] 10
 
 $type
-[1] "BFGS-YC maximization"
+[1] "BFGSR maximization"
 
 $gradientObs
       (Intercept)          x1          x2 logSigmaMu logSigmaNu
@@ -1022,9 +1195,37 @@ $call
 censReg(formula = yAddNeg ~ x1 + x2, left = -Inf, right = -5, 
     data = pData, method = "BFGSR")
 
+$terms
+yAddNeg ~ x1 + x2
+attr(,"variables")
+list(yAddNeg, x1, x2)
+attr(,"factors")
+        x1 x2
+yAddNeg  0  0
+x1       1  0
+x2       0  1
+attr(,"term.labels")
+[1] "x1" "x2"
+attr(,"order")
+[1] 1 1
+attr(,"intercept")
+[1] 1
+attr(,"response")
+[1] 1
+attr(,".Environment")
+<environment: R_GlobalEnv>
+attr(,"predvars")
+list(yAddNeg, x1, x2)
+attr(,"dataClasses")
+  yAddNeg        x1        x2 
+"numeric" "numeric" "numeric" 
+
 $nObs
          Total  Left-censored     Uncensored Right-censored 
             60              0             40             20 
+
+$df.residual
+[1] 55
 
 attr(,"class")
 [1] "censReg" "maxLik"  "maxim"   "list"   
@@ -1047,7 +1248,7 @@ Coefficients:
 > maxLik:::summary.maxLik( randEffBoth )
 --------------------------------------------
 Maximum Likelihood estimation
-BFGS-YC maximization, 16 iterations
+BFGSR maximization, 16 iterations
 Return code 2: successive function values within tolerance limit
 Log-Likelihood: -64.31272 
 5  free parameters
@@ -1073,15 +1274,15 @@ Observations:
 
 Coefficients:
              Estimate Std. error t value  Pr(> t)    
-(Intercept) -0.235535   0.548605  -0.429   0.6677    
+(Intercept) -0.235535   0.548605  -0.429    0.668    
 x1           1.893305   0.301140   6.287 3.23e-10 ***
-x2           1.972325   0.819113   2.408   0.0160 *  
-logSigmaMu   0.001777   0.277794   0.006   0.9949    
-logSigmaNu   0.052887   0.163015   0.324   0.7456    
+x2           1.972325   0.819113   2.408    0.016 *  
+logSigmaMu   0.001777   0.277794   0.006    0.995    
+logSigmaNu   0.052887   0.163015   0.324    0.746    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
 
-BFGS-YC maximization, 16 iterations
+BFGSR maximization, 16 iterations
 Return code 2: successive function values within tolerance limit
 Log-likelihood: -64.31272 on 5 Df
 
@@ -1105,7 +1306,7 @@ sigmaNu       1.0543     0.1719   6.134 8.55e-10 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
 
-BFGS-YC maximization, 16 iterations
+BFGSR maximization, 16 iterations
 Return code 2: successive function values within tolerance limit
 Log-likelihood: -64.31272 on 5 Df
 
@@ -1145,6 +1346,8 @@ sigmaMu      1.0017786  0.2782877  3.599795 3.184681e-04
 sigmaNu      1.0543105  0.1718685  6.134403 8.547939e-10
 > logLik( randEffBoth )
 'log Lik.' -64.31272 (df=5)
+> extractAIC( randEffBoth )
+[1] -40.0000 138.6254
 > print.default( randEffBoth )
 $maximum
 [1] -64.31272
@@ -1158,12 +1361,12 @@ $gradient
  2.487688e-08 -2.871254e-06  1.028026e-06  4.853692e-07 -3.020918e-06 
 
 $hessian
-            (Intercept)          x1         x2  logSigmaMu  logSigmaNu
-(Intercept)  -9.9215611  -1.4895580 -5.3035083  -0.0820374  -0.3186171
-x1           -1.4895580 -15.1354595 -0.5438191   6.2936777   7.6261353
-x2           -5.3035083  -0.5438191 -4.3889375   0.1480904   1.0870164
-logSigmaMu   -0.0820374   6.2936777  0.1480904 -15.8045283  -1.3710175
-logSigmaNu   -0.3186171   7.6261353  1.0870164  -1.3710175 -43.1836339
+            (Intercept)          x1         x2   logSigmaMu  logSigmaNu
+(Intercept) -9.92156107  -1.4895580 -5.3035083  -0.08203739  -0.3186171
+x1          -1.48955800 -15.1354595 -0.5438191   6.29367769   7.6261353
+x2          -5.30350830  -0.5438191 -4.3889375   0.14809035   1.0870164
+logSigmaMu  -0.08203739   6.2936777  0.1480904 -15.80452827  -1.3710175
+logSigmaNu  -0.31861714   7.6261353  1.0870164  -1.37101753 -43.1836339
 
 $code
 [1] 2
@@ -1182,7 +1385,7 @@ $iterations
 [1] 16
 
 $type
-[1] "BFGS-YC maximization"
+[1] "BFGSR maximization"
 
 $gradientObs
       (Intercept)          x1         x2  logSigmaMu logSigmaNu
@@ -1206,9 +1409,37 @@ $call
 censReg(formula = yBoth ~ x1 + x2, left = 0, right = 3, data = pData, 
     method = "BFGSR")
 
+$terms
+yBoth ~ x1 + x2
+attr(,"variables")
+list(yBoth, x1, x2)
+attr(,"factors")
+      x1 x2
+yBoth  0  0
+x1     1  0
+x2     0  1
+attr(,"term.labels")
+[1] "x1" "x2"
+attr(,"order")
+[1] 1 1
+attr(,"intercept")
+[1] 1
+attr(,"response")
+[1] 1
+attr(,".Environment")
+<environment: R_GlobalEnv>
+attr(,"predvars")
+list(yBoth, x1, x2)
+attr(,"dataClasses")
+    yBoth        x1        x2 
+"numeric" "numeric" "numeric" 
+
 $nObs
          Total  Left-censored     Uncensored Right-censored 
             60             20             28             12 
+
+$df.residual
+[1] 55
 
 attr(,"class")
 [1] "censReg" "maxLik"  "maxim"   "list"   
@@ -1247,7 +1478,7 @@ Coefficients:
 > maxLik:::summary.maxLik( randEffBfgsrUnb )
 --------------------------------------------
 Maximum Likelihood estimation
-BFGS-YC maximization, 10 iterations
+BFGSR maximization, 10 iterations
 Return code 2: successive function values within tolerance limit
 Log-Likelihood: -71.19256 
 5  free parameters
@@ -1280,12 +1511,14 @@ logSigmaNu  -0.001134   0.132271  -0.009  0.99316
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
 
-BFGS-YC maximization, 10 iterations
+BFGSR maximization, 10 iterations
 Return code 2: successive function values within tolerance limit
 Log-likelihood: -71.19256 on 5 Df
 
 > logLik( randEffBfgsrUnb )
 'log Lik.' -71.19256 (df=5)
+> extractAIC( randEffBfgsrUnb )
+[1] -36.0000 152.3851
 > print.default( randEffBfgsrUnb )
 $maximum
 [1] -71.19256
@@ -1323,7 +1556,7 @@ $iterations
 [1] 10
 
 $type
-[1] "BFGS-YC maximization"
+[1] "BFGSR maximization"
 
 $gradientObs
       (Intercept)           x1          x2  logSigmaMu  logSigmaNu
@@ -1346,9 +1579,37 @@ $gradientObs
 $call
 censReg(formula = y ~ x1 + x2, data = pDataUnb, method = "BFGSR")
 
+$terms
+y ~ x1 + x2
+attr(,"variables")
+list(y, x1, x2)
+attr(,"factors")
+   x1 x2
+y   0  0
+x1  1  0
+x2  0  1
+attr(,"term.labels")
+[1] "x1" "x2"
+attr(,"order")
+[1] 1 1
+attr(,"intercept")
+[1] 1
+attr(,"response")
+[1] 1
+attr(,".Environment")
+<environment: R_GlobalEnv>
+attr(,"predvars")
+list(y, x1, x2)
+attr(,"dataClasses")
+        y        x1        x2 
+"numeric" "numeric" "numeric" 
+
 $nObs
          Total  Left-censored     Uncensored Right-censored 
             56             17             39              0 
+
+$df.residual
+[1] 51
 
 attr(,"class")
 [1] "censReg" "maxLik"  "maxim"   "list"   

@@ -31,6 +31,7 @@ vcov( randEff, logSigma = FALSE )
 coef( summary( randEff ) )
 coef( summary( randEff ), logSigma = FALSE )
 logLik( randEff )
+extractAIC( randEff )
 print.default( randEff )
 
 
@@ -69,6 +70,7 @@ coef( randEffAdd, logSigma = FALSE )
 vcov( randEffAdd )
 vcov( randEffAdd, logSigma = FALSE )
 logLik( randEffAdd )
+extractAIC( randEffAdd )
 print.default( randEffAdd )
 
 
@@ -84,6 +86,7 @@ coef( randEffNeg, logSigma = FALSE )
 vcov( randEffNeg )
 vcov( randEffNeg, logSigma = FALSE )
 logLik( randEffNeg )
+extractAIC( randEffNeg )
 print.default( randEffNeg )
 
 
@@ -99,6 +102,7 @@ coef( randEffAddNeg, logSigma = FALSE )
 vcov( randEffAddNeg )
 vcov( randEffAddNeg, logSigma = FALSE )
 logLik( randEffAddNeg )
+extractAIC( randEffAddNeg )
 print.default( randEffAddNeg )
 
 
@@ -117,6 +121,7 @@ vcov( randEffBoth, logSigma = FALSE )
 coef( summary( randEffBoth ) )
 coef( summary( randEffBoth ), logSigma = FALSE )
 logLik( randEffBoth )
+extractAIC( randEffBoth )
 print.default( randEffBoth )
 
 
@@ -143,6 +148,7 @@ print( randEffBfgsrUnb )
 maxLik:::summary.maxLik( randEffBfgsrUnb )
 summary( randEffBfgsrUnb )
 logLik( randEffBfgsrUnb )
+extractAIC( randEffBfgsrUnb )
 print.default( randEffBfgsrUnb )
 
 

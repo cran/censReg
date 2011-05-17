@@ -1,4 +1,6 @@
 library( censReg )
+library( lmtest )
+library( sandwich )
 
 data( "Affairs", package = "AER" )
 affairsFormula <- affairs ~ age + yearsmarried + religiousness +
@@ -19,6 +21,16 @@ vcov( estResult, logSigma = FALSE )
 coef( summary( estResult ) )
 coef( summary( estResult ), logSigma = FALSE )
 logLik( estResult )
+extractAIC( estResult )
+formula( estResult )
+model.frame( estResult )
+estfun( estResult )[ 20 * c(1:30), ]
+meat( estResult )
+bread( estResult )
+sandwich( estResult )
+all.equal( sandwich( estResult ), vcov( estResult ) )
+waldtest( estResult, . ~ . - age )
+waldtest( estResult, . ~ . - age, vcov = sandwich( estResult ) )
 
 ## usual tobit estimation, BHHH method
 estResultBhhh <- censReg( affairsFormula, data = Affairs, method = "BHHH" )
@@ -26,6 +38,9 @@ print.default( estResultBhhh )
 print( estResultBhhh )
 maxLik:::summary.maxLik( estResultBhhh )
 summary( estResultBhhh )
+all.equal( -crossprod( estfun( estResultBhhh ) ), 
+   hessian( estResultBhhh ), check.attributes = FALSE )
+all.equal( sandwich( estResultBhhh ), vcov( estResultBhhh ) )
 
 ## usual tobit estimation, BFGS method
 estResultBfgs <- censReg( affairsFormula, data = Affairs, method = "BFGS" )
@@ -56,6 +71,7 @@ print( estResultStart )
 maxLik:::summary.maxLik( estResultStart )
 summary( estResultStart )
 logLik( estResultStart )
+formula( estResultStart )
 
 ## estimation with left-censoring at 5
 Affairs$affairsAdd <- Affairs$affairs + 5
@@ -70,6 +86,7 @@ coef( estResultAdd, logSigma = FALSE )
 vcov( estResultAdd )
 vcov( estResultAdd, logSigma = FALSE )
 logLik( estResultAdd )
+extractAIC( estResultAdd )
 
 ## estimation with right-censoring
 Affairs$affairsNeg <- - Affairs$affairs
@@ -84,6 +101,8 @@ coef( estResultNeg, logSigma = FALSE )
 vcov( estResultNeg )
 vcov( estResultNeg, logSigma = FALSE )
 logLik( estResultNeg )
+extractAIC( estResultNeg )
+model.frame( estResultNeg )
 
 ## estimation with right-censoring at -5
 Affairs$affairsAddNeg <- - Affairs$affairsAdd
@@ -98,6 +117,7 @@ coef( estResultAddNeg, logSigma = FALSE )
 vcov( estResultAddNeg )
 vcov( estResultAddNeg, logSigma = FALSE )
 logLik( estResultAddNeg )
+extractAIC( estResultAddNeg )
 
 ## estimation with left and right censoring
 estResultBoth <- censReg( affairsFormula, data = Affairs, right = 4 )
@@ -113,3 +133,32 @@ vcov( estResultBoth, logSigma = FALSE )
 coef( summary( estResultBoth ) )
 coef( summary( estResultBoth ), logSigma = FALSE )
 logLik( estResultBoth )
+extractAIC( estResultBoth )
+estfun( estResultBoth )[ 20 * c(1:30), ]
+meat( estResultBoth )
+bread( estResultBoth )
+sandwich( estResultBoth )
+all.equal( sandwich( estResultBoth ), vcov( estResultBoth ) )
+waldtest( estResultBoth, . ~ . - age )
+waldtest( estResultBoth, . ~ . - age, vcov = sandwich( estResultBoth ) )
+
+## with empty levels
+Affairs2 <- Affairs
+Affairs2$religiousness <- as.factor( Affairs2$religiousness )
+Affairs2 <- Affairs2[ Affairs2$religiousness != "5", ]
+estResultEmpty <- censReg( affairsFormula, data = Affairs2 )
+print.default( estResultEmpty )
+print( estResultEmpty )
+summary( estResultEmpty )
+coef( estResultEmpty )
+vcov( estResultEmpty )
+formula( estResultEmpty )
+model.frame( estResultEmpty )
+estfun( estResultEmpty )[ 20 * c(1:26), ]
+meat( estResultEmpty )
+bread( estResultEmpty )
+sandwich( estResultEmpty )
+all.equal( sandwich( estResultEmpty ), vcov( estResultEmpty ) )
+waldtest( estResultEmpty, . ~ . - age )
+waldtest( estResultEmpty, . ~ . - age, vcov = sandwich( estResultEmpty ) )
+
