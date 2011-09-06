@@ -59,6 +59,13 @@ summary( randEffBfgsr )
 print.default( randEffBfgsr )
 
 
+## BHHH with starting values
+randEffBhhhStart <- censReg( y ~ x1 + x2, data = pData, method = "BHHH",
+   start = c( -0.4, 1.7, 2.2, -0.1, -0.01 ) )
+print( randEffBhhhStart )
+summary( randEffBhhhStart )
+
+
 ## left-censoring at 5
 pData$yAdd <- pData$y + 5
 randEffAdd <- censReg( yAdd ~ x1 + x2, data = pData, method = "BFGSR", left = 5 )

@@ -26,10 +26,11 @@ censReg( formula, left = 0, right = Inf, data = sys.frame( sys.parent()),
       If argument \code{data} is of class \code{"pdata.frame"},
       a panel-model is estimated.}
    \item{start}{an optional vector of initial parameters for the ML estimation
-      (intercept, slope parameters, and logarithm of the standard deviation
-      of the disturbance term);
+      (intercept, slope parameters, logarithm of the standard deviation
+      of the individual effects (only for random-effects panel data models), 
+      and logarithm of the standard deviation of the general disturbance term);
       if \code{start} is not specified, initial values are taken from an OLS
-      estimation.}
+      estimation or (uncensored) random-effects panel data estimation.}
    \item{nGHQ}{number of points used in the Gauss-Hermite quadrature,
       which is used to compute the log-likelihood value in case of the
       random effects model for panel data.}

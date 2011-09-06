@@ -94,6 +94,9 @@ censReg <- function( formula, left = 0, right = Inf,
 
    ## starting values
    nParam <- ncol( xMat ) + 1
+   if( isPanel ) {
+      nParam <- nParam + 1
+   }
    if( is.null( start ) ) {
       if( isPanel ) {
          assign( "validObs2", validObs, inherits = TRUE )

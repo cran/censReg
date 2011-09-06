@@ -1,5 +1,5 @@
 
-R version 2.13.0 (2011-04-13)
+R version 2.13.1 (2011-07-08)
 Copyright (C) 2011 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: i686-pc-linux-gnu (32-bit)
@@ -705,6 +705,45 @@ $df.residual
 
 attr(,"class")
 [1] "censReg" "maxLik"  "maxim"   "list"   
+> 
+> 
+> ## BHHH with starting values
+> randEffBhhhStart <- censReg( y ~ x1 + x2, data = pData, method = "BHHH",
++    start = c( -0.4, 1.7, 2.2, -0.1, -0.01 ) )
+> print( randEffBhhhStart )
+
+Call:
+censReg(formula = y ~ x1 + x2, data = pData, start = c(-0.4, 
+    1.7, 2.2, -0.1, -0.01), method = "BHHH")
+
+Coefficients:
+(Intercept)          x1          x2  logSigmaMu  logSigmaNu 
+    -0.3657      1.6800      2.2406     -0.1296     -0.0124 
+
+> summary( randEffBhhhStart )
+
+Call:
+censReg(formula = y ~ x1 + x2, data = pData, start = c(-0.4, 
+    1.7, 2.2, -0.1, -0.01), method = "BHHH")
+
+Observations:
+         Total  Left-censored     Uncensored Right-censored 
+            60             20             40              0 
+
+Coefficients:
+            Estimate Std. error t value  Pr(> t)    
+(Intercept)  -0.3657     0.5551  -0.659  0.51003    
+x1            1.6800     0.2938   5.719 1.07e-08 ***
+x2            2.2406     0.7295   3.071  0.00213 ** 
+logSigmaMu   -0.1295     0.2950  -0.439  0.66056    
+logSigmaNu   -0.0124     0.1401  -0.088  0.92948    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+
+BHHH maximisation, 10 iterations
+Return code 2: successive function values within tolerance limit
+Log-likelihood: -73.19882 on 5 Df
+
 > 
 > 
 > ## left-censoring at 5
