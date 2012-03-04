@@ -162,3 +162,14 @@ all.equal( sandwich( estResultEmpty ), vcov( estResultEmpty ) )
 waldtest( estResultEmpty, . ~ . - age )
 waldtest( estResultEmpty, . ~ . - age, vcov = sandwich( estResultEmpty ) )
 
+
+# returning log-likelihood contributions only (no estimations)
+logLikBhhh <- censReg( affairsFormula, data = Affairs, method = "BHHH",
+   start = coef( estResultBhhh ), logLikOnly = TRUE )
+print( logLikBhhh )
+all.equal( sum( logLikBhhh ), c( logLik( estResultBhhh ) ) )
+logLikStart <- censReg( affairsFormula, data = Affairs,
+   start = c( 8.17, -0.18, 0.55, -1.69, 0.33, -2.3, 2.13 ),
+   logLikOnly = TRUE )
+print( logLikStart )
+

@@ -1,8 +1,8 @@
 
-R version 2.13.0 (2011-04-13)
-Copyright (C) 2011 The R Foundation for Statistical Computing
+R version 2.14.2 (2012-02-29)
+Copyright (C) 2012 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
-Platform: i686-pc-linux-gnu (32-bit)
+Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -21,11 +21,25 @@ Loading required package: maxLik
 Loading required package: miscTools
 > library( plm )
 Loading required package: bdsmatrix
+
+Attaching package: 'bdsmatrix'
+
+The following object(s) are masked from 'package:base':
+
+    backsolve
+
 Loading required package: nlme
 Loading required package: Formula
 Loading required package: MASS
 Loading required package: sandwich
 Loading required package: zoo
+
+Attaching package: 'zoo'
+
+The following object(s) are masked from 'package:base':
+
+    as.Date, as.Date.numeric
+
 > 
 > nId <- 100
 > nTime <- 3
@@ -91,17 +105,17 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 > maxLik:::summary.maxLik( randEffBfgsr )
 --------------------------------------------
 Maximum Likelihood estimation
-BFGSR maximization, 15 iterations
+BFGSR maximization, 22 iterations
 Return code 2: successive function values within tolerance limit
 Log-Likelihood: -330.5222 
 5  free parameters
 Estimates:
              Estimate Std. error t value   Pr(> t)    
-(Intercept) -1.086695   0.226326 -4.8015 1.575e-06 ***
-x1           2.069552   0.096853 21.3679 < 2.2e-16 ***
-x2           3.115097   0.326649  9.5365 < 2.2e-16 ***
-logSigmaMu  -0.105561   0.130954 -0.8061    0.4202    
-logSigmaNu   0.025601   0.069593  0.3679    0.7130    
+(Intercept) -1.086421   0.226316 -4.8005 1.583e-06 ***
+x1           2.069543   0.096852 21.3681 < 2.2e-16 ***
+x2           3.114673   0.326638  9.5356 < 2.2e-16 ***
+logSigmaMu  -0.105526   0.130947 -0.8059    0.4203    
+logSigmaNu   0.025589   0.069591  0.3677    0.7131    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
 --------------------------------------------

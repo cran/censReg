@@ -146,6 +146,37 @@ randEffBfgsr2 <- censReg( y ~ x1 + x2, data = pData2, method = "BFGSR" )
 all.equal( randEffBfgsr2[ -c(11,12) ], randEffBfgsr[ -c(11,12) ] )
 all.equal( sort( randEffBfgsr2[[ 11 ]] ), sort( randEffBfgsr[[ 11 ]] ) )
 
+# check if the order of observations/individuals influences the likelihood values
+d1c1 <- censReg( y ~ x1 + x2, data = pData, method = "BFGSR", start = coef(randEffBfgsr),
+   iterlim = 0 )
+all.equal( d1c1[-c(5,6,9,12,16)], randEffBfgsr[-c(5,6,9,12,16)] )
+d1c1$maximum -  randEffBfgsr$maximum
+
+d2c2 <- censReg( y ~ x1 + x2, data = pData2, method = "BFGSR", start = coef(randEffBfgsr2),
+   iterlim = 0 )
+all.equal( d2c2[-c(5,6,9,12,16)], randEffBfgsr2[-c(5,6,9,12,16)] )
+d2c2$maximum -  randEffBfgsr2$maximum
+
+d1c2 <- censReg( y ~ x1 + x2, data = pData, method = "BFGSR", 
+   start = coef(randEffBfgsr2), iterlim = 0 )
+d2c2$maximum - d1c2$maximum
+d2c2$gradient - d1c2$gradient
+
+d2c1 <- censReg( y ~ x1 + x2, data = pData2, method = "BFGSR", 
+   start = coef(randEffBfgsr), iterlim = 0 )
+d1c1$maximum - d2c1$maximum
+d1c1$gradient - d2c1$gradient
+
+d2c2$maximum - d2c1$maximum
+d1c1$maximum - d1c2$maximum
+
+d1cS <- censReg( y ~ x1 + x2, data = pData, method = "BFGSR", 
+   start = randEffBfgsr$start, iterlim = 0 )
+d2cS <- censReg( y ~ x1 + x2, data = pData2, method = "BFGSR", 
+   start = randEffBfgsr$start, iterlim = 0 )
+d1cS$maximum - d2cS$maximum
+d1cS$gradient - d2cS$gradient
+
 
 ## unbalanced panel data
 nDataUnb <- nData[ -c( 2, 5, 6, 8 ), ]
@@ -167,5 +198,16 @@ pDataNa$x1[ obsNa[ 3 ] ] <- NA
 pDataNa$x2[ obsNa[ c( 1, 2, 4 ) ] ] <- NA
 randEffBfgsrNa <- censReg( y ~ x1 + x2, data = pDataNa, method = "BFGSR" )
 all.equal( randEffBfgsrNa[ -12 ], randEffBfgsrUnb[ -12 ] )
+
+
+# returning log-likelihood contributions only (no estimations)
+logLikRandEff <- censReg( y ~ x1 + x2, data = pData, start = coef( randEff ),
+   logLikOnly = TRUE )
+print( logLikRandEff )
+all.equal( sum( logLikRandEff ), c( logLik( randEff ) ) )
+logLikStart <- censReg( y ~ x1 + x2, data = pData, 
+   start = c( -0.4, 1.7, 2.2, -0.1, -0.01 ), logLikOnly = TRUE )
+print( logLikStart )
+
 
 

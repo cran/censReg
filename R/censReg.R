@@ -1,6 +1,6 @@
 censReg <- function( formula, left = 0, right = Inf,
       data = sys.frame( sys.parent() ), start = NULL,
-      nGHQ = 8, ... ) {
+      nGHQ = 8, logLikOnly = FALSE, ... ) {
 
    ## checking formula
    if( class( formula ) != "formula" ) {
@@ -25,6 +25,17 @@ censReg <- function( formula, left = 0, right = Inf,
    # both
    if( left >= right ) {
       stop( "argument 'right' must be a larger number than argument 'left'" )
+   }
+
+   ## checking argument 'logLikOnly'
+   if( length( logLikOnly ) != 1 ) {
+      stop( "argument 'logLikOnly' must be a single logical value" )
+   } else if( !is.logical( logLikOnly ) ) {
+      stop( "argument 'logLikOnly' must be logical" )
+   }
+   if( logLikOnly && is.null( start ) ) {
+      stop( "if argument 'logLikOnly' is 'TRUE',",
+         " parameters must be specified by argument 'start'" )
    }
 
    ## preparing model matrix and model response
@@ -141,65 +152,22 @@ censReg <- function( formula, left = 0, right = Inf,
       obsAbove <- yMat >= right & !is.na( yMat )
       obsBetween <- !obsBelow & !obsAbove & !is.na( yMat )
 
-      ## log likelihood function for panel data (incl. gradients)
-      censRegLogLik <- function( beta ) {
-         yMatHat <- matrix( matrix( xArr, ncol = ncol( xMat ) ) %*%
-            beta[ 1:( length( beta ) - 2 ) ], nrow = nInd, ncol = nTime )
-         sigmaMu <- exp( beta[ length( beta ) - 1 ] )
-         sigmaNu <- exp( beta[ length( beta ) ] )
-         likInd <- rep( 0, nInd )
-         gradInd <- matrix( 0, nrow = nInd, ncol = length( beta ) )
-         for( h in 1:nGHQ ) {
-            likGhqInner <- matrix( NA, nrow = nInd, ncol = nTime )
-            likGhqInner[ obsBelow ] <-
-               ( left - yMatHat[ obsBelow ] - sqrt( 2 ) * sigmaMu *
-                  ghqPoints$zeros[ h ] ) / sigmaNu
-            likGhqInner[ obsAbove ] <-
-               ( yMatHat[ obsAbove ] - right + sqrt( 2 ) * sigmaMu *
-                  ghqPoints$zeros[ h ] ) / sigmaNu
-            likGhqInner[ obsBetween ] <-
-               ( yMat[ obsBetween ] - yMatHat[ obsBetween ] -
-                  sqrt( 2 ) * sigmaMu * ghqPoints$zeros[ h ] ) / sigmaNu
-            likGhq <- matrix( 1, nrow = nInd, ncol = nTime )
-            likGhq[ obsBelow | obsAbove ] <-
-               pnorm( likGhqInner[ obsBelow | obsAbove ] )
-            likGhq[ obsBetween ] <-
-               dnorm( likGhqInner[ obsBetween ] ) / sigmaNu
-            likGhqProd <- apply( likGhq, 1, prod )
-            likInd <- likInd + ghqPoints$weights[ h ] * likGhqProd
-            # gradients
-            gradPartGhq <- matrix( 0, nrow = nInd, ncol = nTime )
-            gradPartGhq[ obsBelow ] <-
-               - dnorm( likGhqInner[ obsBelow ] ) / sigmaNu
-            gradPartGhq[ obsAbove ] <-
-               dnorm( likGhqInner[ obsAbove ] ) / sigmaNu
-            gradPartGhq[ obsBetween ] <-
-               - ddnorm( likGhqInner[ obsBetween ] ) / sigmaNu^2
-            # part of gradients with respect to beta
-            for( i in 1:( length( beta ) - 2 ) ) {
-               gradInd[ , i ] <- gradInd[ , i ] + ghqPoints$weights[ h ] *
-                  likGhqProd * rowSums( gradPartGhq * xArr[ , , i ] / likGhq,
-                  na.rm = TRUE )
-            }
-            # part of gradient with respect to log( sigma_mu )
-            gradInd[ , length( beta ) - 1 ] <- gradInd[ , length( beta ) - 1 ] +
-               sigmaMu * ghqPoints$weights[ h ] * likGhqProd *
-               rowSums( gradPartGhq * sqrt( 2 ) * ghqPoints$zeros[ h ] / likGhq )
-            # part of gradient with respect to log( sigma_nu )
-            gradPartGhq[ obsBelow ] <- gradPartGhq[ obsBelow ] *
-               likGhqInner[ obsBelow ]
-            gradPartGhq[ obsAbove ] <- - gradPartGhq[ obsAbove ] *
-               likGhqInner[ obsAbove ]
-            gradPartGhq[ obsBetween ] <- gradPartGhq[ obsBetween ] *
-               likGhqInner[ obsBetween ] - likGhq[ obsBetween ] / sigmaNu
-            gradInd[ , length( beta ) ] <- gradInd[ , length( beta ) ] +
-               sigmaNu * ghqPoints$weights[ h ] * likGhqProd *
-               rowSums( gradPartGhq / likGhq )
-         }
-         ll <- log( likInd / sqrt( pi ) )
-         attr( ll, "gradient" ) <- gradInd / likInd
-         return( ll )
+      ## stop and return log likelihood values
+      if( logLikOnly ) {
+         result <- censRegLogLikPanel( beta = start,
+            yMat = yMat, xArr = xArr, left = left, right = right, 
+            nInd = nInd, nTime = nTime,
+            obsBelow = obsBelow, obsBetween = obsBetween, obsAbove = obsAbove,
+            nGHQ = nGHQ, ghqPoints = ghqPoints )
+         return( result )
       }
+
+      ## log likelihood function for panel data (incl. gradients)
+      result <- maxLik( censRegLogLikPanel, start = start,
+         yMat = yMat, xArr = xArr, left = left, right = right, 
+         nInd = nInd, nTime = nTime,
+         obsBelow = obsBelow, obsBetween = obsBetween, obsAbove = obsAbove,
+         nGHQ = nGHQ, ghqPoints = ghqPoints, ... )
    } else {
       ## naming coefficients
       names( start ) <- c( colnames( xMat ), "logSigma" )
@@ -209,40 +177,20 @@ censReg <- function( formula, left = 0, right = Inf,
       obsAbove <- yVec >= right
       obsBetween <- !obsBelow & !obsAbove
 
-      ## log likelihood function for cross-sectional data
-      censRegLogLik <- function( beta ) {
-         yHat <- xMat %*% beta[ - length( beta ) ]
-         sigma <- exp( beta[ length( beta ) ] )
-         ll <- rep( NA, length( yVec ) )
-         ll[ obsBelow ] <-
-            pnorm( ( left - yHat[ obsBelow ] ) / sigma, log.p = TRUE )
-         ll[ obsBetween ] <-
-            dnorm( ( yVec - yHat )[ obsBetween ] / sigma, log = TRUE ) -
-            log( sigma )
-         ll[ obsAbove ] <-
-            pnorm( ( yHat[ obsAbove ] - right ) / sigma, log.p = TRUE )
-
-         ## gradients of log likelihood function for cross-sectional data
-         grad <- matrix( NA, nrow = length( yVec ), ncol = length( beta ) )
-         grad[ obsBelow, ] <-
-            dnorm( ( left - yHat[ obsBelow ] ) / sigma ) /
-            pnorm( ( left - yHat[ obsBelow ] ) / sigma ) *
-            cbind( - xMat[ obsBelow, , drop = FALSE ] / sigma,
-               - ( left - yHat[ obsBelow ] ) / sigma )
-         grad[ obsBetween, ] <-
-            cbind( ( ( yVec - yHat )[ obsBetween ] / sigma ) *
-               xMat[ obsBetween, , drop = FALSE ] / sigma,
-               ( ( yVec - yHat )[ obsBetween ] / sigma )^2 - 1 )
-         grad[ obsAbove, ] <-
-            dnorm( ( yHat[ obsAbove ] - right ) / sigma ) /
-            pnorm( ( yHat[ obsAbove ] - right ) / sigma ) *
-            cbind( xMat[ obsAbove, , drop = FALSE ] / sigma,
-               - ( yHat[ obsAbove ] - right ) / sigma )
-         attr( ll, "gradient" ) <- grad
-         return( ll )
+      ## stop and return log likelihood values
+      if( logLikOnly ) {
+         result <- censRegLogLikCross( beta = start,
+            yVec = yVec, xMat = xMat, left = left, right = right, 
+            obsBelow = obsBelow, obsBetween = obsBetween, obsAbove = obsAbove )
+         return( result )
       }
+
+      ## log likelihood function for cross-sectional data
+      result <- maxLik( censRegLogLikCross, start = start,
+         yVec = yVec, xMat = xMat, left = left, right = right,
+         obsBelow = obsBelow, obsBetween = obsBetween, obsAbove = obsAbove,
+         ... )
    }
-   result <- maxLik( censRegLogLik, start = start, ... )
 
    # save and return the call
    result$call <- match.call()
@@ -258,6 +206,9 @@ censReg <- function( formula, left = 0, right = Inf,
 
    # return the degrees of freedom of the residuals
    result$df.residual <- unname( result$nObs[ 1 ] - length( coef( result ) ) )
+   
+   # return starting values
+   result$start <- start
 
    class( result ) <- c( "censReg", class( result ) )
    return( result )

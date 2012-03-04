@@ -5,6 +5,19 @@ A full ChangeLog is available in the log messages of the SVN repository
 on R-Forge.
 
 
+            CHANGES IN VERSION 0.5-8  (2012-04-03)
+
+* censReg() has an argument "logLikOnly" now: if this argument is set to TRUE, 
+the model is not estimated but the log-likelihood contributions of all 
+observations/individuals and the corresponding gradients calculated at the 
+parameters specified by argument "start" are returned
+
+* made the calculation of the log-likelihood value of random effects panel data 
+models with censored dependent variables and the calculation of the corresponsing 
+gradient(s) numerically more robust and stable by calculating and storing the 
+*logarithms* rather than the actual numbers
+
+
             CHANGES IN VERSION 0.5-6  (2011-09-06)
 
 * fixed bug that made it impossible to specify starting values
