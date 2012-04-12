@@ -67,6 +67,9 @@ censReg( formula, left = 0, right = Inf, data = sys.frame( sys.parent()),
       the number of right-censored observations.}
    \item{df.residual}{degrees of freedom of the residuals.}
    \item{start}{vector of starting values.}
+   \item{left}{left limit of the censored dependent variable.}
+   \item{right}{right limit of the censored dependent variable.}
+   \item{xMean}{vector of mean values of the explanatory variables.}
 
    In contrast, 
    if argument \code{logLikOnly} is \code{TRUE},

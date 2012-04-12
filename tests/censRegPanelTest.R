@@ -30,6 +30,7 @@ vcov( randEff )
 vcov( randEff, logSigma = FALSE )
 coef( summary( randEff ) )
 coef( summary( randEff ), logSigma = FALSE )
+try( margEff( randEff ) )
 logLik( randEff )
 extractAIC( randEff )
 print.default( randEff )
@@ -143,18 +144,18 @@ for( i in 1:nId ) {
 }
 pData2 <- pdata.frame( nData2, c( "id", "time" ) )
 randEffBfgsr2 <- censReg( y ~ x1 + x2, data = pData2, method = "BFGSR" )
-all.equal( randEffBfgsr2[ -c(11,12) ], randEffBfgsr[ -c(11,12) ] )
+all.equal( randEffBfgsr2[ -c(11,13) ], randEffBfgsr[ -c(11,13) ] )
 all.equal( sort( randEffBfgsr2[[ 11 ]] ), sort( randEffBfgsr[[ 11 ]] ) )
 
 # check if the order of observations/individuals influences the likelihood values
 d1c1 <- censReg( y ~ x1 + x2, data = pData, method = "BFGSR", start = coef(randEffBfgsr),
    iterlim = 0 )
-all.equal( d1c1[-c(5,6,9,12,16)], randEffBfgsr[-c(5,6,9,12,16)] )
+all.equal( d1c1[-c(5,6,9,13,17)], randEffBfgsr[-c(5,6,9,13,17)] )
 d1c1$maximum -  randEffBfgsr$maximum
 
 d2c2 <- censReg( y ~ x1 + x2, data = pData2, method = "BFGSR", start = coef(randEffBfgsr2),
    iterlim = 0 )
-all.equal( d2c2[-c(5,6,9,12,16)], randEffBfgsr2[-c(5,6,9,12,16)] )
+all.equal( d2c2[-c(5,6,9,13,17)], randEffBfgsr2[-c(5,6,9,13,17)] )
 d2c2$maximum -  randEffBfgsr2$maximum
 
 d1c2 <- censReg( y ~ x1 + x2, data = pData, method = "BFGSR", 
@@ -197,7 +198,7 @@ pDataNa$y[ obsNa[ 1:2 ] ] <- NA
 pDataNa$x1[ obsNa[ 3 ] ] <- NA
 pDataNa$x2[ obsNa[ c( 1, 2, 4 ) ] ] <- NA
 randEffBfgsrNa <- censReg( y ~ x1 + x2, data = pDataNa, method = "BFGSR" )
-all.equal( randEffBfgsrNa[ -12 ], randEffBfgsrUnb[ -12 ] )
+all.equal( randEffBfgsrNa[ -13 ], randEffBfgsrUnb[ -13 ] )
 
 
 # returning log-likelihood contributions only (no estimations)

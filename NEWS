@@ -5,7 +5,15 @@ A full ChangeLog is available in the log messages of the SVN repository
 on R-Forge.
 
 
-            CHANGES IN VERSION 0.5-8  (2012-04-03)
+            CHANGES IN VERSION 0.5-10 (2012-04-12)
+
+* added margEff() method that computes the marginal effects of the explanatory 
+variables on the expected value of the dependent variable evaluated at the mean 
+values of the explanatory variables. This functionality is currently not 
+available for panel data models.
+
+
+            CHANGES IN VERSION 0.5-8  (2012-03-04)
 
 * censReg() has an argument "logLikOnly" now: if this argument is set to TRUE, 
 the model is not estimated but the log-likelihood contributions of all 

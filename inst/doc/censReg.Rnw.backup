@@ -552,7 +552,7 @@ ME_j = \frac{\partial E[y|x]}{\partial x_j}
 \end{equation}
 
 In order to compute the approximate variance covariance matrix
-of these marginal effects using the Delta method,
+of these marginal effects,
 we need to obtain the Jacobian matrix of these marginal effects
 with respect to all estimated parameters (including~$\sigma$):
 \begin{equation}
@@ -570,19 +570,13 @@ and
 \begin{equation}
 \frac{\partial ME_j}{\partial \sigma}
 = - \beta_j \; \left[
-   \dnorm \left( \frac{ b - x' \beta }{ \sigma } \right) \;
+   \dnorm \left( \frac{ b - x' \beta }{ \sigma } \right)
        \frac{ b - x' \beta }{ \sigma^2 } -
-   \dnorm \left( \frac{ a - x' \beta }{ \sigma } \right) \;
+   \dnorm \left( \frac{ a - x' \beta }{ \sigma } \right)
        \frac{ a - x' \beta }{ \sigma^2 }
    \right],
-\label{eq:margEffJacSigma}
 \end{equation}
-where $\Delta_{jk}$ is ``Kronecker's Delta''
-with $\Delta_{jk} = 1$ for $j=k$ and $\Delta_{jk} = 0$ for $j \neq k$.
-If the upper limit of the censored dependent variable ($b$) is infinity
-or the lower limit of the censored dependent variable ($a$) is minus infinity,
-the terms in the square brackets in equation~(\ref{eq:margEffJacSigma})
-that include $b$ or $a$, respectively, have to be removed.
+where
 
 
 % \section{Conclusions}

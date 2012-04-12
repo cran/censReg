@@ -1,6 +1,7 @@
 export( "censReg" )
 
 importFrom( "glmmML", "ghq" )
+importFrom( "miscTools", "margEff" )
 importFrom( "sandwich", "estfun" )
 
 S3method( "coef", "censReg" )
@@ -13,5 +14,10 @@ S3method( "print", "censReg" )
 S3method( "summary", "censReg" )
 S3method( "vcov", "censReg" )
 
+S3method( "summary", "margEff.censReg" )
+
 S3method( "coef", "summary.censReg" )
+S3method( "margEff", "censReg" )
 S3method( "print", "summary.censReg" )
+
+S3method( "print", "summary.margEff.censReg" )

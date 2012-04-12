@@ -1,7 +1,0 @@
-censReg                 Censored Regression (Tobit) Model
-coef.censReg            Coefficients, their Covariances, and
-                        Log-Likelihood Values of Censored Regression
-                        Models
-coef.summary.censReg    Coefficients of Censored Regression Models and
-                        their Statistical Properties
-summary.censReg         Summary Results of Censored Regression Models
