@@ -179,6 +179,8 @@ Error in margEff.censReg(randEff) :
   the margEff() method for objects of class 'censReg' can not yet be used for panel data models
 > logLik( randEff )
 'log Lik.' -73.19882 (df=5)
+> nobs( randEff )
+[1] 60
 > extractAIC( randEff )
 [1] -40.0000 156.3976
 > print.default( randEff )
@@ -817,6 +819,8 @@ BHHH maximisation, 10 iterations
 Return code 2: successive function values within tolerance limit
 Log-likelihood: -73.19882 on 5 Df
 
+> nobs( randEffBhhhStart )
+[1] 60
 > 
 > 
 > ## left-censoring at 5
@@ -893,6 +897,8 @@ sigmaMu     -0.021132792  0.011792244  0.015235169  0.051396556 -0.002293867
 sigmaNu     -0.003017516  0.002917803  0.001683778 -0.002293867  0.016405681
 > logLik( randEffAdd )
 'log Lik.' -73.19889 (df=5)
+> nobs( randEffAdd )
+[1] 60
 > extractAIC( randEffAdd )
 [1] -40.0000 156.3978
 > print.default( randEffAdd )
@@ -1506,6 +1512,8 @@ sigmaMu      1.0015445  0.2783050  3.5987296 3.197754e-04
 sigmaNu      1.0542899  0.1718659  6.1343749 8.549467e-10
 > logLik( randEffBoth )
 'log Lik.' -64.31273 (df=5)
+> nobs( randEffBoth )
+[1] 60
 > extractAIC( randEffBoth )
 [1] -40.0000 138.6255
 > print.default( randEffBoth )
@@ -1945,4 +1953,4 @@ attr(,"gradient")
 > 
 > proc.time()
    user  system elapsed 
- 55.539   0.064  55.624 
+ 39.486   0.068  39.585 

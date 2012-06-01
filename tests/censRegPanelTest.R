@@ -32,6 +32,7 @@ coef( summary( randEff ) )
 coef( summary( randEff ), logSigma = FALSE )
 try( margEff( randEff ) )
 logLik( randEff )
+nobs( randEff )
 extractAIC( randEff )
 print.default( randEff )
 
@@ -65,6 +66,7 @@ randEffBhhhStart <- censReg( y ~ x1 + x2, data = pData, method = "BHHH",
    start = c( -0.4, 1.7, 2.2, -0.1, -0.01 ) )
 print( randEffBhhhStart )
 summary( randEffBhhhStart )
+nobs( randEffBhhhStart )
 
 
 ## left-censoring at 5
@@ -78,6 +80,7 @@ coef( randEffAdd, logSigma = FALSE )
 vcov( randEffAdd )
 vcov( randEffAdd, logSigma = FALSE )
 logLik( randEffAdd )
+nobs( randEffAdd )
 extractAIC( randEffAdd )
 print.default( randEffAdd )
 
@@ -129,6 +132,7 @@ vcov( randEffBoth, logSigma = FALSE )
 coef( summary( randEffBoth ) )
 coef( summary( randEffBoth ), logSigma = FALSE )
 logLik( randEffBoth )
+nobs( randEffBoth )
 extractAIC( randEffBoth )
 print.default( randEffBoth )
 

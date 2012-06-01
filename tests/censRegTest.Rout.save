@@ -1534,6 +1534,8 @@ occupation      0.076218   0.122465  0.6224   0.5339
 rating         -0.534137   0.830839 -0.6429   0.5205
 > logLik( estResult )
 'log Lik.' -705.5762 (df=7)
+> nobs( estResult )
+[1] 601
 > extractAIC( estResult )
 [1]    7.000 1425.152
 > formula( estResult )
@@ -9316,6 +9318,8 @@ Log-likelihood: -705.5762 on 7 Df
 
 > logLik( estResultStart )
 'log Lik.' -705.5762 (df=7)
+> nobs( estResultStart )
+[1] 601
 > formula( estResultStart )
 affairs ~ age + yearsmarried + religiousness + occupation + rating
 > 
@@ -10773,6 +10777,8 @@ rating         1.663236e-01 -0.056722685
 sigma         -5.672269e-02  0.306211731
 > logLik( estResultAdd )
 'log Lik.' -705.5762 (df=7)
+> nobs( estResultAdd )
+[1] 601
 > extractAIC( estResultAdd )
 [1]    7.000 1425.152
 > 
@@ -12236,6 +12242,8 @@ rating         0.166323611  0.056722685
 sigma          0.056722685  0.306211731
 > logLik( estResultNeg )
 'log Lik.' -705.5762 (df=7)
+> nobs( estResultNeg )
+[1] 601
 > extractAIC( estResultNeg )
 [1]    7.000 1425.152
 > model.frame( estResultNeg )
@@ -14299,6 +14307,8 @@ rating         1.663236e-01  0.056722685
 sigma          5.672269e-02  0.306211731
 > logLik( estResultAddNeg )
 'log Lik.' -705.5762 (df=7)
+> nobs( estResultAddNeg )
+[1] 601
 > extractAIC( estResultAddNeg )
 [1]    7.000 1425.152
 > 
@@ -15794,6 +15804,8 @@ rating        -2.2070074 0.44983190 -4.906294 9.281349e-07
 sigma          7.9432194 0.87690019  9.058294 1.325071e-19
 > logLik( estResultBoth )
 'log Lik.' -500.0428 (df=7)
+> nobs( estResultBoth )
+[1] 601
 > extractAIC( estResultBoth )
 [1]    7.000 1014.086
 > estfun( estResultBoth )[ 20 * c(1:30), ]
@@ -20584,4 +20596,4 @@ attr(,"gradient")
 > 
 > proc.time()
    user  system elapsed 
- 15.460   0.144  15.616 
+ 14.580   0.172  14.753 

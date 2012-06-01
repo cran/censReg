@@ -1,5 +1,5 @@
-308054b383855305c47f35b4287fdcb8 *DESCRIPTION
-ffb7b61fc5d9f28663d279b153f98f59 *NAMESPACE
+8be306dba12b7b388353d2b910f5cf8c *DESCRIPTION
+62eed15f7f28cea6008b03d777c9e791 *NAMESPACE
 9fc339a58a47e32a554082b3f3bbe6f3 *NEWS
 fa4bb39802d3a46f0ebc32cc16e5afc6 *R/censReg.R
 4590e05bd1a1d3e5e2cc8be69a925b0e *R/coef.censReg.R
@@ -12,6 +12,7 @@ a8f83f99c6183eaeaa0500bc68cde553 *R/logLikCross.R
 3f17e17c751c6280413a3870b0dd606a *R/logLikPanel.R
 8f96bc0cdc3654b68c31d66cd2694cdb *R/margEff.censReg.R
 75f17f0adec231b01fe0e2c216c6c544 *R/model.frame.censReg.R
+1fb8934e1f5737e29de5aed5aa7ce40a *R/nobs.censReg.R
 8cb2f9c3dbf71d5e005814fe2c8ba52d *R/print.censReg.R
 c3e70eb88a095bdd8a84d8b7ec0dbe2e *R/print.summary.censReg.R
 9a8754e330c9ed64f1cdd5453b9f9837 *R/print.summary.margEff.censReg.R
@@ -22,15 +23,15 @@ a7faf9bba1efaed6a2954d337668c026 *R/summary.censReg.R
 9808b41ea52a025b968f4598527b71c1 *inst/doc/censReg.Rnw
 b4c68877da60e9e828305521cac0d5d1 *inst/doc/censReg.Rnw.backup
 82060e6da3e644f5a575527cd4a30d5a *inst/doc/censReg.bib
-f4c4b7fe4b8dce7fab9254353e1ba10a *inst/doc/censReg.pdf
+571cf1bcdcc4625cb548df533cd53a1f *inst/doc/censReg.pdf
 e990062776204aaba61f61af9b6c3984 *man/censReg.Rd
 eceec3fbcdd192a08152fa98ff40096f *man/coef.censReg.Rd
 9123f26e013613face82b0721d9a6355 *man/coef.summary.censReg.Rd
 80cf991e14e50c2ee4c3ac6744fd183d *man/margEff.censReg.Rd
 0b43df1d6c97a9f22c4459076c5bc982 *man/summary.censReg.Rd
 7c6134c4139eaac756839d18d849a266 *tests/censRegPanelLargerTest.R
-16483360ddec99fb9e08d90f5fc2b2a5 *tests/censRegPanelLargerTest.Rout.save
-ec2f52a3ce2ba9196ee120e4d0d56452 *tests/censRegPanelTest.R
-df71e9e516a120974f592e08084c78ef *tests/censRegPanelTest.Rout.save
-41e13ae402770c6a7e8d7a1d113c5c52 *tests/censRegTest.R
-cdddea355eaf4434862d115ebfaa5edb *tests/censRegTest.Rout.save
+e259e510115fb0c2449f68c5d73e7086 *tests/censRegPanelLargerTest.Rout.save
+bd597d2f270dc7f38ee24327543f0b78 *tests/censRegPanelTest.R
+08be76c21566e49d2fb6440e62ebf0b6 *tests/censRegPanelTest.Rout.save
+8592596c5021845cc54aa834baefae7b *tests/censRegTest.R
+4e688b24ed22793d5b041d04d60f82b3 *tests/censRegTest.Rout.save
