@@ -5,6 +5,17 @@ A full ChangeLog is available in the log messages of the SVN repository
 on R-Forge.
 
 
+            CHANGES IN VERSION 0.5-14 (2012-06-28)
+
+* the calculation of the gradients of the log-likelihood function for 
+cross-sectional data is numerically more stable
+
+
+            CHANGES IN VERSION 0.5-12 (2012-06-01)
+
+* added nobs() method that returns the (total) number of observations 
+
+
             CHANGES IN VERSION 0.5-10 (2012-04-12)
 
 * added margEff() method that computes the marginal effects of the explanatory 

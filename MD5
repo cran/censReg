@@ -1,6 +1,6 @@
-8be306dba12b7b388353d2b910f5cf8c *DESCRIPTION
+a805961e13668780ee5a787fdf625998 *DESCRIPTION
 62eed15f7f28cea6008b03d777c9e791 *NAMESPACE
-9fc339a58a47e32a554082b3f3bbe6f3 *NEWS
+c488caeeb7b0a1d49c9f941cb41477fb *NEWS
 fa4bb39802d3a46f0ebc32cc16e5afc6 *R/censReg.R
 4590e05bd1a1d3e5e2cc8be69a925b0e *R/coef.censReg.R
 e8831de248e16515dd4d93da70869e22 *R/coef.summary.censReg.R
@@ -8,7 +8,7 @@ cb30dbeb86fbb4a1cb9bfd37232de3bf *R/estfun.censReg.R
 5fa415e75150892ddf7deb93e762cac4 *R/extractAIC.censReg.R
 19e298a155864e1047f8e31a8cf6da31 *R/formula.censReg.R
 7038aa123980720a72800c7e6e01533a *R/logLik.censReg.R
-a8f83f99c6183eaeaa0500bc68cde553 *R/logLikCross.R
+929a5cb7f72cccd7f8e9dbdcd16166b4 *R/logLikCross.R
 3f17e17c751c6280413a3870b0dd606a *R/logLikPanel.R
 8f96bc0cdc3654b68c31d66cd2694cdb *R/margEff.censReg.R
 75f17f0adec231b01fe0e2c216c6c544 *R/model.frame.censReg.R
@@ -23,15 +23,15 @@ a7faf9bba1efaed6a2954d337668c026 *R/summary.censReg.R
 9808b41ea52a025b968f4598527b71c1 *inst/doc/censReg.Rnw
 b4c68877da60e9e828305521cac0d5d1 *inst/doc/censReg.Rnw.backup
 82060e6da3e644f5a575527cd4a30d5a *inst/doc/censReg.bib
-571cf1bcdcc4625cb548df533cd53a1f *inst/doc/censReg.pdf
+1188a9b3061de6f44656056b4888b511 *inst/doc/censReg.pdf
 e990062776204aaba61f61af9b6c3984 *man/censReg.Rd
 eceec3fbcdd192a08152fa98ff40096f *man/coef.censReg.Rd
 9123f26e013613face82b0721d9a6355 *man/coef.summary.censReg.Rd
 80cf991e14e50c2ee4c3ac6744fd183d *man/margEff.censReg.Rd
 0b43df1d6c97a9f22c4459076c5bc982 *man/summary.censReg.Rd
 7c6134c4139eaac756839d18d849a266 *tests/censRegPanelLargerTest.R
-e259e510115fb0c2449f68c5d73e7086 *tests/censRegPanelLargerTest.Rout.save
+16483360ddec99fb9e08d90f5fc2b2a5 *tests/censRegPanelLargerTest.Rout.save
 bd597d2f270dc7f38ee24327543f0b78 *tests/censRegPanelTest.R
 08be76c21566e49d2fb6440e62ebf0b6 *tests/censRegPanelTest.Rout.save
 8592596c5021845cc54aa834baefae7b *tests/censRegTest.R
-4e688b24ed22793d5b041d04d60f82b3 *tests/censRegTest.Rout.save
+aead8b140065c49417f83bd016ffc8ba *tests/censRegTest.Rout.save

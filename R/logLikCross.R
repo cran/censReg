@@ -15,8 +15,8 @@ censRegLogLikCross <- function( beta, yVec, xMat, left, right,
    ## gradients of log likelihood function for cross-sectional data
    grad <- matrix( NA, nrow = length( yVec ), ncol = length( beta ) )
    grad[ obsBelow, ] <-
-      dnorm( ( left - yHat[ obsBelow ] ) / sigma ) /
-      pnorm( ( left - yHat[ obsBelow ] ) / sigma ) *
+      exp( dnorm( ( left - yHat[ obsBelow ] ) / sigma, log = TRUE ) -
+      pnorm( ( left - yHat[ obsBelow ] ) / sigma, log.p = TRUE ) ) *
       cbind( - xMat[ obsBelow, , drop = FALSE ] / sigma,
          - ( left - yHat[ obsBelow ] ) / sigma )
    grad[ obsBetween, ] <-
@@ -24,8 +24,8 @@ censRegLogLikCross <- function( beta, yVec, xMat, left, right,
          xMat[ obsBetween, , drop = FALSE ] / sigma,
          ( ( yVec - yHat )[ obsBetween ] / sigma )^2 - 1 )
    grad[ obsAbove, ] <-
-      dnorm( ( yHat[ obsAbove ] - right ) / sigma ) /
-      pnorm( ( yHat[ obsAbove ] - right ) / sigma ) *
+      exp( dnorm( ( yHat[ obsAbove ] - right ) / sigma, log = TRUE ) -
+      pnorm( ( yHat[ obsAbove ] - right ) / sigma, log.p = TRUE ) ) *
       cbind( xMat[ obsAbove, , drop = FALSE ] / sigma,
          - ( yHat[ obsAbove ] - right ) / sigma )
    attr( ll, "gradient" ) <- grad
