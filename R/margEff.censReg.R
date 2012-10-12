@@ -37,7 +37,7 @@ margEff.censReg <- function( object, calcVCov = TRUE, returnJacobian = FALSE,
          for( k in names( allPar )[ -length( allPar ) ] ) {
             jac[ j, k ] <- 
                ( j == k ) * ( pnorm( zRight ) - pnorm( zLeft ) ) -
-               ( beta[ j ] * object$xMean[ j ] / sigma ) *
+               ( beta[ j ] * object$xMean[ k ] / sigma ) *
                ( dnorm( zRight ) - dnorm( zLeft ) )
          }
          jac[ j, "sigma"] <- 0

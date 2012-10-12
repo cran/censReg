@@ -1,5 +1,5 @@
 
-R version 2.15.0 (2012-03-30)
+R version 2.15.1 (2012-06-22) -- "Roasted Marshmallows"
 Copyright (C) 2012 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: x86_64-pc-linux-gnu (64-bit)
@@ -1514,24 +1514,35 @@ sigma          8.2470803 0.55336401 14.903536 3.125905e-50
 > margEff( estResult )
           age  yearsmarried religiousness    occupation        rating 
   -0.04192089    0.12953651   -0.39417189    0.07621840   -0.53413656 
+> print.default( margEff( estResult ) )
+          age  yearsmarried religiousness    occupation        rating 
+  -0.04192089    0.12953651   -0.39417189    0.07621840   -0.53413656 
 attr(,"vcov")
-                      age yearsmarried religiousness  occupation      rating
-age            0.26898730  -0.20944964    0.24868749 -0.05607105  0.42736955
-yearsmarried  -0.20944964   0.16368946   -0.19433695  0.04371387 -0.33262559
-religiousness  0.24868749  -0.19433695    0.24013928 -0.05180838  0.39683239
-occupation    -0.05607105   0.04371387   -0.05180838  0.01499776 -0.08982951
-rating         0.42736955  -0.33262559    0.39683239 -0.08982951  0.69029275
+                        age  yearsmarried religiousness    occupation
+age            3.401972e-04 -0.0004346802  1.167616e-05 -0.0002132758
+yearsmarried  -4.346802e-04  0.0009714167 -4.925779e-04  0.0001903240
+religiousness  1.167616e-05 -0.0004925779  8.719665e-03  0.0003040253
+occupation    -2.132758e-04  0.0001903240  3.040253e-04  0.0035368759
+rating         4.700924e-05  0.0003066582 -1.596234e-04 -0.0003312699
+                     rating
+age            4.700924e-05
+yearsmarried   3.066582e-04
+religiousness -1.596234e-04
+occupation    -3.312699e-04
+rating         9.005275e-03
 attr(,"df.residual")
 [1] 594
 attr(,"class")
 [1] "margEff.censReg" "numeric"        
 > summary( margEff( estResult ) )
-              Marg. Eff. Std. Error t value Pr(>|t|)
-age            -0.041921   0.518640 -0.0808   0.9356
-yearsmarried    0.129537   0.404586  0.3202   0.7490
-religiousness  -0.394172   0.490040 -0.8044   0.4215
-occupation      0.076218   0.122465  0.6224   0.5339
-rating         -0.534137   0.830839 -0.6429   0.5205
+              Marg. Eff. Std. Error t value  Pr(>|t|)    
+age            -0.041921   0.018444 -2.2728   0.02339 *  
+yearsmarried    0.129537   0.031168  4.1561 3.713e-05 ***
+religiousness  -0.394172   0.093379 -4.2212 2.811e-05 ***
+occupation      0.076218   0.059472  1.2816   0.20049    
+rating         -0.534137   0.094896 -5.6286 2.802e-08 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
 > logLik( estResult )
 'log Lik.' -705.5762 (df=7)
 > nobs( estResult )
@@ -3620,37 +3631,48 @@ Coefficients:
 > margEff( estResultBhhh, returnJacobian = TRUE )
           age  yearsmarried religiousness    occupation        rating 
   -0.04192274    0.12953992   -0.39417546    0.07621915   -0.53414825 
+> print.default( margEff( estResultBhhh, returnJacobian = TRUE ) )
+          age  yearsmarried religiousness    occupation        rating 
+  -0.04192274    0.12953992   -0.39417546    0.07621915   -0.53414825 
 attr(,"vcov")
-                      age yearsmarried religiousness  occupation      rating
-age            0.22611644  -0.17705133    0.21554042 -0.04687774  0.37069115
-yearsmarried  -0.17705133   0.13940333   -0.16963746  0.03673658 -0.29050764
-religiousness  0.21554042  -0.16963746    0.21658814 -0.04464206  0.35675079
-occupation    -0.04687774   0.03673658   -0.04464206  0.01336021 -0.07850558
-rating         0.37069115  -0.29050764    0.35675079 -0.07850558  0.62127663
+                        age  yearsmarried religiousness    occupation
+age            3.179783e-04 -0.0004463775 -0.0001018963 -0.0002061228
+yearsmarried  -4.463775e-04  0.0010630359 -0.0003215745  0.0001062833
+religiousness -1.018963e-04 -0.0003215745  0.0090008844  0.0005725577
+occupation    -2.061228e-04  0.0001062833  0.0005725577  0.0038560694
+rating         8.743927e-05  0.0002603142  0.0007364634 -0.0008215117
+                     rating
+age            8.743927e-05
+yearsmarried   2.603142e-04
+religiousness  7.364634e-04
+occupation    -8.215117e-04
+rating         1.057221e-02
 attr(,"jacobian")
-              (Intercept)         age yearsmarried religiousness occupation
-age           -0.21646145  0.01729884  -0.21646145   -0.21646145 -0.2164614
-yearsmarried   0.16836385  0.16836385   0.40212414    0.16836385  0.1683639
-religiousness -0.19523927 -0.19523927  -0.19523927    0.03852102 -0.1952393
-occupation     0.05081322  0.05081322   0.05081322    0.05081322  0.2845735
-rating        -0.33378387 -0.33378387  -0.33378387   -0.33378387 -0.3337839
+               (Intercept)         age yearsmarried religiousness  occupation
+age           -0.006662911  0.01729884  -0.05448725   -0.02076478 -0.02794875
+yearsmarried   0.020588178  0.66885886   0.40212414    0.06416249  0.08636073
+religiousness -0.062647519 -2.03526256  -0.51231233    0.03852102 -0.26278601
+occupation     0.012113744  0.39354550   0.09906251    0.03775215  0.28457351
+rating        -0.084893825 -2.75798990  -0.69423585   -0.26456927 -0.35610205
                    rating        sigma
-age           -0.21646145 -0.004840732
-yearsmarried   0.16836385  0.014957705
-religiousness -0.19523927 -0.045514621
-occupation     0.05081322  0.008800867
+age           -0.02619710 -0.004840732
+yearsmarried   0.08094819  0.014957705
+religiousness -0.24631628 -0.045514621
+occupation     0.04762858  0.008800867
 rating        -0.10002358 -0.061676988
 attr(,"df.residual")
 [1] 594
 attr(,"class")
 [1] "margEff.censReg" "numeric"        
 > summary( margEff( estResultBhhh ) )
-              Marg. Eff. Std. Error t value Pr(>|t|)
-age            -0.041923   0.475517 -0.0882   0.9298
-yearsmarried    0.129540   0.373368  0.3470   0.7288
-religiousness  -0.394175   0.465390 -0.8470   0.3973
-occupation      0.076219   0.115586  0.6594   0.5099
-rating         -0.534148   0.788211 -0.6777   0.4982
+              Marg. Eff. Std. Error t value  Pr(>|t|)    
+age            -0.041923   0.017832 -2.3510   0.01905 *  
+yearsmarried    0.129540   0.032604  3.9731 7.966e-05 ***
+religiousness  -0.394175   0.094873 -4.1548 3.735e-05 ***
+occupation      0.076219   0.062097  1.2274   0.22015    
+rating         -0.534148   0.102821 -5.1949 2.819e-07 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
 > maxLik:::summary.maxLik( estResultBhhh )
 --------------------------------------------
 Maximum Likelihood estimation
@@ -5043,17 +5065,22 @@ Coefficients:
 > margEff( estResultBfgs, calcVCov = FALSE )
           age  yearsmarried religiousness    occupation        rating 
   -0.04192116    0.12953703   -0.39417321    0.07621758   -0.53413844 
+> print.default( margEff( estResultBfgs, calcVCov = FALSE ) )
+          age  yearsmarried religiousness    occupation        rating 
+  -0.04192116    0.12953703   -0.39417321    0.07621758   -0.53413844 
 attr(,"df.residual")
 [1] 594
 attr(,"class")
 [1] "margEff.censReg" "numeric"        
 > summary( margEff( estResultBfgs ) )
-              Marg. Eff. Std. Error t value Pr(>|t|)
-age            -0.041921   0.518643 -0.0808   0.9356
-yearsmarried    0.129537   0.404587  0.3202   0.7490
-religiousness  -0.394173   0.490042 -0.8044   0.4215
-occupation      0.076218   0.122464  0.6224   0.5339
-rating         -0.534138   0.830842 -0.6429   0.5205
+              Marg. Eff. Std. Error t value  Pr(>|t|)    
+age            -0.041921   0.018444 -2.2728   0.02339 *  
+yearsmarried    0.129537   0.031168  4.1561 3.713e-05 ***
+religiousness  -0.394173   0.093379 -4.2212 2.811e-05 ***
+occupation      0.076218   0.059472  1.2816   0.20049    
+rating         -0.534138   0.094896 -5.6287 2.802e-08 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
 > maxLik:::summary.maxLik( estResultBfgs )
 --------------------------------------------
 Maximum Likelihood estimation
@@ -6441,24 +6468,35 @@ Coefficients:
 > margEff( estResultNm )
           age  yearsmarried religiousness    occupation        rating 
   -0.04258612    0.12846974   -0.40158622    0.07077242   -0.53551737 
+> print.default( margEff( estResultNm ) )
+          age  yearsmarried religiousness    occupation        rating 
+  -0.04258612    0.12846974   -0.40158622    0.07077242   -0.53551737 
 attr(,"vcov")
-                      age yearsmarried religiousness  occupation      rating
-age            0.27988007  -0.21298225    0.25973080 -0.05306377  0.43935263
-yearsmarried  -0.21298225   0.16267524   -0.19834702  0.04043479 -0.33417878
-religiousness  0.25973080  -0.19834702    0.25134871 -0.04918509  0.40954822
-occupation    -0.05306377   0.04043479   -0.04918509  0.01335127 -0.08399262
-rating         0.43935263  -0.33417878    0.40954822 -0.08399262  0.70094377
+                        age  yearsmarried religiousness    occupation
+age            3.395340e-04 -0.0004333519  1.544693e-05 -0.0002114682
+yearsmarried  -4.333519e-04  0.0009660500 -4.938007e-04  0.0001866095
+religiousness  1.544693e-05 -0.0004938007  8.704239e-03  0.0003107816
+occupation    -2.114682e-04  0.0001866095  3.107816e-04  0.0035103070
+rating         4.965536e-05  0.0003048606 -1.248634e-04 -0.0003154406
+                     rating
+age            4.965536e-05
+yearsmarried   3.048606e-04
+religiousness -1.248634e-04
+occupation    -3.154406e-04
+rating         8.971027e-03
 attr(,"df.residual")
 [1] 594
 attr(,"class")
 [1] "margEff.censReg" "numeric"        
 > summary( margEff( estResultNm ) )
-              Marg. Eff. Std. Error t value Pr(>|t|)
-age            -0.042586   0.529037 -0.0805   0.9359
-yearsmarried    0.128470   0.403330  0.3185   0.7502
-religiousness  -0.401586   0.501347 -0.8010   0.4234
-occupation      0.070772   0.115548  0.6125   0.5404
-rating         -0.535517   0.837224 -0.6396   0.5227
+              Marg. Eff. Std. Error t value  Pr(>|t|)    
+age            -0.042586   0.018426 -2.3111   0.02117 *  
+yearsmarried    0.128470   0.031081  4.1333 4.090e-05 ***
+religiousness  -0.401586   0.093297 -4.3044 1.958e-05 ***
+occupation      0.070772   0.059248  1.1945   0.23275    
+rating         -0.535517   0.094716 -5.6540 2.437e-08 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
 > maxLik:::summary.maxLik( estResultNm )
 --------------------------------------------
 Maximum Likelihood estimation
@@ -7846,24 +7884,35 @@ Coefficients:
 > margEff( estResultSann )
           age  yearsmarried religiousness    occupation        rating 
   -0.03915112    0.12814928   -0.35677312    0.12216953   -0.44856615 
+> print.default( margEff( estResultSann ) )
+          age  yearsmarried religiousness    occupation        rating 
+  -0.03915112    0.12814928   -0.35677312    0.12216953   -0.44856615 
 attr(,"vcov")
-                      age yearsmarried religiousness  occupation     rating
-age            0.25297190  -0.20743599    0.22435718 -0.09240915  0.3608726
-yearsmarried  -0.20743599   0.17072770   -0.18473903  0.07588781 -0.2957777
-religiousness  0.22435718  -0.18473903    0.20939725 -0.08231271  0.3213180
-occupation    -0.09240915   0.07588781   -0.08231271  0.03731064 -0.1331006
-rating         0.36087264  -0.29577766    0.32131802 -0.13310057  0.5255492
+                        age  yearsmarried religiousness    occupation
+age            3.506439e-04 -0.0004488950  3.078707e-06 -0.0002287821
+yearsmarried  -4.488950e-04  0.0010083407 -4.923141e-04  0.0002228844
+religiousness  3.078707e-06 -0.0004923141  8.926206e-03  0.0002628942
+occupation    -2.287821e-04  0.0002228844  2.628942e-04  0.0037975902
+rating         1.731199e-05  0.0003862816 -4.025749e-04 -0.0003738190
+                     rating
+age            1.731199e-05
+yearsmarried   3.862816e-04
+religiousness -4.025749e-04
+occupation    -3.738190e-04
+rating         9.027866e-03
 attr(,"df.residual")
 [1] 594
 attr(,"class")
 [1] "margEff.censReg" "numeric"        
 > summary( margEff( estResultSann ) )
-              Marg. Eff. Std. Error t value Pr(>|t|)
-age            -0.039151   0.502963 -0.0778   0.9380
-yearsmarried    0.128149   0.413192  0.3101   0.7566
-religiousness  -0.356773   0.457599 -0.7797   0.4359
-occupation      0.122170   0.193160  0.6325   0.5273
-rating         -0.448566   0.724948 -0.6188   0.5363
+              Marg. Eff. Std. Error t value  Pr(>|t|)    
+age            -0.039151   0.018725 -2.0908 0.0369710 *  
+yearsmarried    0.128149   0.031754  4.0356 6.157e-05 ***
+religiousness  -0.356773   0.094479 -3.7762 0.0001752 ***
+occupation      0.122170   0.061625  1.9825 0.0478858 *  
+rating         -0.448566   0.095015 -4.7210 2.931e-06 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
 > maxLik:::summary.maxLik( estResultSann )
 --------------------------------------------
 Maximum Likelihood estimation
@@ -9250,13 +9299,22 @@ Coefficients:
 > margEff( estResultStart )
           age  yearsmarried religiousness    occupation        rating 
   -0.04192089    0.12953651   -0.39417189    0.07621840   -0.53413656 
+> print.default( margEff( estResultStart ) )
+          age  yearsmarried religiousness    occupation        rating 
+  -0.04192089    0.12953651   -0.39417189    0.07621840   -0.53413656 
 attr(,"vcov")
-                      age yearsmarried religiousness  occupation      rating
-age            0.26898730  -0.20944964    0.24868749 -0.05607105  0.42736955
-yearsmarried  -0.20944964   0.16368946   -0.19433695  0.04371387 -0.33262559
-religiousness  0.24868749  -0.19433695    0.24013928 -0.05180838  0.39683238
-occupation    -0.05607105   0.04371387   -0.05180838  0.01499776 -0.08982951
-rating         0.42736955  -0.33262559    0.39683238 -0.08982951  0.69029275
+                        age  yearsmarried religiousness    occupation
+age            3.401972e-04 -0.0004346802  1.167616e-05 -0.0002132758
+yearsmarried  -4.346802e-04  0.0009714167 -4.925779e-04  0.0001903240
+religiousness  1.167616e-05 -0.0004925779  8.719665e-03  0.0003040253
+occupation    -2.132758e-04  0.0001903240  3.040253e-04  0.0035368759
+rating         4.700924e-05  0.0003066582 -1.596234e-04 -0.0003312699
+                     rating
+age            4.700924e-05
+yearsmarried   3.066582e-04
+religiousness -1.596234e-04
+occupation    -3.312699e-04
+rating         9.005275e-03
 attr(,"df.residual")
 [1] 594
 attr(,"class")
@@ -10668,24 +10726,35 @@ Coefficients:
 > margEff( estResultAdd )
           age  yearsmarried religiousness    occupation        rating 
   -0.04192089    0.12953651   -0.39417189    0.07621840   -0.53413656 
+> print.default( margEff( estResultAdd ) )
+          age  yearsmarried religiousness    occupation        rating 
+  -0.04192089    0.12953651   -0.39417189    0.07621840   -0.53413656 
 attr(,"vcov")
-                      age yearsmarried religiousness  occupation      rating
-age            0.26898730  -0.20944964    0.24868749 -0.05607105  0.42736955
-yearsmarried  -0.20944964   0.16368946   -0.19433695  0.04371387 -0.33262559
-religiousness  0.24868749  -0.19433695    0.24013928 -0.05180838  0.39683238
-occupation    -0.05607105   0.04371387   -0.05180838  0.01499776 -0.08982951
-rating         0.42736955  -0.33262559    0.39683238 -0.08982951  0.69029275
+                        age  yearsmarried religiousness    occupation
+age            3.401972e-04 -0.0004346802  1.167616e-05 -0.0002132758
+yearsmarried  -4.346802e-04  0.0009714167 -4.925779e-04  0.0001903240
+religiousness  1.167616e-05 -0.0004925779  8.719665e-03  0.0003040253
+occupation    -2.132758e-04  0.0001903240  3.040253e-04  0.0035368759
+rating         4.700924e-05  0.0003066582 -1.596234e-04 -0.0003312699
+                     rating
+age            4.700924e-05
+yearsmarried   3.066582e-04
+religiousness -1.596234e-04
+occupation    -3.312699e-04
+rating         9.005275e-03
 attr(,"df.residual")
 [1] 594
 attr(,"class")
 [1] "margEff.censReg" "numeric"        
 > summary( margEff( estResultAdd, returnJacobian = TRUE ) )
-              Marg. Eff. Std. Error t value Pr(>|t|)
-age            -0.041921   0.518640 -0.0808   0.9356
-yearsmarried    0.129537   0.404586  0.3202   0.7490
-religiousness  -0.394172   0.490040 -0.8044   0.4215
-occupation      0.076218   0.122465  0.6224   0.5339
-rating         -0.534137   0.830839 -0.6429   0.5205
+              Marg. Eff. Std. Error t value  Pr(>|t|)    
+age            -0.041921   0.018444 -2.2728   0.02339 *  
+yearsmarried    0.129537   0.031168  4.1561 3.713e-05 ***
+religiousness  -0.394172   0.093379 -4.2212 2.811e-05 ***
+occupation      0.076218   0.059472  1.2816   0.20049    
+rating         -0.534137   0.094896 -5.6286 2.802e-08 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
 > maxLik:::summary.maxLik( estResultAdd )
 --------------------------------------------
 Maximum Likelihood estimation
@@ -12127,30 +12196,35 @@ Coefficients:
 > margEff( estResultNeg, calcVCov = FALSE, returnJacobian = TRUE )
           age  yearsmarried religiousness    occupation        rating 
    0.04192089   -0.12953651    0.39417189   -0.07621840    0.53413656 
+> print.default( margEff( estResultNeg, calcVCov = FALSE, returnJacobian = TRUE ) )
+          age  yearsmarried religiousness    occupation        rating 
+   0.04192089   -0.12953651    0.39417189   -0.07621840    0.53413656 
 attr(,"jacobian")
-              (Intercept)         age yearsmarried religiousness occupation
-age           -0.21645573  0.01730486  -0.21645573   -0.21645573 -0.2164557
-yearsmarried   0.16836242  0.16836242   0.40212300    0.16836242  0.1683624
-religiousness -0.19524098 -0.19524098  -0.19524098    0.03851961 -0.1952410
-occupation     0.05081363  0.05081363   0.05081363    0.05081363  0.2845742
-rating        -0.33378251 -0.33378251  -0.33378251   -0.33378251 -0.3337825
+               (Intercept)         age yearsmarried religiousness  occupation
+age           -0.006662735  0.01730486  -0.05448581   -0.02076423 -0.02794801
+yearsmarried   0.020588003  0.66885318   0.40212300    0.06416195  0.08635999
+religiousness -0.062648066 -2.03528034  -0.51231681    0.03851961 -0.26278831
+occupation     0.012113840  0.39354863   0.09906330    0.03775245  0.28457421
+rating        -0.084893477 -2.75797861  -0.69423301   -0.26456819 -0.35610059
                    rating        sigma
-age           -0.21645573  0.004840598
-yearsmarried   0.16836242 -0.014957558
-religiousness -0.19524098  0.045514959
-occupation     0.05081363 -0.008800925
+age           -0.02619641  0.004840598
+yearsmarried   0.08094751 -0.014957558
+religiousness -0.24631843  0.045514959
+occupation     0.04762896 -0.008800925
 rating        -0.10002192  0.061676654
 attr(,"df.residual")
 [1] 594
 attr(,"class")
 [1] "margEff.censReg" "numeric"        
 > summary( margEff( estResultNeg ) )
-              Marg. Eff. Std. Error t value Pr(>|t|)
-age             0.041921   0.518640  0.0808   0.9356
-yearsmarried   -0.129537   0.404586 -0.3202   0.7490
-religiousness   0.394172   0.490040  0.8044   0.4215
-occupation     -0.076218   0.122465 -0.6224   0.5339
-rating          0.534137   0.830839  0.6429   0.5205
+              Marg. Eff. Std. Error t value  Pr(>|t|)    
+age             0.041921   0.018444  2.2728   0.02339 *  
+yearsmarried   -0.129537   0.031168 -4.1561 3.713e-05 ***
+religiousness   0.394172   0.093379  4.2212 2.811e-05 ***
+occupation     -0.076218   0.059472 -1.2816   0.20049    
+rating          0.534137   0.094896  5.6286 2.802e-08 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
 > maxLik:::summary.maxLik( estResultNeg )
 --------------------------------------------
 Maximum Likelihood estimation
@@ -14195,13 +14269,22 @@ Coefficients:
 > margEff( estResultAddNeg )
           age  yearsmarried religiousness    occupation        rating 
    0.04192089   -0.12953651    0.39417189   -0.07621840    0.53413656 
+> print.default( margEff( estResultAddNeg ) )
+          age  yearsmarried religiousness    occupation        rating 
+   0.04192089   -0.12953651    0.39417189   -0.07621840    0.53413656 
 attr(,"vcov")
-                      age yearsmarried religiousness  occupation      rating
-age            0.26898730  -0.20944964    0.24868749 -0.05607105  0.42736955
-yearsmarried  -0.20944964   0.16368946   -0.19433695  0.04371387 -0.33262559
-religiousness  0.24868749  -0.19433695    0.24013928 -0.05180838  0.39683238
-occupation    -0.05607105   0.04371387   -0.05180838  0.01499776 -0.08982951
-rating         0.42736955  -0.33262559    0.39683238 -0.08982951  0.69029275
+                        age  yearsmarried religiousness    occupation
+age            3.401972e-04 -0.0004346802  1.167616e-05 -0.0002132758
+yearsmarried  -4.346802e-04  0.0009714167 -4.925779e-04  0.0001903240
+religiousness  1.167616e-05 -0.0004925779  8.719665e-03  0.0003040253
+occupation    -2.132758e-04  0.0001903240  3.040253e-04  0.0035368759
+rating         4.700924e-05  0.0003066582 -1.596234e-04 -0.0003312699
+                     rating
+age            4.700924e-05
+yearsmarried   3.066582e-04
+religiousness -1.596234e-04
+occupation    -3.312699e-04
+rating         9.005275e-03
 attr(,"df.residual")
 [1] 594
 attr(,"class")
@@ -15653,24 +15736,35 @@ Coefficients:
 > margEff( estResultBoth )
           age  yearsmarried religiousness    occupation        rating 
   -0.02183258    0.06543718   -0.19870004    0.03985302   -0.27131275 
+> print.default( margEff( estResultBoth ) )
+          age  yearsmarried religiousness    occupation        rating 
+  -0.02183258    0.06543718   -0.19870004    0.03985302   -0.27131275 
 attr(,"vcov")
-                       age yearsmarried religiousness   occupation      rating
-age            0.044419545 -0.033776441   0.040591293 -0.009126589  0.07028949
-yearsmarried  -0.033776441  0.025838724  -0.031017137  0.006956759 -0.05335442
-religiousness  0.040591293 -0.031017137   0.039713402 -0.008327681  0.06445561
-occupation    -0.009126589  0.006956759  -0.008327681  0.002781824 -0.01462211
-rating         0.070289495 -0.053354424   0.064455609 -0.014622109  0.11398059
+                        age  yearsmarried religiousness    occupation
+age            9.178407e-05 -1.167525e-04  4.328472e-07 -5.857955e-05
+yearsmarried  -1.167525e-04  2.592567e-04 -1.248547e-04  5.077425e-05
+religiousness  4.328472e-07 -1.248547e-04  2.331823e-03  8.492085e-05
+occupation    -5.857955e-05  5.077425e-05  8.492085e-05  9.612829e-04
+rating         1.110085e-05  9.367464e-05 -1.165182e-04 -6.969367e-05
+                     rating
+age            1.110085e-05
+yearsmarried   9.367464e-05
+religiousness -1.165182e-04
+occupation    -6.969367e-05
+rating         2.381769e-03
 attr(,"df.residual")
 [1] 594
 attr(,"class")
 [1] "margEff.censReg" "numeric"        
 > summary( margEff( estResultBoth ) )
-              Marg. Eff. Std. Error t value Pr(>|t|)
-age            -0.021833   0.210759 -0.1036   0.9175
-yearsmarried    0.065437   0.160744  0.4071   0.6841
-religiousness  -0.198700   0.199282 -0.9971   0.3191
-occupation      0.039853   0.052743  0.7556   0.4502
-rating         -0.271313   0.337610 -0.8036   0.4219
+              Marg. Eff. Std. Error t value  Pr(>|t|)    
+age           -0.0218326  0.0095804 -2.2789   0.02303 *  
+yearsmarried   0.0654372  0.0161015  4.0641 5.471e-05 ***
+religiousness -0.1987000  0.0482889 -4.1148 4.423e-05 ***
+occupation     0.0398530  0.0310046  1.2854   0.19916    
+rating        -0.2713127  0.0488034 -5.5593 4.096e-08 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
 > maxLik:::summary.maxLik( estResultBoth )
 --------------------------------------------
 Maximum Likelihood estimation
@@ -17231,36 +17325,41 @@ logSigma        0.0049058331
    -0.03929670     0.12574754    -0.98985842    -0.72496393    -1.73438654 
     occupation         rating 
     0.09645167    -0.55930186 
+> print.default( margEff( estResultEmpty ) )
+           age   yearsmarried religiousness2 religiousness3 religiousness4 
+   -0.03929670     0.12574754    -0.98985842    -0.72496393    -1.73438654 
+    occupation         rating 
+    0.09645167    -0.55930186 
 attr(,"vcov")
-                       age yearsmarried religiousness2 religiousness3
-age             0.61727154  -0.48548280    -0.07580011    -0.13400753
-yearsmarried   -0.48548280   0.38249928     0.05975053     0.10511720
-religiousness2 -0.07580011   0.05975053     0.09369806     0.05744477
-religiousness3 -0.13400753   0.10511720     0.05744477     0.11741373
-religiousness4  0.05505591  -0.04521486     0.03542061     0.02754635
-occupation     -0.19134347   0.15053062     0.02443207     0.04407860
-rating          1.07848167  -0.84790590    -0.12171658    -0.22653597
-               religiousness4  occupation     rating
-age                0.05505591 -0.19134347  1.0784817
-yearsmarried      -0.04521486  0.15053062 -0.8479059
-religiousness2     0.03542061  0.02443207 -0.1217166
-religiousness3     0.02754635  0.04407860 -0.2265360
-religiousness4     0.09990184 -0.01465090  0.1083467
-occupation        -0.01465090  0.06343926 -0.3348130
-rating             0.10834668 -0.33481299  1.8990130
+                         age  yearsmarried religiousness2 religiousness3
+age             4.420984e-04 -5.515509e-04   8.028298e-05   0.0004558606
+yearsmarried   -5.515509e-04  1.184479e-03  -3.160987e-05  -0.0009913088
+religiousness2  8.028298e-05 -3.160987e-05   1.561540e-01   0.1140302420
+religiousness3  4.558606e-04 -9.913088e-04   1.140302e-01   0.1616845297
+religiousness4  2.361200e-04 -1.608679e-03   1.145186e-01   0.1153763759
+occupation     -3.204550e-04  3.125955e-04  -7.948707e-04   0.0005195741
+rating          4.398663e-05  4.221269e-04   5.429924e-03   0.0045973945
+               religiousness4    occupation        rating
+age              0.0002361200 -0.0003204550  4.398663e-05
+yearsmarried    -0.0016086791  0.0003125955  4.221269e-04
+religiousness2   0.1145186357 -0.0007948707  5.429924e-03
+religiousness3   0.1153763759  0.0005195741  4.597395e-03
+religiousness4   0.1627502002  0.0009550928  2.970187e-03
+occupation       0.0009550928  0.0042982415 -4.221871e-04
+rating           0.0029701866 -0.0004221871  1.091700e-02
 attr(,"df.residual")
 [1] 522
 attr(,"class")
 [1] "margEff.censReg" "numeric"        
 > summary( margEff( estResultEmpty ) )
                Marg. Eff. Std. Error t value  Pr(>|t|)    
-age             -0.039297   0.785666 -0.0500  0.960128    
-yearsmarried     0.125748   0.618465  0.2033  0.838963    
-religiousness2  -0.989858   0.306101 -3.2338  0.001299 ** 
-religiousness3  -0.724964   0.342657 -2.1157  0.034842 *  
-religiousness4  -1.734387   0.316073 -5.4873 6.374e-08 ***
-occupation       0.096452   0.251872  0.3829  0.701920    
-rating          -0.559302   1.378047 -0.4059  0.685008    
+age             -0.039297   0.021026 -1.8689 0.0621902 .  
+yearsmarried     0.125748   0.034416  3.6537 0.0002846 ***
+religiousness2  -0.989858   0.395163 -2.5049 0.0125510 *  
+religiousness3  -0.724964   0.402100 -1.8029 0.0719736 .  
+religiousness4  -1.734387   0.403423 -4.2992 2.046e-05 ***
+occupation       0.096452   0.065561  1.4712 0.1418464    
+rating          -0.559302   0.104484 -5.3530 1.298e-07 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
 > formula( estResultEmpty )
@@ -20596,4 +20695,4 @@ attr(,"gradient")
 > 
 > proc.time()
    user  system elapsed 
- 15.840   0.156  16.000 
+ 15.764   0.148  15.927 

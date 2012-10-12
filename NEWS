@@ -5,6 +5,15 @@ A full ChangeLog is available in the log messages of the SVN repository
 on R-Forge.
 
 
+            CHANGES IN VERSION 0.5-16 (2012-10-12)
+
+* corrected bug in the calculation of the covariance matrix of the marginal 
+effects: hence, all statistical tests for the marginal effects were wrong
+in previous versions of the censReg package
+
+* added print() method for objects that are returned by the margEff() method
+
+
             CHANGES IN VERSION 0.5-14 (2012-06-28)
 
 * the calculation of the gradients of the log-likelihood function for 
