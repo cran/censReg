@@ -5,6 +5,14 @@ A full ChangeLog is available in the log messages of the SVN repository
 on R-Forge.
 
 
+            CHANGES IN VERSION 0.5-20 (2013-08-20)
+
+* fixed an internal problem so that this package can be used with R version 3.1
+
+* fixed a few minor internal problems that were indicated by "R CMD check" with
+R version 3.1
+
+
             CHANGES IN VERSION 0.5-16 (2012-10-12)
 
 * corrected bug in the calculation of the covariance matrix of the marginal 

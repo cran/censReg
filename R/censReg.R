@@ -1,3 +1,5 @@
+if( getRversion() >= "2.15.1" ) globalVariables( "validObs2" )
+
 censReg <- function( formula, left = 0, right = Inf,
       data = sys.frame( sys.parent() ), start = NULL,
       nGHQ = 8, logLikOnly = FALSE, ... ) {

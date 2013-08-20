@@ -1,0 +1,816 @@
+\documentclass[article,nojss]{jss}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,bbm}
+%% need no \usepackage{Sweave.sty}
+
+% \usepackage{csquotes}
+% \MakeOuterQuote{§}
+
+\newcommand{\dnorm}{\phi}% normal density
+\newcommand{\loglik}{\ell}% log likelihood
+\newcommand*{\mat}[1]{\mathbf{#1}}% Matrix
+\newcommand{\pnorm}{\Phi}% normal distribution function
+\renewcommand*{\vec}[1]{\boldsymbol{#1}}% vector
+
+\author{Arne Henningsen\\University of Copenhagen}
+\Plainauthor{Arne Henningsen}
+
+\title{Estimating Censored Regression Models in \proglang{R} using the \pkg{censReg} Package}
+\Plaintitle{Estimating Censored Regression Models Models in R using the censReg Package}
+
+\Abstract{
+We demonstrate how censored regression models
+(including standard Tobit models)
+can be estimated in \proglang{R}
+using the add-on package \pkg{censReg}.
+This package provides not only the usual maximum likelihood (ML) procedure
+for cross-sectional data
+but also the random-effects maximum likelihood procedure
+for panel data using Gauss-Hermite quadrature.
+}
+
+\Keywords{censored regression, Tobit, econometrics, \proglang{R}}
+\Plainkeywords{censored regression, Tobit, econometrics, R}
+
+\Address{
+  Arne Henningsen\\
+  Institute of Food and Resource Economics\\
+  University of Copenhagen\\
+  1958 Frederiksberg, Denmark\\
+  E-mail: \email{arne.henningsen@gmail.com}\\
+  URL: \url{http://www.arne-henningsen.name/}
+}
+
+\begin{document}
+% initialisation stuff
+\SweaveOpts{engine=R}
+%\VignetteIndexEntry{Censored Regression Models}
+%\VignetteDepends{censReg,AER}
+%\VignetteKeywords{censored regression, Tobit model, econometrics, R}
+%\VignettePackage{censReg}
+<<echo=FALSE>>=
+options( prompt = "R> ", ctinue = "+  " )
+@ 
+
+\section{Introduction}
+\label{sec:intro}
+
+In many statistical analyses of individual data,
+the dependent variable is censored,
+e.g.\ the number of hours worked,
+the number of extramarital affairs,
+the number of arrests after release from prison,
+purchases of durable goods,
+or expenditures on various commodity groups
+\citep[p.~869]{greene08}.
+If the dependent variable is censored (e.g.\ zero in the above examples)
+for a significant fraction of the observations,
+parameter estimates obtained by conventional regression methods (e.g.\ OLS)
+are biased.
+Consistent estimates can be obtained by the method
+proposed by \citet{tobin58}.
+This approach is usually called ``Tobit'' model
+and is a special case of the more general censored regression model.
+
+This paper briefly explains the censored regression model,
+describes function \code{censReg} of the \proglang{R} package
+\pkg{censReg},
+and demonstrates how this function can be used
+to estimate censored regression models.
+
+There are also some other functions for estimating censored regression models
+available in \proglang{R}.
+For instance function \code{tobit} from the \pkg{AER} package
+\citep{kleiber08a,r-aer-1.1}
+and function \code{cenmle} from the \pkg{NADA} package
+are front ends to the \code{survreg} function from the \pkg{survival} package.
+Function \code{tobit} from the \pkg{VGAM} package
+estimates the censored regression model
+by using its own maximum likelihood routine.
+Function \code{MCMCtobit} from the \pkg{MCMCpack} package
+uses the Bayesian Markov Chain Monte Carlo (MCMC) method
+to estimate censored regression models.
+
+
+\section{Censored regression model for cross-sectional data}
+\label{sec:censored}
+
+
+\subsection{Standard Tobit model}
+
+In the standard Tobit model \citep{tobin58},
+we have a dependent variable $y$ that is left-censored at zero:
+\begin{align}
+y_i^* &= x_i ' \beta + \varepsilon_i\\
+y_i &=
+   \begin{cases}
+   0     & \text{if } y_i^* \leq 0\\
+   y_i^* & \text{if } y_i^* > 0
+   \end{cases}
+\end{align}
+Here the subscript $i = 1, \ldots , N$ indicates the observation,
+$y_i^*$ is an unobserved (``latent'') variable,
+$x_i$ is a vector of explanatory variables,
+$\beta$ is a vector of unknown parameters, and
+$\varepsilon_i$ is an disturbance term.
+
+
+\subsection{Censored regression model}
+
+The censored regression model is a generalisation of the standard Tobit model.
+The dependent variable can be either left-censored, right-censored,
+or both left-censored and right-censored,
+where the lower and/or upper limit of the dependent variable can be any number:
+\begin{align}
+y_i^* &= x_i ' \beta + \varepsilon_i\\
+y_i &=
+   \begin{cases}
+   a     & \text{if } y_i^* \leq a\\
+   y_i^* & \text{if } a < y_i^* < b\\
+   b     & \text{if } y_i^* \geq b
+   \end{cases}
+\end{align}
+Here $a$ is the lower limit and $b$ is the upper limit
+of the dependent variable.
+If $a = -\infty$ or $b = \infty$,
+the dependent variable is not left-censored or right-censored,
+respectively.
+
+
+\subsection{Estimation Method}
+
+Censored regression models (including the standard Tobit model)
+are usually estimated by the Maximum Likelihood (ML) method.
+Assuming that the disturbance term $\varepsilon$ follows a normal distribution
+with mean $0$ and variance $\sigma^2$,
+the log-likelihood function is
+\begin{align}
+\log L  = 
+   \sum_{i = 1}^N \bigg[ \;&
+      I_i^a \log \pnorm \left( \frac{ a - x_i ' \beta }{ \sigma } \right)
+      + I_i^b \log \pnorm \left( \frac{ x_i ' \beta - b }{ \sigma } \right)
+      \label{eq:logLik}\\
+   & + \left( 1 - I_i^a - I_i^b \right)
+      \left(
+         \log \dnorm \left( \frac{ y_i - x_i ' \beta }{ \sigma } \right)
+         - \log \sigma
+      \right)
+   \bigg], \nonumber
+\end{align}
+where $\dnorm(.)$ and  $\pnorm(.)$ denote the probability density function
+and the cumulative distribution function, respectively,
+of the standard normal distribution,
+and $I_i^a$ and $I_i^b$ are indicator functions with
+\begin{align}
+I_i^a & =
+   \begin{cases}
+   1 & \text{if } y_i = a\\
+   0 & \text{if } y_i > a
+   \end{cases}\\
+I_i^b & =
+   \begin{cases}
+   1 & \text{if } y_i = b\\
+   0 & \text{if } y_i < b
+   \end{cases}
+\end{align}
+The log-likelihood function of the censored regression model~(\ref{eq:logLik})
+can be maximised with respect to the parameter vector $( \beta' , \sigma )'$
+using standard non-linear optimisation algorithms.
+
+
+\subsection[Implementation in function censReg]{Implementation in function \code{censReg}}
+\label{sec:implementCross}
+
+Censored regression models can be estimated in \proglang{R}
+with function \code{censReg},
+which is available in the \pkg{censReg} package
+\citep{r-censreg-0.5}.
+The most important steps done by the \code{censReg} function are:
+\begin{enumerate}
+\item perform basic checks on the arguments provided by the user
+\item prepare the data for the estimation,
+   i.e.\ the vector of the dependent variable $y = ( y_1 , \ldots , y_N )'$
+   and the matrix of the regressors $X = ( x_1 ' , \ldots , x_N ' )'$
+\item obtain initial values of the parameters $\beta$ and $\sigma$
+   from an OLS estimation using function \code{lm}
+   (if no initial values are provided by the user)
+\item define a function that calculates and returns the log-likelihood value
+   and its gradients\footnote{
+      The gradients of the log-likelihood function are presented
+      in appendix~\ref{sec:logLikGrad}.}
+   given the vector of parameters $( \beta' , \sigma )'$
+\item call function \code{maxLik} of the \pkg{maxLik} package
+   \citep{r-maxlik-0.7} for the maximisation of the likelihood function
+\item add class \code{"censReg"} to the returned object
+\end{enumerate}
+
+
+\subsection[Using function censReg]{Using function \code{censReg}}
+
+Before function \code{censReg} can be used,
+the \pkg{censReg} package \citep{r-censreg-0.5}
+must be loaded:
+<<>>=
+library( "censReg" )
+@
+The user interface (e.g.\ function arguments and printed output)
+of function \code{censReg} follows rather closely
+the user interface of function \code{tobit} from the \pkg{AER} package
+\citep{kleiber08a,r-aer-1.1}.
+The first argument of both functions is \code{formula}.
+It is the only mandatory argument and
+must provide a symbolic description of the model to be fitted.
+The optional argument \code{data} can be used to provide
+a data set (\code{data.frame})
+that contains the variables used in the estimation.
+We demonstrate the usage of \code{censReg} by replicating an example
+given in \citet[p.~142]{kleiber08a}.
+The data used in this example are available in the data set \code{Affairs}
+that is included in the \proglang{R} package \pkg{AER}
+\citep{kleiber08a,r-aer-1.1}.
+This data set can be loaded by the following command:
+<<>>=
+data( "Affairs", package = "AER" )
+@
+In the example of \citet[p.~142]{kleiber08a},
+the number of a person's extramarital sexual intercourses (``affairs'')
+in the past year
+is regressed on the person's age, number of years married,
+religiousness, occupation, and own rating of the marriage.
+The dependent variable is left-censored at zero and not right-censored.
+Hence, this is a standard Tobit model.
+It can be estimated by following command:
+<<>>=
+estResult <- censReg( affairs ~ age + yearsmarried + religiousness +
+   occupation + rating, data = Affairs )
+@
+Function \code{censReg} returns an object of class \code{"censReg"}.
+The corresponding \code{summary} method can be used
+to obtain summarized estimation results:
+<<>>=
+summary( estResult )
+@
+In case of a censored regression with left-censoring not at zero
+and/or right-censoring,
+arguments \code{left} (defaults to zero) and
+\code{right} (defaults to infinity)
+can be used to specify the limits of the dependent variable.
+A lower (left) limit of minus infinity (\code{-Inf})
+and an upper (right) limit of infinity (\code{Inf})
+indicate that there is no left-censoring and right-censoring, respectively.
+For instance, minus the number of extramarital sexual intercourses
+is not left-censored but right-censored at zero.
+The same model as above
+but with the negative number of affairs as the dependent variable
+can be estimated by
+<<>>=
+estResultMinus <- censReg( I( - affairs ) ~ age + yearsmarried + religiousness +
+   occupation + rating, left = -Inf, right = 0, data = Affairs )
+@
+This estimation returns $\beta$ parameters that have the opposite sign
+of the $\beta$  parameters estimated in the original model,
+but the (logarithmised) standard deviation of the residuals remains unchanged.
+<<>>=
+cbind( coef( estResult ), coef( estResultMinus ) )
+@
+
+
+\subsection[Methods for objects of class "censReg"]{Methods for objects of class \code{"censReg"}}
+
+The \pkg{censReg} package provides several methods for objects
+of class \code{"censReg"}:
+the \code{print} method prints some basic information on the estimated model,
+the \code{coef} method returns the coefficient vector,
+the \code{vcov} method returns the variance-covariance matrix of the coefficients,
+the \code{logLik} method returns the log-likelihood value, and
+the \code{summary} method prepares summary results and returns an object
+of class \code{"summary.censReg"}.
+Furthermore, there are two methods for objects of
+class \code{"summary.censReg"}:
+the \code{print} method prints summarized estimation results and
+the \code{coef} method returns a matrix consisting of
+the estimated coefficients, their standard errors, $z$ statistics,
+and $P$ values.
+
+The \code{print}, \code{coef}, and \code{vcov} methods
+have an argument \code{logSigma}.
+This argument must be logical and determines
+whether the estimated standard deviation of the residuals ($\sigma$)
+should be printed or returned
+in logarithmic terms (if argument \code{logSigma} is \code{TRUE}) or
+in natural units (if it is \code{FALSE}).
+As the logarithm of the residuals' standard deviation ($\log \sigma$)
+is used during the estimation procedure,
+argument \code{logSigma} defaults to \code{TRUE}.
+If this argument is \code{FALSE},
+the (unlogarithmized) standard deviation ($\sigma$) is calculated
+by applying the exponential function
+and the covariance matrix of all parameters is calculated
+by the Delta method.
+
+
+\section{Censored regression model for panel data}
+\label{sec:panel}
+
+\subsection{Specification}
+
+The censored regression model for panel data
+with individual specific effects has following specification:
+\begin{align}
+y_{it}^* &= x_{it} ' \beta + \varepsilon_{it} =  x_{it} ' \beta + \mu_{i} + \nu_{it} \\
+y_{it} &=
+   \begin{cases}
+   a        & \text{if } y_{it}^* \leq a\\
+   y_{it}^* & \text{if } a < y_{it}^* < b\\
+   b        & \text{if } y_{it}^* \geq b
+   \end{cases}
+\end{align}
+Here the subscript $i = 1, \ldots , N$ indicates the individual,
+subscript $t = 1, \ldots , T_i$ indicates the time period,
+$T_i$ is the number of time periods observed for the $i$th individual,
+$\mu_i$ is a time-invariant individual specific effect,
+and $\nu_{it}$ is the remaining disturbance.
+
+
+\subsection{Fixed effects}
+
+In contrast to linear panel data models,
+we cannot get rid of the individual effects by the \emph{within transformation}.
+Theoretically, the fixed-effects panel Tobit model is affected by
+the \emph{incidental parameters problem} \citep{neyman48, lancaster00},
+i.e.\ the estimated coefficients are inconsistent
+unless the number of time periods ($T_i$) approaches infinity
+for each individual $i$.
+However, \citet{greene04b} showed with a Monte Carlo study
+that the slope parameters (but not the variance) of a fixed-effects Tobit model
+can be estimated consistently even if the number of time periods in small.
+
+Assuming that the disturbance term $\nu$ follows a normal distribution
+with mean $0$ and variance $\sigma^2$,
+the log-likelihood function is
+\begin{align}
+\log L  =
+   \sum_{i = 1}^N \sum_{t = 1}^{T_i} \bigg[ \;&
+      I_{it}^a \log \pnorm \left( \frac{ a - x_{it} ' \beta - \mu_i }{ \sigma } \right)
+      + I_{it}^b \log \pnorm \left( \frac{ x_{it} ' \beta + \mu_i - b }{ \sigma } \right)
+      \label{eq:logLikFix}\\
+   & + \left( 1 - I_{it}^a - I_{it}^b \right)
+      \left(
+         \log \dnorm \left( \frac{ y_{it} - x_{it} ' \beta - \mu_i }{ \sigma } \right)
+         - \log \sigma
+      \right)
+   \bigg]. \nonumber
+\end{align}
+This log-likelihood function can be maximized with respect to
+the parameter vectors $\beta$ and $\mu = [ \mu_i ]$.
+However, the number of coefficients increases linearly with the number
+of individuals.
+As most empirical applications use data sets with large numbers of individuals,
+special maximization routines,
+e.g.\ as described in \citet{greene01} and \citet[p.~554-557]{greene08},
+are usually required.
+
+
+\subsection{Random effects}
+
+If the individual specific effects $\mu_i$ are independent
+of the regressors $x_{it}$,
+the parameters can be consistently estimated with a random effects model.
+Assuming
+that the individual specific effects $\mu$ follow a normal distribution
+with mean $0$ and variance $\sigma_\mu^2$,
+the remaining disturbance $\nu$ follows a normal distribution
+with mean $0$ and variance $\sigma_\nu^2$, and
+$\mu$ and $\nu$ are independent,
+the likelihood contribution of a single individual $i$ is
+\begin{align}
+L_i  = \int_{-\infty}^\infty
+   \Bigg\{ \prod_{t=1}^{T_i} \;&
+      \left[
+         \pnorm \left( \frac{ a - x_{it} ' \beta - \mu_i }{ \sigma_\nu } \right)
+      \right]^{I_{it}^a}
+      \left[
+         \pnorm \left( \frac{ x_{it} ' \beta + \mu_i - b }{ \sigma_\nu } \right)
+      \right]^{I_{it}^b}
+      \label{eq:likRandom}\\
+      & \left[
+         \frac{1}{\sigma_\nu}
+         \dnorm \left( \frac{ y_{it} - x_{it} ' \beta - \mu_i }{ \sigma_\nu } \right)
+      \right]^{\left( 1 - I_{it}^a - I_{it}^b \right)}
+   \Bigg\} \; \dnorm \left( \frac{\mu_i}{\sigma_\mu} \right) \; d \mu_i
+      \nonumber
+\end{align}
+and the log-likelihood function is
+\begin{equation}
+\log L = \sum_{i=1}^N \log L_i
+\end{equation}
+\citep[see][p.~2]{bruno04}.
+
+Given that we assumed that $\mu$ follows a normal distribution,
+we can calculate the integrals in the log-likelihood function
+by the Gauss-Hermite quadrature and then maximise the log-likelihood function
+using standard non-linear optimisation algorithms
+\citep[see][]{butler82}.
+
+Alternatively, the log-likelihood function can be maximized
+using the method of Maximum Simulated Likelihood (MSL),
+which allows some flexibility in the specification
+of the disturbance terms \citep[p.~799]{greene08}.
+
+
+\subsubsection{Random effects estimation using the Gauss-Hermite quadrature}
+
+The Gauss-Hermite quadrature is a technique
+for approximating specific integrals
+with a weighted sum of function values at some specified points.
+Applying the Gauss-Hermite quadrature to equation~(\ref{eq:likRandom}),
+we get
+\begin{align}
+L_i  = \frac{1}{\sqrt{\pi}}
+   \sum_{h=1}^H w_h
+   \Bigg\{ \prod_{t=1}^{T_i} \;&
+      \left[
+         \pnorm \left( \frac{ a - x_{it} ' \beta - \sqrt{2} \sigma_\mu \psi_h }
+            { \sigma_\nu } \right)
+      \right]^{I_{it}^a}
+      \left[
+         \pnorm \left( \frac{ x_{it} ' \beta + \sqrt{2} \sigma_\mu \psi_h - b }
+            { \sigma_\nu } \right)
+      \right]^{I_{it}^b}
+      \label{eq:likRandomGhq}\\
+      & \left[
+         \frac{1}{\sigma_\nu}
+         \dnorm \left( \frac{ y_{it} - x_{it} ' \beta - \sqrt{2} \sigma_\mu \psi_h }
+            { \sigma_\nu } \right)
+      \right]^{\left( 1 - I_{it}^a - I_{it}^b \right)}
+   \Bigg\},  \nonumber
+\end{align}
+where $H$ is number of quadrature points,
+$\psi_1 , \ldots , \psi_H$ are the abscissae, and
+$w_1, \ldots , w_H$ are the corresponding weights
+\citep[p.~553]{greene08}
+ 
+
+\subsection[Implementation in function censReg]{Implementation in function \code{censReg}}
+
+Currently, only the random-effects model using the Gauss-Hermite quadrature
+is implemented in \pkg{censReg}.%
+\footnote{%
+Of course, also the ``pooled'' model can be estimated by \code{censReg}%
+---simply by ignoring the panel structure of the data set.
+}
+Most steps internally done by \code{censReg}
+in case of panel data are similar to the steps described in
+section~\ref{sec:implementCross}:
+\begin{enumerate}
+\item perform basic checks on the arguments provided by the user
+\item prepare the data for the estimation,
+   i.e.\ the matrix of the dependent variable $y = [ y_{it} ]$
+   and the 3-dimensional array the regressors $X = [ x_{itk} ]$
+\item obtain initial values of the parameters $\beta$,
+   $\sigma_\mu$ and $\sigma_\nu$ from a linear random-effects estimation
+   using function \code{plm} of the \pkg{plm} package \citep{croissant08}
+   (if no initial values are provided by the user)
+\item obtain the abscissae $\psi$ and the corresponding weights $w$
+   for the Gauss-Hermite quadrature using function \code{ghq}
+   of the \pkg{glmmML} package \citep{glmmml-0.81}
+\item define a function that calculates (using the Gauss-Hermite quadrature)
+   and returns the log-likelihood value and its gradients\footnote{
+      The gradients of the log-likelihood function are presented
+      in appendix~\ref{sec:logLikGradRand}.}
+   given the vector of parameters $( \beta' , \sigma_\mu , \sigma_\nu )'$
+\item call function \code{maxLik} of the \pkg{maxLik} package
+   \citep{r-maxlik-0.7} for the maximisation of the likelihood function
+\item add class \code{"censReg"} to the returned object
+\end{enumerate}
+
+
+\subsection[Using function censReg]{Using function \code{censReg}}
+
+Function \code{censReg} automatically estimates a random effects
+censored regression model
+if argument \code{data} is of class \code{"pdata.frame"},
+i.e.\ created with function \code{pdata.frame}
+of package \pkg{plm} \citep{croissant08}.
+
+First, we prepare a small artificial panel data set
+with 15 individuals, 4 time periods and a censored dependent variable:
+<<>>=
+set.seed( 123 )
+pData <- data.frame(
+   id = rep( paste( "F", 1:15, sep = "_" ), each = 4 ),
+   time = rep( 1981:1984, 15 ) )
+pData$mu <- rep( rnorm( 15 ), each = 4 )
+pData$x1 <- rnorm( 60 )
+pData$x2 <- runif( 60 )
+pData$ys <- -1 + pData$mu + 2 * pData$x1 + 3 * pData$x2 + rnorm( 60 )
+pData$y <- ifelse( pData$ys > 0, pData$ys, 0 )
+library( plm )
+pData <- pdata.frame( pData, c( "id", "time" ) )
+@
+
+Now, we estimate the random-effects censored regression model
+using the BHHH method \citep{berndt74}
+and show summary results:
+<<>>=
+system.time( panelResult <- censReg( y ~ x1 + x2, data = pData, method = "BHHH" ) )
+summary( panelResult )
+@
+
+Argument \code{nGHQ} can be used to specify the number of points
+for the Gauss-Hermite quadrature.
+It defaults to 8.
+Increasing the number of points increases the accuracy of the computation
+of the log-likelihood value but also increases the computation time.
+In the following,
+we re-estimate the model above with different numbers of points
+and compare the execution times (measured in seconds of user CPU time)
+and the estimated parameters.
+<<>>=
+nGHQ <- 2^(2:6)
+times <- numeric( length( nGHQ ) )
+results <- list()
+for( i in 1:length (nGHQ ) ) {
+   times[i] <- system.time( results[[i]] <- censReg( y ~ x1 + x2, data = pData,
+   method = "BHHH", nGHQ = nGHQ[i] ) )[1]
+}
+names(results)<-nGHQ
+round( rbind(sapply( results, coef ),times),4)
+@
+
+\section{Marginal Effects}
+
+The marginal effects of an explanatory variable
+on the expected value of the dependent variable is
+\citep[p.~889]{greene12}:
+\begin{equation}
+ME_j = \frac{\partial E[y|x]}{\partial x_j}
+= \beta_j \; \left[
+   \pnorm \left( \frac{ b - x' \beta }{ \sigma } \right) -
+   \pnorm \left( \frac{ a - x' \beta }{ \sigma } \right)
+   \right]
+\end{equation}
+
+In order to compute the approximate variance covariance matrix
+of these marginal effects using the Delta method,
+we need to obtain the Jacobian matrix of these marginal effects
+with respect to all estimated parameters (including~$\sigma$):
+\begin{equation}
+\frac{\partial ME_j}{\partial \beta_k}
+= \Delta_{jk} \left[
+   \pnorm \left( \frac{ b - x' \beta }{ \sigma } \right) -
+   \pnorm \left( \frac{ a - x' \beta }{ \sigma } \right)
+   \right]
+- \frac{\beta_j \; x_k}{\sigma} \; \left[
+   \dnorm \left( \frac{ b - x' \beta }{ \sigma } \right) -
+   \dnorm \left( \frac{ a - x' \beta }{ \sigma } \right)
+   \right]
+\end{equation}
+and
+\begin{equation}
+\frac{\partial ME_j}{\partial \sigma}
+= - \beta_j \; \left[
+   \dnorm \left( \frac{ b - x' \beta }{ \sigma } \right) \;
+       \frac{ b - x' \beta }{ \sigma^2 } -
+   \dnorm \left( \frac{ a - x' \beta }{ \sigma } \right) \;
+       \frac{ a - x' \beta }{ \sigma^2 }
+   \right],
+\label{eq:margEffJacSigma}
+\end{equation}
+where $\Delta_{jk}$ is ``Kronecker's Delta''
+with $\Delta_{jk} = 1$ for $j=k$ and $\Delta_{jk} = 0$ for $j \neq k$.
+If the upper limit of the censored dependent variable ($b$) is infinity
+or the lower limit of the censored dependent variable ($a$) is minus infinity,
+the terms in the square brackets in equation~(\ref{eq:margEffJacSigma})
+that include $b$ or $a$, respectively, have to be removed.
+
+
+% \section{Conclusions}
+% \label{sec:conclusions}
+
+
+% \section*{Acknowledgments}
+
+
+\clearpage
+\appendix
+\section*{Appendix}
+
+\section{Gradients of the log-likelihood function}
+\subsection{Cross-sectional data}
+\label{sec:logLikGrad}
+\begin{align}
+\frac{ \partial \log L }{ \partial \beta_j } =
+   \sum_{i = 1}^N \Bigg[ &\;
+      - I_i^a \;
+         \frac{ \dnorm \left( \frac{ a - x_i ' \beta }{ \sigma } \right) }
+            { \pnorm \left( \frac{ a - x_i ' \beta }{ \sigma } \right) }
+         \; \frac{ x_{ij} }{ \sigma }
+      + I_i^b \;
+         \frac{ \dnorm \left( \frac{ x_i ' \beta - b }{ \sigma } \right) }
+            { \pnorm \left( \frac{ x_i ' \beta - b }{ \sigma } \right) }
+         \; \frac{ x_{ij} }{ \sigma } \\
+   & + \left( 1 - I_i^a - I_i^b \right)
+      \frac{ y_i - x_i ' \beta }{ \sigma }
+      \; \frac{ x_{ij} }{ \sigma }
+      \Bigg] \nonumber\\
+\frac{ \partial \log L }{ \partial \log \sigma } =
+   \sum_{i = 1}^N \Bigg[ \;&
+      - I_i^a \;
+         \frac{ \dnorm \left( \frac{ a - x_i ' \beta }{ \sigma } \right) }
+            { \pnorm \left( \frac{ a - x_i ' \beta }{ \sigma } \right) }
+         \; \frac{ a - x_i ' \beta }{ \sigma }
+      - I_i^b \;
+         \frac{ \dnorm \left( \frac{ x_i ' \beta - b }{ \sigma } \right) }
+            { \pnorm \left( \frac{ x_i ' \beta - b }{ \sigma } \right) }
+         \; \frac{ x_i ' \beta - b }{ \sigma } \\
+   & + \left( 1 - I_i^a - I_i^b \right)
+      \left(
+         \left( \frac{ y_i - x_i ' \beta }{ \sigma } \right)^2
+         - 1
+      \right)
+      \Bigg] \nonumber
+\end{align}
+
+\subsection{Panel data with random effects}
+\label{sec:logLikGradRand}
+\begin{align}
+\frac{ \partial \log L_i }{ \partial \beta_j } =
+   & \frac{ 1 }{ \sqrt{\pi} \; L_i } \;
+   \sum_{h=1}^H w_h
+   \left\{
+      \left( \prod_{t=1}^{T_i}
+         \left[
+            \pnorm \left( \frac{ a - x_{it} ' \beta - \sqrt{2} \sigma_\mu \psi_h }
+               { \sigma_\nu } \right)
+         \right]^{I_{it}^a}
+         \label{eq:gradLikRandomGhqBeta} \right. \right. \\
+         & \left.
+         \left[
+            \pnorm \left( \frac{ x_{it} ' \beta + \sqrt{2} \sigma_\mu \psi_h - b }
+               { \sigma_\nu } \right)
+         \right]^{I_{it}^b}
+         \left[
+            \frac{1}{\sigma_\nu}
+            \dnorm \left( \frac{ y_{it} - x_{it} ' \beta - \sqrt{2} \sigma_\mu \psi_h }
+               { \sigma_\nu } \right)
+         \right]^{\left( 1 - I_{it}^a - I_{it}^b \right)}
+      \right)\nonumber \\
+      & \left( \sum_{t=1}^{T_i}
+         \left[ -
+            \frac{ 
+               \dnorm \left( \frac{ a - x_{it} ' \beta - \sqrt{2} \sigma_\mu \psi_h }
+                  { \sigma_\nu } \right)
+            }{
+               \pnorm \left( \frac{ a - x_{it} ' \beta - \sqrt{2} \sigma_\mu \psi_h }
+                  { \sigma_\nu } \right)
+            }
+            \; \frac{ x_{jit} }{ \sigma_\nu }
+         \right]^{I_{it}^a}\nonumber \right. \\
+         & \left. \left.
+         \left[
+            \frac{
+               \dnorm \left( \frac{ x_{it} ' \beta + \sqrt{2} \sigma_\mu \psi_h - b }
+                  { \sigma_\nu } \right)
+            }{
+               \pnorm \left( \frac{ x_{it} ' \beta + \sqrt{2} \sigma_\mu \psi_h - b }
+                  { \sigma_\nu } \right)
+            }
+            \; \frac{ x_{jit} }{ \sigma_\nu }
+         \right]^{I_{it}^b}
+         \left[ -
+            \frac{
+               \dnorm ' \left( \frac{ y_{it} - x_{it} ' \beta - \sqrt{2} \sigma_\mu \psi_h }
+                  { \sigma_\nu } \right)
+            }{
+               \dnorm \left( \frac{ y_{it} - x_{it} ' \beta - \sqrt{2} \sigma_\mu \psi_h }
+                  { \sigma_\nu } \right)
+            } \;
+            \frac{ x_{jit} }{\sigma_\nu^2}
+         \right]^{\left( 1 - I_{it}^a - I_{it}^b \right)}
+      \right)
+   \right\}  \nonumber
+\end{align}
+
+\begin{align}
+\frac{ \partial \log L_i }{ \partial \log \sigma_\mu } =
+   & \frac{ \sigma_\mu }{ \sqrt{\pi} \; L_i } \;
+   \sum_{h=1}^H w_h
+   \left\{
+      \left( \prod_{t=1}^{T_i}
+         \left[
+            \pnorm \left( \frac{ a - x_{it} ' \beta - \sqrt{2} \sigma_\mu \psi_h }
+               { \sigma_\nu } \right)
+         \right]^{I_{it}^a}
+         \label{eq:gradLikRandomGhqSigmaMu} \right. \right. \\
+         & \left.
+         \left[
+            \pnorm \left( \frac{ x_{it} ' \beta + \sqrt{2} \sigma_\mu \psi_h - b }
+               { \sigma_\nu } \right)
+         \right]^{I_{it}^b}
+         \left[
+            \frac{1}{\sigma_\nu}
+            \dnorm \left( \frac{ y_{it} - x_{it} ' \beta - \sqrt{2} \sigma_\mu \psi_h }
+               { \sigma_\nu } \right)
+         \right]^{\left( 1 - I_{it}^a - I_{it}^b \right)}
+      \right)\nonumber \\
+      & \left( \sum_{t=1}^{T_i}
+         \left[ -
+            \frac{
+               \dnorm \left( \frac{ a - x_{it} ' \beta - \sqrt{2} \sigma_\mu \psi_h }
+                  { \sigma_\nu } \right)
+            }{
+               \pnorm \left( \frac{ a - x_{it} ' \beta - \sqrt{2} \sigma_\mu \psi_h }
+                  { \sigma_\nu } \right)
+            }
+            \; \frac{ \sqrt{2} \psi_h }{ \sigma_\nu }
+         \right]^{I_{it}^a}\nonumber \right. \\
+         & \left. \left.
+         \left[
+            \frac{
+               \dnorm \left( \frac{ x_{it} ' \beta + \sqrt{2} \sigma_\mu \psi_h - b }
+                  { \sigma_\nu } \right)
+            }{
+               \pnorm \left( \frac{ x_{it} ' \beta + \sqrt{2} \sigma_\mu \psi_h - b }
+                  { \sigma_\nu } \right)
+            }
+            \; \frac{ \sqrt{2} \psi_h }{ \sigma_\nu }
+         \right]^{I_{it}^b}
+         \left[ -
+            \frac{
+               \dnorm ' \left( \frac{ y_{it} - x_{it} ' \beta - \sqrt{2} \sigma_\mu \psi_h }
+                  { \sigma_\nu } \right)
+            }{
+               \dnorm \left( \frac{ y_{it} - x_{it} ' \beta - \sqrt{2} \sigma_\mu \psi_h }
+                  { \sigma_\nu } \right)
+            } \;
+            \frac{ \sqrt{2} \psi_h }{\sigma_\nu^2}
+         \right]^{\left( 1 - I_{it}^a - I_{it}^b \right)}
+      \right)
+   \right\}  \nonumber
+\end{align}
+
+\begin{align}
+\frac{ \partial \log L_i }{ \partial \log \sigma_\nu } =
+   & \frac{ \sigma_\nu }{ \sqrt{\pi} \; L_i } \;
+   \sum_{h=1}^H w_h
+   \left\{
+      \left( \prod_{t=1}^{T_i}
+         \left[
+            \pnorm \left( \frac{ a - x_{it} ' \beta - \sqrt{2} \sigma_\mu \psi_h }
+               { \sigma_\nu } \right)
+         \right]^{I_{it}^a}
+         \label{eq:gradLikRandomGhqSigmaMu} \right. \right. \\
+         & \left.
+         \left[
+            \pnorm \left( \frac{ x_{it} ' \beta + \sqrt{2} \sigma_\mu \psi_h - b }
+               { \sigma_\nu } \right)
+         \right]^{I_{it}^b}
+         \left[
+            \frac{1}{\sigma_\nu}
+            \dnorm \left( \frac{ y_{it} - x_{it} ' \beta - \sqrt{2} \sigma_\mu \psi_h }
+               { \sigma_\nu } \right)
+         \right]^{\left( 1 - I_{it}^a - I_{it}^b \right)}
+      \right)\nonumber \\
+      & \left( \sum_{t=1}^{T_i}
+         \left[ -
+            \frac{
+               \dnorm \left( \frac{ a - x_{it} ' \beta - \sqrt{2} \sigma_\mu \psi_h }
+                  { \sigma_\nu } \right)
+            }{
+               \pnorm \left( \frac{ a - x_{it} ' \beta - \sqrt{2} \sigma_\mu \psi_h }
+                  { \sigma_\nu } \right)
+            }
+            \; \frac{ a - x_{it} ' \beta - \sqrt{2} \sigma_\mu \psi_h }{ \sigma_\nu^2 }
+         \right]^{I_{it}^a}\nonumber \right. \\
+         & \left[
+            - \frac{
+               \dnorm \left( \frac{ x_{it} ' \beta + \sqrt{2} \sigma_\mu \psi_h - b }
+                  { \sigma_\nu } \right)
+            }{
+               \pnorm \left( \frac{ x_{it} ' \beta + \sqrt{2} \sigma_\mu \psi_h - b }
+                  { \sigma_\nu } \right)
+            }
+            \; \frac{ x_{it} ' \beta + \sqrt{2} \sigma_\mu \psi_h - b }{ \sigma_\nu^2 }
+         \right]^{I_{it}^b}\nonumber \\
+         & \left. \left. \left[ -
+            \frac{ 1 }{\sigma_\nu}
+            - \frac{
+               \dnorm ' \left( \frac{ y_{it} - x_{it} ' \beta - \sqrt{2} \sigma_\mu \psi_h }
+                  { \sigma_\nu } \right)
+            }{
+               \dnorm \left( \frac{ y_{it} - x_{it} ' \beta - \sqrt{2} \sigma_\mu \psi_h }
+                  { \sigma_\nu } \right)
+            } \;
+            \frac{ y_{it} - x_{it} ' \beta - \sqrt{2} \sigma_\mu \psi_h }{\sigma_\nu^2}
+         \right]^{\left( 1 - I_{it}^a - I_{it}^b \right)}
+      \right)
+   \right\}  \nonumber
+\end{align}
+
+
+
+\bibliography{censReg}
+% \bibliography{agrarpol}
+
+\end{document}

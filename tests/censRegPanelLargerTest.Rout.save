@@ -1,7 +1,6 @@
 
-R version 2.15.0 (2012-03-30)
-Copyright (C) 2012 The R Foundation for Statistical Computing
-ISBN 3-900051-07-0
+R version 3.0.1 (2013-05-16) -- "Good Sport"
+Copyright (C) 2013 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -24,7 +23,7 @@ Loading required package: bdsmatrix
 
 Attaching package: 'bdsmatrix'
 
-The following object(s) are masked from 'package:base':
+The following object is masked from 'package:base':
 
     backsolve
 
@@ -36,10 +35,12 @@ Loading required package: zoo
 
 Attaching package: 'zoo'
 
-The following object(s) are masked from 'package:base':
+The following object is masked from 'package:base':
 
     as.Date, as.Date.numeric
 
+> 
+> options( digits = 5 )
 > 
 > nId <- 100
 > nTime <- 3
@@ -67,17 +68,17 @@ The following object(s) are masked from 'package:base':
 Maximum Likelihood estimation
 BHHH maximisation, 15 iterations
 Return code 2: successive function values within tolerance limit
-Log-Likelihood: -330.5222 
+Log-Likelihood: -330.52 
 5  free parameters
 Estimates:
-             Estimate Std. error t value   Pr(> t)    
-(Intercept) -1.086693   0.234624 -4.6316 3.628e-06 ***
-x1           2.069550   0.092324 22.4161 < 2.2e-16 ***
-x2           3.115095   0.370082  8.4173 < 2.2e-16 ***
-logSigmaMu  -0.105561   0.128939 -0.8187    0.4130    
-logSigmaNu   0.025600   0.064679  0.3958    0.6922    
+            Estimate Std. error t value Pr(> t)    
+(Intercept)  -1.0867     0.2346   -4.63 3.6e-06 ***
+x1            2.0695     0.0923   22.42 < 2e-16 ***
+x2            3.1151     0.3701    8.42 < 2e-16 ***
+logSigmaMu   -0.1056     0.1289   -0.82    0.41    
+logSigmaNu    0.0256     0.0647    0.40    0.69    
 ---
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 --------------------------------------------
 > 
 > ## BFGS method (optim)
@@ -87,17 +88,17 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 Maximum Likelihood estimation
 BFGS maximisation, 29 iterations
 Return code 0: successful convergence 
-Log-Likelihood: -330.5222 
+Log-Likelihood: -330.52 
 5  free parameters
 Estimates:
-             Estimate Std. error t value   Pr(> t)    
-(Intercept) -1.086729   0.226324 -4.8017 1.574e-06 ***
-x1           2.069572   0.096850 21.3689 < 2.2e-16 ***
-x2           3.115190   0.326639  9.5371 < 2.2e-16 ***
-logSigmaMu  -0.105506   0.130941 -0.8058    0.4204    
-logSigmaNu   0.025538   0.069589  0.3670    0.7136    
+            Estimate Std. error t value Pr(> t)    
+(Intercept)  -1.0867     0.2263   -4.80 1.6e-06 ***
+x1            2.0696     0.0968   21.37 < 2e-16 ***
+x2            3.1152     0.3266    9.54 < 2e-16 ***
+logSigmaMu   -0.1055     0.1309   -0.81    0.42    
+logSigmaNu    0.0255     0.0696    0.37    0.71    
 ---
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 --------------------------------------------
 > 
 > ## BFGS method (R)
@@ -107,20 +108,20 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 Maximum Likelihood estimation
 BFGSR maximization, 22 iterations
 Return code 2: successive function values within tolerance limit
-Log-Likelihood: -330.5222 
+Log-Likelihood: -330.52 
 5  free parameters
 Estimates:
-             Estimate Std. error t value   Pr(> t)    
-(Intercept) -1.086421   0.226316 -4.8005 1.583e-06 ***
-x1           2.069543   0.096852 21.3681 < 2.2e-16 ***
-x2           3.114673   0.326638  9.5356 < 2.2e-16 ***
-logSigmaMu  -0.105526   0.130947 -0.8059    0.4203    
-logSigmaNu   0.025589   0.069591  0.3677    0.7131    
+            Estimate Std. error t value Pr(> t)    
+(Intercept)  -1.0864     0.2263   -4.80 1.6e-06 ***
+x1            2.0695     0.0969   21.37 < 2e-16 ***
+x2            3.1147     0.3266    9.54 < 2e-16 ***
+logSigmaMu   -0.1055     0.1309   -0.81    0.42    
+logSigmaNu    0.0256     0.0696    0.37    0.71    
 ---
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 --------------------------------------------
 > 
 > 
 > proc.time()
    user  system elapsed 
-  4.040   0.036   4.071 
+  2.976   0.020   2.992 

@@ -1,6 +1,8 @@
 model.frame.censReg <- function( formula, ... ) {
 
-   result <- model.frame.lm( formula )
+   class( formula ) <- "lm"
+   
+   result <- model.frame( formula )
 
    return( result )
 }

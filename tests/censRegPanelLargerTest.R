@@ -1,6 +1,8 @@
 library( censReg )
 library( plm )
 
+options( digits = 5 )
+
 nId <- 100
 nTime <- 3
 

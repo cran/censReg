@@ -1,6 +1,6 @@
 vcov.censReg <- function( object, logSigma = TRUE, ... ) {
 
-   result <- maxLik:::vcov.maxLik( object )
+   result <- NextMethod( vcov, object )
    if( !logSigma ) {
       if( "logSigma" %in% rownames( result ) ) {
          pos <- nrow( result )

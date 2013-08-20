@@ -1,6 +1,6 @@
 coef.censReg <- function( object, logSigma = TRUE, ... ) {
 
-   result <- maxLik:::coef.maxLik( object )
+   result <- NextMethod( coef, object )
    if( !logSigma ) {
       if( "logSigma" %in% names( result ) ) {
          pos <- length( result )

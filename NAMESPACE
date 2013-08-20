@@ -1,6 +1,7 @@
 export( "censReg" )
 
 importFrom( "glmmML", "ghq" )
+importFrom( "maxLik", "maxLik" )
 importFrom( "miscTools", "margEff" )
 importFrom( "sandwich", "estfun" )
 importFrom( "stats", "nobs" )
