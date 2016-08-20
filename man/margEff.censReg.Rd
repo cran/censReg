@@ -6,14 +6,14 @@
 
 \description{
    The \code{margEff} method computes the marginal effects of the explanatory variables
-   on the expected value of the dependent variable evaluated
-   at the mean values of the explanatory variables.
+   on the expected value of the dependent variable evaluated.
    Please note that this functionality is currently not available
    for panel data models.
 }
 
 \usage{
-\method{margEff}{censReg}( object, calcVCov = TRUE, returnJacobian = FALSE, ... )
+\method{margEff}{censReg}( object, xValues = NULL,
+   calcVCov = TRUE, returnJacobian = FALSE, ... )
 
 \method{summary}{margEff.censReg}( object, ... )
 }
@@ -25,6 +25,15 @@
       argument \code{object} of the \code{summary} method
       must be an object of class \code{"margEff.censReg"}
       (returned by \code{margEff.censReg}).}
+   \item{xValues}{vector that specifies the values of the explanatory variables
+      (including the intercept if it is included in the model),
+      at which the marginal effects should be calculated.
+      The number and order of the elements of this vector
+      must correspond to the number and order of the estimated coefficients
+      (without sigma).
+      If this argument is \code{NULL} (or not specified),
+      argument \code{xValues} is set to the mean values
+      of the explanatory variables.}
    \item{calcVCov}{logical. If \code{TRUE}, 
      the approximate variance covariance matrices of the marginal effects 
      is calculated and returned as an attribute (see below).}
@@ -74,6 +83,7 @@ estResult <- censReg( affairs ~ age + yearsmarried + religiousness +
    occupation + rating, data = Affairs )
 margEff( estResult )
 summary( margEff( estResult ) )
+margEff( estResult, xValues = c( 1, 40, 4, 2, 4, 4 ) )
 }
 
 \keyword{methods}

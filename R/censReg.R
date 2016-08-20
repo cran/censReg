@@ -164,6 +164,13 @@ censReg <- function( formula, left = 0, right = Inf,
          return( result )
       }
 
+      if( sum( obsBelow, na.rm = TRUE ) + sum( obsAbove, na.rm = TRUE ) == 0 ) {
+         stop( "there are no censored observations" )
+      }
+      if( sum( obsBetween, na.rm = TRUE ) == 0 ) {
+         stop( "there are no uncensored observations" )
+      }
+      
       ## log likelihood function for panel data (incl. gradients)
       result <- maxLik( censRegLogLikPanel, start = start,
          yMat = yMat, xArr = xArr, left = left, right = right, 
@@ -185,6 +192,13 @@ censReg <- function( formula, left = 0, right = Inf,
             yVec = yVec, xMat = xMat, left = left, right = right, 
             obsBelow = obsBelow, obsBetween = obsBetween, obsAbove = obsAbove )
          return( result )
+      }
+
+      if( sum( obsBelow, na.rm = TRUE ) + sum( obsAbove, na.rm = TRUE ) == 0 ) {
+         stop( "there are no censored observations" )
+      }
+      if( sum( obsBetween, na.rm = TRUE ) == 0 ) {
+         stop( "there are no uncensored observations" )
       }
 
       ## log likelihood function for cross-sectional data

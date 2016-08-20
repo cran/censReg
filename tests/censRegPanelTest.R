@@ -1,15 +1,16 @@
-library( censReg )
-library( plm )
+library( "censReg" )
+library( "plm" )
 
 options( digits = 5 )
 
 printAll <- function( x ) {
    for( n in names( x ) ) {
       cat( "$", n, "\n", sep = "" )
-      if( n %in% c( "estimate", "hessian", "gradientObs" ) ) {
+      if( n %in% c( "estimate", "gradientObs" ) ) {
          print( round( x[[ n ]], 2 ) )
+      } else if( n %in% c( "hessian" ) ) {
+         print( round( x[[ n ]], 1 ) )
       } else if( n %in% c( "gradient" ) ) {
-         print( x[[ n ]], digits = 1 )
       } else if( ! n %in% c( "last.step" ) ) {
          print( x[[ n ]] )
       }
@@ -166,18 +167,18 @@ for( i in 1:nId ) {
 }
 pData2 <- pdata.frame( nData2, c( "id", "time" ) )
 randEffBfgsr2 <- censReg( y ~ x1 + x2, data = pData2, method = "BFGSR" )
-all.equal( randEffBfgsr2[ -c(11,13) ], randEffBfgsr[ -c(11,13) ] )
-all.equal( sort( randEffBfgsr2[[ 11 ]] ), sort( randEffBfgsr[[ 11 ]] ) )
+all.equal( randEffBfgsr2[ -c(3,5,6,7,9,11,14) ],
+   randEffBfgsr[ -c(3,5,6,7,9,11,14) ], tolerance = 1e-2 )
 
 # check if the order of observations/individuals influences the likelihood values
 d1c1 <- censReg( y ~ x1 + x2, data = pData, method = "BFGSR", start = coef(randEffBfgsr),
    iterlim = 0 )
-all.equal( d1c1[-c(5,6,9,13,17)], randEffBfgsr[-c(5,6,9,13,17)] )
+all.equal( d1c1[-c(5,6,7,9,12,14,18)], randEffBfgsr[-c(5,6,7,9,12,14,18)] )
 d1c1$maximum -  randEffBfgsr$maximum
 
 d2c2 <- censReg( y ~ x1 + x2, data = pData2, method = "BFGSR", start = coef(randEffBfgsr2),
    iterlim = 0 )
-all.equal( d2c2[-c(5,6,9,13,17)], randEffBfgsr2[-c(5,6,9,13,17)] )
+all.equal( d2c2[-c(5,6,7,9,12,14,18)], randEffBfgsr2[-c(5,6,7,9,12,14,18)] )
 d2c2$maximum -  randEffBfgsr2$maximum
 
 d1c2 <- censReg( y ~ x1 + x2, data = pData, method = "BFGSR", 
@@ -190,8 +191,8 @@ d2c1 <- censReg( y ~ x1 + x2, data = pData2, method = "BFGSR",
 d1c1$maximum - d2c1$maximum
 d1c1$gradient - d2c1$gradient
 
-d2c2$maximum - d2c1$maximum
-d1c1$maximum - d1c2$maximum
+round( d2c2$maximum - d2c1$maximum, 3 )
+round( d1c1$maximum - d1c2$maximum, 3 )
 
 d1cS <- censReg( y ~ x1 + x2, data = pData, method = "BFGSR", 
    start = randEffBfgsr$start, iterlim = 0 )
@@ -205,7 +206,7 @@ d1cS$gradient - d2cS$gradient
 nDataUnb <- nData[ -c( 2, 5, 6, 8 ), ]
 pDataUnb <- pdata.frame( nDataUnb, c( "id", "time" ) )
 randEffBfgsrUnb <- censReg( y ~ x1 + x2, data = pDataUnb, method = "BFGSR" )
-print( randEffBfgsrUnb )
+print( randEffBfgsrUnb, digits = 1 )
 print( maxLik:::summary.maxLik( randEffBfgsrUnb ), digits = 1 )
 print( summary( randEffBfgsrUnb ), digits = 1 )
 logLik( randEffBfgsrUnb )
@@ -220,7 +221,7 @@ pDataNa$y[ obsNa[ 1:2 ] ] <- NA
 pDataNa$x1[ obsNa[ 3 ] ] <- NA
 pDataNa$x2[ obsNa[ c( 1, 2, 4 ) ] ] <- NA
 randEffBfgsrNa <- censReg( y ~ x1 + x2, data = pDataNa, method = "BFGSR" )
-all.equal( randEffBfgsrNa[ -13 ], randEffBfgsrUnb[ -13 ] )
+all.equal( randEffBfgsrNa[ -14 ], randEffBfgsrUnb[ -14 ] )
 
 
 # returning log-likelihood contributions only (no estimations)
@@ -230,7 +231,8 @@ print( logLikRandEff, digits = 1 )
 all.equal( sum( logLikRandEff ), c( logLik( randEff ) ) )
 logLikStart <- censReg( y ~ x1 + x2, data = pData, 
    start = c( -0.4, 1.7, 2.2, -0.1, -0.01 ), logLikOnly = TRUE )
-print( logLikStart )
+print( round( c( logLikStart ), 3 ) )
+print( round( attr( logLikStart, "gradient" ), 2 ) )
 
 
 

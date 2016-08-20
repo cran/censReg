@@ -1,5 +1,5 @@
-margEff.censReg <- function( object, calcVCov = TRUE, returnJacobian = FALSE, 
-      ... ) {
+margEff.censReg <- function( object, xValues = NULL,
+    calcVCov = TRUE, returnJacobian = FALSE, ... ) {
    ## calculate marginal effects on E[y] at the mean explanatory variables
    allPar <- coef( object, logSigma = FALSE )
 
@@ -14,13 +14,26 @@ margEff.censReg <- function( object, calcVCov = TRUE, returnJacobian = FALSE,
 
    sigma <- allPar[ "sigma" ]
    beta <- allPar[ ! names( allPar ) %in% c( "sigma" ) ]
-   if( length( object$xMean ) != length( beta ) ){
-      print( beta )
-      print( object$xMean )
-      stop( "cannot calculate marginal effects due to an internal error:",
-               " please contact the maintainer of this package" )
+   if( is.null( xValues ) ) {
+      xValues <- object$xMean
+      if( length( xValues ) != length( beta ) ){
+         print( beta )
+         print( xValues )
+         print( object$xMean )
+         stop( "cannot calculate marginal effects due to an internal error:",
+            " please contact the maintainer of this package" )
+      }
+   } else if( !is.vector( xValues ) ) {
+      stop( "argument 'xValues' must be a vector" )
+   } else if( length( xValues ) != length( beta ) ) {
+      stop( "argument 'xValues' must be a vector with the number of elements",
+         " equal to the number of estimated coefficients without sigma (",
+         length( beta ), ")" )
+   } else {
+      names( xValues ) <- names( object$xMean )
    }
-   xBeta <- crossprod( object$xMean, beta )
+   
+   xBeta <- crossprod( xValues, beta )
    zRight <- ( object$right - xBeta ) / sigma
    zLeft <- ( object$left - xBeta ) / sigma
    result <- beta[ ! names( beta ) %in% c( "(Intercept)" ) ] * 
@@ -37,7 +50,7 @@ margEff.censReg <- function( object, calcVCov = TRUE, returnJacobian = FALSE,
          for( k in names( allPar )[ -length( allPar ) ] ) {
             jac[ j, k ] <- 
                ( j == k ) * ( pnorm( zRight ) - pnorm( zLeft ) ) -
-               ( beta[ j ] * object$xMean[ k ] / sigma ) *
+               ( beta[ j ] * xValues[ k ] / sigma ) *
                ( dnorm( zRight ) - dnorm( zLeft ) )
          }
          jac[ j, "sigma"] <- 0
