@@ -1,6 +1,6 @@
 
-R version 3.3.1 (2016-06-21) -- "Bug in Your Hair"
-Copyright (C) 2016 The R Foundation for Statistical Computing
+R version 3.3.3 (2017-03-06) -- "Another Canoe"
+Copyright (C) 2017 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -24,26 +24,144 @@ Henningsen, Arne and Toomet, Ott (2011). maxLik: A package for maximum likelihoo
 
 If you have questions, suggestions, or comments regarding the 'maxLik' package, please use a forum or 'tracker' at maxLik's R-Forge site:
 https://r-forge.r-project.org/projects/maxlik/
+
+Please cite the 'censReg' package as:
+Henningsen, Arne (2017). censReg: Censored Regression (Tobit) Models. R package version 0.5. http://CRAN.R-Project.org/package=censReg.
+
+If you have questions, suggestions, or comments regarding the 'censReg' package, please use a forum or 'tracker' at the R-Forge site of the 'sampleSelection' project:
+https://r-forge.r-project.org/projects/sampleselection/
 > library( "plm" )
 Loading required package: Formula
 > 
+> # load outputs that were previously produced by this script 
+> saved <- new.env()
+> load( "censRegPanelTest.RData.save", envir = saved )
+> 
 > options( digits = 5 )
 > 
-> printAll <- function( x ) {
-+    for( n in names( x ) ) {
-+       cat( "$", n, "\n", sep = "" )
-+       if( n %in% c( "estimate", "gradientObs" ) ) {
-+          print( round( x[[ n ]], 2 ) )
-+       } else if( n %in% c( "hessian" ) ) {
-+          print( round( x[[ n ]], 1 ) )
-+       } else if( n %in% c( "gradient" ) ) {
-+       } else if( ! n %in% c( "last.step" ) ) {
-+          print( x[[ n ]] )
+> printAll <- function( objName, what = "print" ) {
++    cat( "Comparing new object '", objName, "' to previously saved object...",
++       sep = "" )
++    x <- get( objName )
++    if( !exists( objName, envir = saved, inherits = FALSE ) ) {
++       cat( " previously saved object not found\n" )
++    } else {
++       xSaved <- get( objName, envir = saved, inherits = FALSE )
++       if( !isTRUE( all.equal( class( x ), class( xSaved ) ) ) ) {
++          cat( " different classes:\n" )
++          cat( "new:\n" )
++          print( class( x ) )
++          cat( "saved:\n" )
++          print( class( xSaved ) )
++       } else if( !isTRUE( all.equal( names( x ), names( xSaved ) ) ) ) {
++          cat( " different names:\n" )
++          cat( "new:\n" )
++          print( names( x ) )
++          cat( "saved:\n" )
++          print( names( xSaved ) )
++       } else {
++          cat( "\n" )
 +       }
-+       cat( "\n" )
++       for( n in names( x ) ) {
++          if( ! n %in% c( "code", "gradient", "iterations", "last.step",
++                "message" ) ) {
++             cat( "   comparing component '", n, "' ...", sep = "" )
++             testRes <-  all.equal( x[[ n ]], xSaved[[ n ]], tol = 5e-3 )
++             if( isTRUE( testRes ) ) {
++                cat( " OK\n" )
++             } else {
++                cat( " different\n" )
++                print( testRes )
++                cat( "new:\n" )
++                print( x[[ n ]] )
++                cat( "saved:\n" )
++                print( xSaved[[ n ]] )
++             }
++          }
++       }
 +    }
-+    cat( "class\n" )
-+    print( class( x ) )
++    
++    for( mName in c( "Coef", "CoefNoLs", "Vcov", "VcovNoLs",
++          "CoefSum", "CoefSumNoLs", "LogLik", "Nobs", "ExtractAIC" ) ) {
++       cat( "   comparing method '", mName, "' ...", sep = "" )
++       if( mName == "Coef" ) {
++          xm <- coef( x )
++       } else if( mName == "CoefNoLs" ) {
++          xm <- coef( x, logSigma = FALSE )
++       } else if( mName == "Vcov" ) {
++          xm <- vcov( x )
++       } else if( mName == "VcovNoLs" ) {
++          xm <- vcov( x, logSigma = FALSE )
++       } else if( mName == "CoefSum" ) {
++          xm <- coef( summary( x ) )
++       } else if( mName == "CoefSumNoLs" ) {
++          xm <- coef( summary( x ), logSigma = FALSE )
++       } else if( mName == "LogLik" ) {
++          xm <- logLik( x )
++       } else if( mName == "Nobs" ) {
++          xm <- nobs( x )
++       } else if( mName == "ExtractAIC" ) {
++          xm <- extractAIC( x )
++       } else {
++          stop( "unknown value of 'mName': ", mName )
++       }
++       methodObjName <- paste0( objName, mName )
++       if( !exists( methodObjName, envir = saved, inherits = FALSE ) ) {
++          cat( " previously saved object not found\n" )
++       } else {
++          xmSaved <- get( methodObjName, envir = saved, inherits = FALSE )
++          testRes <- all.equal( xm, xmSaved, tol = 5e-3 )
++          if( isTRUE( testRes ) ) {
++             cat( " OK\n" )
++          } else {
++             cat( " different\n" )
++             print( testRes )
++             cat( "new:\n" )
++             print( xm )
++             cat( "saved:\n" )
++             print( xmSaved )
++          }
++       }
++       # assign to parent frame so that it will be included in the saved workspace
++       assign( methodObjName, xm, envir = parent.frame() )
++    }
++       
++    if( what %in% c( "print", "methods", "all" ) ) {
++       print( x, digits = 1 )
++       print( x, logSigma = FALSE , digits = 1 )
++       print( maxLik:::summary.maxLik( x ), digits = 1 )
++       print( summary( x ), digits = 1 )
++       print( summary( x ), logSigma = FALSE , digits = 1 )
++    }
++    if( what %in% c( "methods", "all" ) ) {
++       print( round( coef( x ), 2 ) )
++       print( round( coef( x, logSigma = FALSE ), 2 ) )
++       print( round( vcov( x ), 2 ) )
++       print( round( vcov( x, logSigma = FALSE ), 2 ) )
++       print( round( coef( summary( x ) ), 2 ) )
++       print( round( coef( summary( x ), logSigma = FALSE ), 2 ) )
++       try( margEff( x ) )
++       print( logLik( x ) )
++       print( nobs( x ) )
++       print( extractAIC( x ) )
++    }
++    
++    if( what == "all" ) {
++       for( n in names( x ) ) {
++          cat( "$", n, "\n", sep = "" )
++          if( n %in% c( "estimate", "gradientObs" ) ) {
++             print( round( x[[ n ]], 2 ) )
++          } else if( n %in% c( "hessian" ) ) {
++             print( round( x[[ n ]], 1 ) )
++          } else if( n %in% c( "gradient" ) ) {
++          } else if( ! n %in% c( "last.step" ) ) {
++             print( x[[ n ]] )
++          }
++          cat( "\n" )
++       }
++       cat( "class\n" )
++       print( class( x ) )
++    }
 + }
 > 
 > nId <- 15
@@ -64,7 +182,32 @@ Loading required package: Formula
 > 
 > ## Newton-Raphson method
 > randEff <- censReg( y ~ x1 + x2, data = pData )
-> print( randEff, digits = 1 )
+> printAll( "randEff" )
+Comparing new object 'randEff' to previously saved object...
+   comparing component 'maximum' ... OK
+   comparing component 'estimate' ... OK
+   comparing component 'hessian' ... OK
+   comparing component 'fixed' ... OK
+   comparing component 'type' ... OK
+   comparing component 'gradientObs' ... OK
+   comparing component 'control' ... OK
+   comparing component 'xMean' ... OK
+   comparing component 'call' ... OK
+   comparing component 'terms' ... OK
+   comparing component 'nObs' ... OK
+   comparing component 'df.residual' ... OK
+   comparing component 'start' ... OK
+   comparing component 'left' ... OK
+   comparing component 'right' ... OK
+   comparing method 'Coef' ... OK
+   comparing method 'CoefNoLs' ... OK
+   comparing method 'Vcov' ... OK
+   comparing method 'VcovNoLs' ... OK
+   comparing method 'CoefSum' ... OK
+   comparing method 'CoefSumNoLs' ... OK
+   comparing method 'LogLik' ... OK
+   comparing method 'Nobs' ... OK
+   comparing method 'ExtractAIC' ... OK
 
 Call:
 censReg(formula = y ~ x1 + x2, data = pData)
@@ -73,7 +216,6 @@ Coefficients:
 (Intercept)          x1          x2  logSigmaMu  logSigmaNu 
       -0.37        1.68        2.24       -0.13       -0.01 
 
-> print( randEff, logSigma = FALSE , digits = 1 )
 
 Call:
 censReg(formula = y ~ x1 + x2, data = pData)
@@ -82,7 +224,6 @@ Coefficients:
 (Intercept)          x1          x2     sigmaMu     sigmaNu 
        -0.4         1.7         2.2         0.9         1.0 
 
-> print( maxLik:::summary.maxLik( randEff ), digits = 1 )
 --------------------------------------------
 Maximum Likelihood estimation
 Newton-Raphson maximisation, 5 iterations
@@ -99,7 +240,6 @@ logSigmaNu     -0.01       0.13    -0.1     0.9
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 --------------------------------------------
-> print( summary( randEff ), digits = 1 )
 
 Call:
 censReg(formula = y ~ x1 + x2, data = pData)
@@ -122,7 +262,6 @@ Newton-Raphson maximisation, 5 iterations
 Return code 1: gradient close to zero
 Log-likelihood: -73.199 on 5 Df
 
-> print( summary( randEff ), logSigma = FALSE , digits = 1 )
 
 Call:
 censReg(formula = y ~ x1 + x2, data = pData)
@@ -145,181 +284,39 @@ Newton-Raphson maximisation, 5 iterations
 Return code 1: gradient close to zero
 Log-likelihood: -73.199 on 5 Df
 
-> round( coef( randEff ), 2 )
-(Intercept)          x1          x2  logSigmaMu  logSigmaNu 
-      -0.37        1.68        2.24       -0.13       -0.01 
-> round( coef( randEff, logSigma = FALSE ), 2 )
-(Intercept)          x1          x2     sigmaMu     sigmaNu 
-      -0.37        1.68        2.24        0.88        0.99 
-> round( vcov( randEff ), 2 )
-            (Intercept)    x1    x2 logSigmaMu logSigmaNu
-(Intercept)        0.23 -0.02 -0.25      -0.02       0.00
-x1                -0.02  0.04  0.01       0.01       0.00
-x2                -0.25  0.01  0.45       0.02       0.00
-logSigmaMu        -0.02  0.01  0.02       0.07       0.00
-logSigmaNu         0.00  0.00  0.00       0.00       0.02
-> round( vcov( randEff, logSigma = FALSE ), 2 )
-            (Intercept)    x1    x2 sigmaMu sigmaNu
-(Intercept)        0.23 -0.02 -0.25   -0.02    0.00
-x1                -0.02  0.04  0.01    0.01    0.00
-x2                -0.25  0.01  0.45    0.02    0.00
-sigmaMu           -0.02  0.01  0.02    0.05    0.00
-sigmaNu            0.00  0.00  0.00    0.00    0.02
-> round( coef( summary( randEff ) ), 2 )
-            Estimate Std. error t value Pr(> t)
-(Intercept)    -0.37       0.47   -0.77    0.44
-x1              1.68       0.21    8.03    0.00
-x2              2.24       0.67    3.32    0.00
-logSigmaMu     -0.13       0.26   -0.50    0.62
-logSigmaNu     -0.01       0.13   -0.10    0.92
-> round( coef( summary( randEff ), logSigma = FALSE ), 2 )
-            Estimate Std. error t value Pr(> t)
-(Intercept)    -0.37       0.47   -0.77    0.44
-x1              1.68       0.21    8.03    0.00
-x2              2.24       0.67    3.32    0.00
-sigmaMu         0.88       0.23    3.87    0.00
-sigmaNu         0.99       0.13    7.71    0.00
 > try( margEff( randEff ) )
 Error in margEff.censReg(randEff) : 
   the margEff() method for objects of class 'censReg' can not yet be used for panel data models
-> logLik( randEff )
-'log Lik.' -73.199 (df=5)
-> nobs( randEff )
-[1] 60
-> extractAIC( randEff )
-[1] -40.0 156.4
-> printAll( randEff )
-$maximum
-[1] -73.199
-
-$estimate
-(Intercept)          x1          x2  logSigmaMu  logSigmaNu 
-      -0.37        1.68        2.24       -0.13       -0.01 
-
-$gradient
-
-$hessian
-            (Intercept)    x1   x2 logSigmaMu logSigmaNu
-(Intercept)       -13.3  -4.1 -7.3       -2.1       -1.3
-x1                 -4.1 -26.1 -2.0        4.5        4.8
-x2                 -7.3  -2.0 -6.2       -0.6       -0.5
-logSigmaMu         -2.1   4.5 -0.6      -16.7       -3.7
-logSigmaNu         -1.3   4.8 -0.5       -3.7      -61.1
-
-$code
-[1] 1
-
-$message
-[1] "gradient close to zero"
-
-$last.step
-
-$fixed
-(Intercept)          x1          x2  logSigmaMu  logSigmaNu 
-      FALSE       FALSE       FALSE       FALSE       FALSE 
-
-$iterations
-[1] 5
-
-$type
-[1] "Newton-Raphson maximisation"
-
-$gradientObs
-      (Intercept)    x1    x2 logSigmaMu logSigmaNu
- [1,]       -0.85  0.23 -0.07      -0.14      -0.96
- [2,]       -1.70  0.05 -1.19       1.68      -1.01
- [3,]        1.75  0.33  1.73       1.84       1.80
- [4,]        0.16 -0.20 -0.43      -0.69      -1.44
- [5,]        0.13  0.98  0.69      -0.68      -0.55
- [6,]        0.33 -0.31  0.38      -0.49      -1.58
- [7,]       -0.08 -3.19 -0.24      -0.68       6.03
- [8,]       -0.27  0.38  0.06      -0.54      -1.11
- [9,]        1.15  0.59  0.30       0.13      -1.62
-[10,]       -0.44 -0.41 -0.15      -0.47      -1.94
-[11,]       -0.03  1.45 -0.64      -0.92       2.73
-[12,]        1.21  0.54  0.61       0.21      -1.74
-[13,]        0.54 -0.23  0.33      -0.37      -1.41
-[14,]       -1.81 -1.31 -0.92       1.96       2.58
-[15,]       -0.08  1.09 -0.46      -0.84       0.20
-
-$control
-A 'MaxControl' object with slots:
-tol = 1e-08 
-reltol = 1.4901e-08 
-gradtol = 1e-06 
-steptol = 1e-10 
-lambdatol = 1e-06 
-qrtol = 1e-10 
-qac = stephalving 
-marquardt_lambda0 = 0.01 
-marquardt_lambdaStep = 2 
-marquardt_maxLambda = 1e+12 
-nm_alpha = 1 
-nm_beta = 0.5 
-nm_gamma = 2 
-sann_cand = <default Gaussian Markov kernel>
-sann_temp = 10 
-sann_tmax = 10 
-sann_randomSeed = 123 
-iterlim = 150 
-printLevel = 0 
-
-$xMean
-(Intercept)          x1          x2 
-  1.0000000  -0.0051594   0.5041407 
-
-$call
-censReg(formula = y ~ x1 + x2, data = pData)
-
-$terms
-y ~ x1 + x2
-attr(,"variables")
-list(y, x1, x2)
-attr(,"factors")
-   x1 x2
-y   0  0
-x1  1  0
-x2  0  1
-attr(,"term.labels")
-[1] "x1" "x2"
-attr(,"order")
-[1] 1 1
-attr(,"intercept")
-[1] 1
-attr(,"response")
-[1] 1
-attr(,".Environment")
-<environment: R_GlobalEnv>
-attr(,"predvars")
-list(y, x1, x2)
-attr(,"dataClasses")
-        y        x1        x2 
-"numeric" "numeric" "numeric" 
-
-$nObs
-         Total  Left-censored     Uncensored Right-censored 
-            60             20             40              0 
-
-$df.residual
-[1] 55
-
-$start
-(Intercept)          x1          x2  logSigmaMu  logSigmaNu 
-   0.470351    1.011160    1.619183   -0.496251   -0.062096 
-
-$left
-[1] 0
-
-$right
-[1] Inf
-
-class
-[1] "censReg" "maxLik"  "maxim"   "list"   
 > 
 > 
 > ## BHHH method
 > randEffBhhh <- censReg( y ~ x1 + x2, data = pData, method = "BHHH" )
-> print( randEffBhhh, digits = 1 )
+> printAll( "randEffBhhh" )
+Comparing new object 'randEffBhhh' to previously saved object...
+   comparing component 'maximum' ... OK
+   comparing component 'estimate' ... OK
+   comparing component 'hessian' ... OK
+   comparing component 'fixed' ... OK
+   comparing component 'type' ... OK
+   comparing component 'gradientObs' ... OK
+   comparing component 'control' ... OK
+   comparing component 'xMean' ... OK
+   comparing component 'call' ... OK
+   comparing component 'terms' ... OK
+   comparing component 'nObs' ... OK
+   comparing component 'df.residual' ... OK
+   comparing component 'start' ... OK
+   comparing component 'left' ... OK
+   comparing component 'right' ... OK
+   comparing method 'Coef' ... OK
+   comparing method 'CoefNoLs' ... OK
+   comparing method 'Vcov' ... OK
+   comparing method 'VcovNoLs' ... OK
+   comparing method 'CoefSum' ... OK
+   comparing method 'CoefSumNoLs' ... OK
+   comparing method 'LogLik' ... OK
+   comparing method 'Nobs' ... OK
+   comparing method 'ExtractAIC' ... OK
 
 Call:
 censReg(formula = y ~ x1 + x2, data = pData, method = "BHHH")
@@ -328,7 +325,14 @@ Coefficients:
 (Intercept)          x1          x2  logSigmaMu  logSigmaNu 
       -0.37        1.68        2.24       -0.13       -0.01 
 
-> print( maxLik:::summary.maxLik( randEffBhhh ), digits = 1 )
+
+Call:
+censReg(formula = y ~ x1 + x2, data = pData, method = "BHHH")
+
+Coefficients:
+(Intercept)          x1          x2     sigmaMu     sigmaNu 
+       -0.4         1.7         2.2         0.9         1.0 
+
 --------------------------------------------
 Maximum Likelihood estimation
 BHHH maximisation, 14 iterations
@@ -345,7 +349,6 @@ logSigmaNu     -0.01       0.14    -0.1   0.930
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 --------------------------------------------
-> print( summary( randEffBhhh ), digits = 1 )
 
 Call:
 censReg(formula = y ~ x1 + x2, data = pData, method = "BHHH")
@@ -368,140 +371,59 @@ BHHH maximisation, 14 iterations
 Return code 2: successive function values within tolerance limit
 Log-likelihood: -73.199 on 5 Df
 
-> printAll( randEffBhhh )
-$maximum
-[1] -73.199
 
-$estimate
-(Intercept)          x1          x2  logSigmaMu  logSigmaNu 
-      -0.37        1.68        2.24       -0.13       -0.01 
-
-$gradient
-
-$hessian
-            (Intercept)    x1   x2 logSigmaMu logSigmaNu
-(Intercept)       -13.5  -4.1 -8.3        2.7        4.0
-x1                 -4.1 -17.4 -2.2        2.1       19.0
-x2                 -8.3  -2.2 -7.3       -0.2        3.4
-logSigmaMu          2.7   2.1 -0.2      -13.9       -3.6
-logSigmaNu          4.0  19.0  3.4       -3.6      -73.2
-attr(,"type")
-[1] "BHHH"
-
-$code
-[1] 2
-
-$message
-[1] "successive function values within tolerance limit"
-
-$last.step
-
-$fixed
-(Intercept)          x1          x2  logSigmaMu  logSigmaNu 
-      FALSE       FALSE       FALSE       FALSE       FALSE 
-
-$iterations
-[1] 14
-
-$type
-[1] "BHHH maximisation"
-
-$gradientObs
-      (Intercept)    x1    x2 logSigmaMu logSigmaNu
- [1,]       -0.85  0.23 -0.07      -0.14      -0.96
- [2,]       -1.70  0.05 -1.19       1.68      -1.01
- [3,]        1.75  0.33  1.73       1.84       1.81
- [4,]        0.16 -0.20 -0.43      -0.69      -1.44
- [5,]        0.13  0.98  0.69      -0.68      -0.55
- [6,]        0.33 -0.31  0.38      -0.49      -1.58
- [7,]       -0.08 -3.18 -0.24      -0.68       6.03
- [8,]       -0.27  0.38  0.06      -0.54      -1.11
- [9,]        1.15  0.59  0.30       0.13      -1.62
-[10,]       -0.44 -0.41 -0.15      -0.47      -1.94
-[11,]       -0.03  1.45 -0.64      -0.92       2.73
-[12,]        1.21  0.54  0.61       0.21      -1.74
-[13,]        0.54 -0.23  0.33      -0.37      -1.41
-[14,]       -1.82 -1.31 -0.92       1.96       2.58
-[15,]       -0.08  1.08 -0.46      -0.84       0.20
-
-$control
-A 'MaxControl' object with slots:
-tol = 1e-08 
-reltol = 1.4901e-08 
-gradtol = 1e-06 
-steptol = 1e-10 
-lambdatol = 1e-06 
-qrtol = 1e-10 
-qac = stephalving 
-marquardt_lambda0 = 0.01 
-marquardt_lambdaStep = 2 
-marquardt_maxLambda = 1e+12 
-nm_alpha = 1 
-nm_beta = 0.5 
-nm_gamma = 2 
-sann_cand = <default Gaussian Markov kernel>
-sann_temp = 10 
-sann_tmax = 10 
-sann_randomSeed = 123 
-iterlim = 150 
-printLevel = 0 
-
-$xMean
-(Intercept)          x1          x2 
-  1.0000000  -0.0051594   0.5041407 
-
-$call
+Call:
 censReg(formula = y ~ x1 + x2, data = pData, method = "BHHH")
 
-$terms
-y ~ x1 + x2
-attr(,"variables")
-list(y, x1, x2)
-attr(,"factors")
-   x1 x2
-y   0  0
-x1  1  0
-x2  0  1
-attr(,"term.labels")
-[1] "x1" "x2"
-attr(,"order")
-[1] 1 1
-attr(,"intercept")
-[1] 1
-attr(,"response")
-[1] 1
-attr(,".Environment")
-<environment: R_GlobalEnv>
-attr(,"predvars")
-list(y, x1, x2)
-attr(,"dataClasses")
-        y        x1        x2 
-"numeric" "numeric" "numeric" 
-
-$nObs
+Observations:
          Total  Left-censored     Uncensored Right-censored 
             60             20             40              0 
 
-$df.residual
-[1] 55
+Coefficients:
+            Estimate Std. error t value Pr(> t)    
+(Intercept)     -0.4        0.6    -0.7   0.510    
+x1               1.7        0.3     5.7   1e-08 ***
+x2               2.2        0.7     3.1   0.002 ** 
+sigmaMu          0.9        0.3     3.4   7e-04 ***
+sigmaNu          1.0        0.1     7.1   1e-12 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-$start
-(Intercept)          x1          x2  logSigmaMu  logSigmaNu 
-   0.470351    1.011160    1.619183   -0.496251   -0.062096 
+BHHH maximisation, 14 iterations
+Return code 2: successive function values within tolerance limit
+Log-likelihood: -73.199 on 5 Df
 
-$left
-[1] 0
-
-$right
-[1] Inf
-
-class
-[1] "censReg" "maxLik"  "maxim"   "list"   
 > 
 > 
 > ## BFGS method (optim)
 > randEffBfgs <- censReg( y ~ x1 + x2, data = pData, method = "BFGS" )
-> print( randEffBfgs, digits = 1 )
+> printAll( "randEffBfgs" )
+Comparing new object 'randEffBfgs' to previously saved object...
+   comparing component 'maximum' ... OK
+   comparing component 'estimate' ... OK
+   comparing component 'hessian' ... OK
+   comparing component 'fixed' ... OK
+   comparing component 'type' ... OK
+   comparing component 'constraints' ... OK
+   comparing component 'gradientObs' ... OK
+   comparing component 'control' ... OK
+   comparing component 'xMean' ... OK
+   comparing component 'call' ... OK
+   comparing component 'terms' ... OK
+   comparing component 'nObs' ... OK
+   comparing component 'df.residual' ... OK
+   comparing component 'start' ... OK
+   comparing component 'left' ... OK
+   comparing component 'right' ... OK
+   comparing method 'Coef' ... OK
+   comparing method 'CoefNoLs' ... OK
+   comparing method 'Vcov' ... OK
+   comparing method 'VcovNoLs' ... OK
+   comparing method 'CoefSum' ... OK
+   comparing method 'CoefSumNoLs' ... OK
+   comparing method 'LogLik' ... OK
+   comparing method 'Nobs' ... OK
+   comparing method 'ExtractAIC' ... OK
 
 Call:
 censReg(formula = y ~ x1 + x2, data = pData, method = "BFGS")
@@ -510,7 +432,14 @@ Coefficients:
 (Intercept)          x1          x2  logSigmaMu  logSigmaNu 
       -0.37        1.68        2.24       -0.13       -0.01 
 
-> print( maxLik:::summary.maxLik( randEffBfgs ), digits = 1 )
+
+Call:
+censReg(formula = y ~ x1 + x2, data = pData, method = "BFGS")
+
+Coefficients:
+(Intercept)          x1          x2     sigmaMu     sigmaNu 
+       -0.4         1.7         2.2         0.9         1.0 
+
 --------------------------------------------
 Maximum Likelihood estimation
 BFGS maximization, 25 iterations
@@ -527,7 +456,6 @@ logSigmaNu     -0.01       0.13    -0.1     0.9
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 --------------------------------------------
-> print( summary( randEffBfgs ), digits = 1 )
 
 Call:
 censReg(formula = y ~ x1 + x2, data = pData, method = "BFGS")
@@ -550,323 +478,89 @@ BFGS maximization, 25 iterations
 Return code 0: successful convergence 
 Log-likelihood: -73.199 on 5 Df
 
-> printAll( randEffBfgs )
-$maximum
-[1] -73.199
 
-$estimate
-(Intercept)          x1          x2  logSigmaMu  logSigmaNu 
-      -0.37        1.68        2.24       -0.13       -0.01 
-
-$gradient
-
-$hessian
-            (Intercept)    x1   x2 logSigmaMu logSigmaNu
-(Intercept)       -13.3  -4.1 -7.3       -2.1       -1.3
-x1                 -4.1 -26.1 -2.0        4.5        4.8
-x2                 -7.3  -2.0 -6.2       -0.6       -0.5
-logSigmaMu         -2.1   4.5 -0.6      -16.7       -3.7
-logSigmaNu         -1.3   4.8 -0.5       -3.7      -61.1
-
-$code
-[1] 0
-
-$message
-[1] "successful convergence "
-
-$last.step
-
-$fixed
-(Intercept)          x1          x2  logSigmaMu  logSigmaNu 
-      FALSE       FALSE       FALSE       FALSE       FALSE 
-
-$iterations
-function 
-      25 
-
-$type
-[1] "BFGS maximization"
-
-$constraints
-NULL
-
-$gradientObs
-      (Intercept)    x1    x2 logSigmaMu logSigmaNu
- [1,]       -0.85  0.23 -0.07      -0.14      -0.96
- [2,]       -1.70  0.05 -1.19       1.68      -1.01
- [3,]        1.75  0.33  1.73       1.84       1.80
- [4,]        0.16 -0.20 -0.43      -0.69      -1.44
- [5,]        0.13  0.98  0.69      -0.68      -0.55
- [6,]        0.33 -0.31  0.38      -0.49      -1.58
- [7,]       -0.08 -3.19 -0.24      -0.68       6.03
- [8,]       -0.27  0.38  0.06      -0.54      -1.11
- [9,]        1.15  0.59  0.30       0.13      -1.62
-[10,]       -0.44 -0.41 -0.15      -0.47      -1.94
-[11,]       -0.03  1.45 -0.64      -0.92       2.74
-[12,]        1.21  0.54  0.61       0.21      -1.74
-[13,]        0.54 -0.23  0.33      -0.37      -1.41
-[14,]       -1.81 -1.31 -0.92       1.96       2.58
-[15,]       -0.08  1.09 -0.46      -0.84       0.20
-
-$control
-A 'MaxControl' object with slots:
-tol = 1e-08 
-reltol = 1.4901e-08 
-gradtol = 1e-06 
-steptol = 1e-10 
-lambdatol = 1e-06 
-qrtol = 1e-10 
-qac = stephalving 
-marquardt_lambda0 = 0.01 
-marquardt_lambdaStep = 2 
-marquardt_maxLambda = 1e+12 
-nm_alpha = 1 
-nm_beta = 0.5 
-nm_gamma = 2 
-sann_cand = <default Gaussian Markov kernel>
-sann_temp = 10 
-sann_tmax = 10 
-sann_randomSeed = 123 
-iterlim = 200 
-printLevel = 0 
-
-$xMean
-(Intercept)          x1          x2 
-  1.0000000  -0.0051594   0.5041407 
-
-$call
+Call:
 censReg(formula = y ~ x1 + x2, data = pData, method = "BFGS")
 
-$terms
-y ~ x1 + x2
-attr(,"variables")
-list(y, x1, x2)
-attr(,"factors")
-   x1 x2
-y   0  0
-x1  1  0
-x2  0  1
-attr(,"term.labels")
-[1] "x1" "x2"
-attr(,"order")
-[1] 1 1
-attr(,"intercept")
-[1] 1
-attr(,"response")
-[1] 1
-attr(,".Environment")
-<environment: R_GlobalEnv>
-attr(,"predvars")
-list(y, x1, x2)
-attr(,"dataClasses")
-        y        x1        x2 
-"numeric" "numeric" "numeric" 
-
-$nObs
+Observations:
          Total  Left-censored     Uncensored Right-censored 
             60             20             40              0 
 
-$df.residual
-[1] 55
+Coefficients:
+            Estimate Std. error t value Pr(> t)    
+(Intercept)     -0.4        0.5    -0.8     0.4    
+x1               1.7        0.2     8.0   1e-15 ***
+x2               2.2        0.7     3.3   9e-04 ***
+sigmaMu          0.9        0.2     3.9   1e-04 ***
+sigmaNu          1.0        0.1     7.7   1e-14 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-$start
-(Intercept)          x1          x2  logSigmaMu  logSigmaNu 
-   0.470351    1.011160    1.619183   -0.496251   -0.062096 
+BFGS maximization, 25 iterations
+Return code 0: successful convergence 
+Log-likelihood: -73.199 on 5 Df
 
-$left
-[1] 0
-
-$right
-[1] Inf
-
-class
-[1] "censReg" "maxLik"  "maxim"  
 > 
 > 
 > ## BFGS method (R)
 > randEffBfgsr <- censReg( y ~ x1 + x2, data = pData, method = "BFGSR" )
-> print( randEffBfgsr, digits = 1 )
-
-Call:
-censReg(formula = y ~ x1 + x2, data = pData, method = "BFGSR")
-
-Coefficients:
-(Intercept)          x1          x2  logSigmaMu  logSigmaNu 
-      -0.37        1.68        2.25       -0.13       -0.01 
-
-> print( maxLik:::summary.maxLik( randEffBfgsr ), digits = 1 )
---------------------------------------------
-Maximum Likelihood estimation
-BFGSR maximization, 77 iterations
-Return code 2: successive function values within tolerance limit
-Log-Likelihood: -73.199 
-5  free parameters
-Estimates:
-            Estimate Std. error t value Pr(> t)    
-(Intercept)    -0.37       0.47    -0.8     0.4    
-x1              1.68       0.21     8.0   1e-15 ***
-x2              2.25       0.67     3.3   9e-04 ***
-logSigmaMu     -0.13       0.26    -0.5     0.6    
-logSigmaNu     -0.01       0.13    -0.1     0.9    
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
---------------------------------------------
-> print( summary( randEffBfgsr ), digits = 1 )
-
-Call:
-censReg(formula = y ~ x1 + x2, data = pData, method = "BFGSR")
-
-Observations:
-         Total  Left-censored     Uncensored Right-censored 
-            60             20             40              0 
-
-Coefficients:
-            Estimate Std. error t value Pr(> t)    
-(Intercept)    -0.37       0.47    -0.8     0.4    
-x1              1.68       0.21     8.0   1e-15 ***
-x2              2.25       0.67     3.3   9e-04 ***
-logSigmaMu     -0.13       0.26    -0.5     0.6    
-logSigmaNu     -0.01       0.13    -0.1     0.9    
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-BFGSR maximization, 77 iterations
-Return code 2: successive function values within tolerance limit
-Log-likelihood: -73.199 on 5 Df
-
-> printAll( randEffBfgsr )
-$maximum
-[1] -73.199
-
-$estimate
-(Intercept)          x1          x2  logSigmaMu  logSigmaNu 
-      -0.37        1.68        2.25       -0.13       -0.01 
-
-$gradient
-
-$hessian
-            (Intercept)    x1   x2 logSigmaMu logSigmaNu
-(Intercept)       -13.3  -4.1 -7.3       -2.1       -1.3
-x1                 -4.1 -26.1 -2.0        4.5        4.8
-x2                 -7.3  -2.0 -6.2       -0.6       -0.4
-logSigmaMu         -2.1   4.5 -0.6      -16.7       -3.7
-logSigmaNu         -1.3   4.8 -0.4       -3.7      -61.1
-
-$code
-[1] 2
-
-$message
-[1] "successive function values within tolerance limit"
-
-$last.step
-
-$fixed
-(Intercept)          x1          x2  logSigmaMu  logSigmaNu 
-      FALSE       FALSE       FALSE       FALSE       FALSE 
-
-$iterations
-[1] 77
-
-$type
-[1] "BFGSR maximization"
-
-$gradientObs
-      (Intercept)    x1    x2 logSigmaMu logSigmaNu
- [1,]       -0.85  0.22 -0.07      -0.14      -0.97
- [2,]       -1.70  0.05 -1.19       1.68      -1.01
- [3,]        1.75  0.33  1.72       1.84       1.80
- [4,]        0.16 -0.20 -0.43      -0.69      -1.43
- [5,]        0.13  0.98  0.69      -0.68      -0.56
- [6,]        0.33 -0.31  0.38      -0.49      -1.58
- [7,]       -0.08 -3.19 -0.24      -0.68       6.03
- [8,]       -0.27  0.38  0.06      -0.54      -1.11
- [9,]        1.15  0.59  0.30       0.13      -1.62
-[10,]       -0.43 -0.40 -0.15      -0.47      -1.94
-[11,]       -0.03  1.45 -0.64      -0.92       2.74
-[12,]        1.21  0.54  0.61       0.20      -1.73
-[13,]        0.54 -0.23  0.33      -0.37      -1.41
-[14,]       -1.81 -1.31 -0.92       1.96       2.58
-[15,]       -0.08  1.09 -0.46      -0.84       0.21
-
-$control
-A 'MaxControl' object with slots:
-tol = 1e-08 
-reltol = 1.4901e-08 
-gradtol = 1e-06 
-steptol = 1e-10 
-lambdatol = 1e-06 
-qrtol = 1e-10 
-qac = stephalving 
-marquardt_lambda0 = 0.01 
-marquardt_lambdaStep = 2 
-marquardt_maxLambda = 1e+12 
-nm_alpha = 1 
-nm_beta = 0.5 
-nm_gamma = 2 
-sann_cand = <default Gaussian Markov kernel>
-sann_temp = 10 
-sann_tmax = 10 
-sann_randomSeed = 123 
-iterlim = 150 
-printLevel = 0 
-
-$xMean
-(Intercept)          x1          x2 
-  1.0000000  -0.0051594   0.5041407 
-
-$call
-censReg(formula = y ~ x1 + x2, data = pData, method = "BFGSR")
-
-$terms
-y ~ x1 + x2
-attr(,"variables")
-list(y, x1, x2)
-attr(,"factors")
-   x1 x2
-y   0  0
-x1  1  0
-x2  0  1
-attr(,"term.labels")
-[1] "x1" "x2"
-attr(,"order")
-[1] 1 1
-attr(,"intercept")
-[1] 1
-attr(,"response")
-[1] 1
-attr(,".Environment")
-<environment: R_GlobalEnv>
-attr(,"predvars")
-list(y, x1, x2)
-attr(,"dataClasses")
-        y        x1        x2 
-"numeric" "numeric" "numeric" 
-
-$nObs
-         Total  Left-censored     Uncensored Right-censored 
-            60             20             40              0 
-
-$df.residual
-[1] 55
-
-$start
-(Intercept)          x1          x2  logSigmaMu  logSigmaNu 
-   0.470351    1.011160    1.619183   -0.496251   -0.062096 
-
-$left
-[1] 0
-
-$right
-[1] Inf
-
-class
-[1] "censReg" "maxLik"  "maxim"   "list"   
+> printAll( "randEffBfgsr", what = "none" )
+Comparing new object 'randEffBfgsr' to previously saved object...
+   comparing component 'maximum' ... OK
+   comparing component 'estimate' ... OK
+   comparing component 'hessian' ... OK
+   comparing component 'fixed' ... OK
+   comparing component 'type' ... OK
+   comparing component 'gradientObs' ... OK
+   comparing component 'control' ... OK
+   comparing component 'xMean' ... OK
+   comparing component 'call' ... OK
+   comparing component 'terms' ... OK
+   comparing component 'nObs' ... OK
+   comparing component 'df.residual' ... OK
+   comparing component 'start' ... OK
+   comparing component 'left' ... OK
+   comparing component 'right' ... OK
+   comparing method 'Coef' ... OK
+   comparing method 'CoefNoLs' ... OK
+   comparing method 'Vcov' ... OK
+   comparing method 'VcovNoLs' ... OK
+   comparing method 'CoefSum' ... OK
+   comparing method 'CoefSumNoLs' ... OK
+   comparing method 'LogLik' ... OK
+   comparing method 'Nobs' ... OK
+   comparing method 'ExtractAIC' ... OK
 > 
 > 
 > ## BHHH with starting values
 > randEffBhhhStart <- censReg( y ~ x1 + x2, data = pData, method = "BHHH",
 +    start = c( -0.4, 1.7, 2.2, -0.1, -0.01 ) )
-> print( randEffBhhhStart, digits = 1 )
+> printAll( "randEffBhhhStart" )
+Comparing new object 'randEffBhhhStart' to previously saved object...
+   comparing component 'maximum' ... OK
+   comparing component 'estimate' ... OK
+   comparing component 'hessian' ... OK
+   comparing component 'fixed' ... OK
+   comparing component 'type' ... OK
+   comparing component 'gradientObs' ... OK
+   comparing component 'control' ... OK
+   comparing component 'xMean' ... OK
+   comparing component 'call' ... OK
+   comparing component 'terms' ... OK
+   comparing component 'nObs' ... OK
+   comparing component 'df.residual' ... OK
+   comparing component 'start' ... OK
+   comparing component 'left' ... OK
+   comparing component 'right' ... OK
+   comparing method 'Coef' ... OK
+   comparing method 'CoefNoLs' ... OK
+   comparing method 'Vcov' ... OK
+   comparing method 'VcovNoLs' ... OK
+   comparing method 'CoefSum' ... OK
+   comparing method 'CoefSumNoLs' ... OK
+   comparing method 'LogLik' ... OK
+   comparing method 'Nobs' ... OK
+   comparing method 'ExtractAIC' ... OK
 
 Call:
 censReg(formula = y ~ x1 + x2, data = pData, start = c(-0.4, 
@@ -876,7 +570,31 @@ Coefficients:
 (Intercept)          x1          x2  logSigmaMu  logSigmaNu 
       -0.37        1.68        2.24       -0.13       -0.01 
 
-> print( summary( randEffBhhhStart ), digits = 1 )
+
+Call:
+censReg(formula = y ~ x1 + x2, data = pData, start = c(-0.4, 
+    1.7, 2.2, -0.1, -0.01), method = "BHHH")
+
+Coefficients:
+(Intercept)          x1          x2     sigmaMu     sigmaNu 
+       -0.4         1.7         2.2         0.9         1.0 
+
+--------------------------------------------
+Maximum Likelihood estimation
+BHHH maximisation, 7 iterations
+Return code 2: successive function values within tolerance limit
+Log-Likelihood: -73.199 
+5  free parameters
+Estimates:
+            Estimate Std. error t value Pr(> t)    
+(Intercept)    -0.37       0.56    -0.7   0.510    
+x1              1.68       0.29     5.7   1e-08 ***
+x2              2.24       0.73     3.1   0.002 ** 
+logSigmaMu     -0.13       0.30    -0.4   0.661    
+logSigmaNu     -0.01       0.14    -0.1   0.929    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+--------------------------------------------
 
 Call:
 censReg(formula = y ~ x1 + x2, data = pData, start = c(-0.4, 
@@ -900,43 +618,95 @@ BHHH maximisation, 7 iterations
 Return code 2: successive function values within tolerance limit
 Log-likelihood: -73.199 on 5 Df
 
-> nobs( randEffBhhhStart )
-[1] 60
+
+Call:
+censReg(formula = y ~ x1 + x2, data = pData, start = c(-0.4, 
+    1.7, 2.2, -0.1, -0.01), method = "BHHH")
+
+Observations:
+         Total  Left-censored     Uncensored Right-censored 
+            60             20             40              0 
+
+Coefficients:
+            Estimate Std. error t value Pr(> t)    
+(Intercept)     -0.4        0.6    -0.7   0.510    
+x1               1.7        0.3     5.7   1e-08 ***
+x2               2.2        0.7     3.1   0.002 ** 
+sigmaMu          0.9        0.3     3.4   7e-04 ***
+sigmaNu          1.0        0.1     7.1   1e-12 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+BHHH maximisation, 7 iterations
+Return code 2: successive function values within tolerance limit
+Log-likelihood: -73.199 on 5 Df
+
 > 
 > 
 > ## left-censoring at 5
 > pData$yAdd <- pData$y + 5
-> randEffAdd <- censReg( yAdd ~ x1 + x2, data = pData, method = "BFGSR", left = 5 )
-> print( randEffAdd, digits = 1 )
+> randEffAdd <- censReg( yAdd ~ x1 + x2, data = pData, left = 5 )
+> printAll( "randEffAdd" )
+Comparing new object 'randEffAdd' to previously saved object...
+   comparing component 'maximum' ... OK
+   comparing component 'estimate' ... OK
+   comparing component 'hessian' ... OK
+   comparing component 'fixed' ... OK
+   comparing component 'type' ... OK
+   comparing component 'gradientObs' ... OK
+   comparing component 'control' ... OK
+   comparing component 'xMean' ... OK
+   comparing component 'call' ... OK
+   comparing component 'terms' ... OK
+   comparing component 'nObs' ... OK
+   comparing component 'df.residual' ... OK
+   comparing component 'start' ... OK
+   comparing component 'left' ... OK
+   comparing component 'right' ... OK
+   comparing method 'Coef' ... OK
+   comparing method 'CoefNoLs' ... OK
+   comparing method 'Vcov' ... OK
+   comparing method 'VcovNoLs' ... OK
+   comparing method 'CoefSum' ... OK
+   comparing method 'CoefSumNoLs' ... OK
+   comparing method 'LogLik' ... OK
+   comparing method 'Nobs' ... OK
+   comparing method 'ExtractAIC' ... OK
 
 Call:
-censReg(formula = yAdd ~ x1 + x2, left = 5, data = pData, method = "BFGSR")
+censReg(formula = yAdd ~ x1 + x2, left = 5, data = pData)
 
 Coefficients:
 (Intercept)          x1          x2  logSigmaMu  logSigmaNu 
-       4.63        1.68        2.25       -0.13       -0.01 
+       4.63        1.68        2.24       -0.13       -0.01 
 
-> print( maxLik:::summary.maxLik( randEffAdd ), digits = 1 )
+
+Call:
+censReg(formula = yAdd ~ x1 + x2, left = 5, data = pData)
+
+Coefficients:
+(Intercept)          x1          x2     sigmaMu     sigmaNu 
+        4.6         1.7         2.2         0.9         1.0 
+
 --------------------------------------------
 Maximum Likelihood estimation
-BFGSR maximization, 76 iterations
-Return code 2: successive function values within tolerance limit
+Newton-Raphson maximisation, 5 iterations
+Return code 1: gradient close to zero
 Log-Likelihood: -73.199 
 5  free parameters
 Estimates:
             Estimate Std. error t value Pr(> t)    
-(Intercept)     4.63       0.47     9.7  <2e-16 ***
+(Intercept)     4.63       0.47     9.8  <2e-16 ***
 x1              1.68       0.21     8.0   1e-15 ***
-x2              2.25       0.67     3.3   9e-04 ***
+x2              2.24       0.67     3.3   9e-04 ***
 logSigmaMu     -0.13       0.26    -0.5     0.6    
 logSigmaNu     -0.01       0.13    -0.1     0.9    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 --------------------------------------------
-> print( summary( randEffAdd ), digits = 1 )
 
 Call:
-censReg(formula = yAdd ~ x1 + x2, left = 5, data = pData, method = "BFGSR")
+censReg(formula = yAdd ~ x1 + x2, left = 5, data = pData)
 
 Observations:
          Total  Left-censored     Uncensored Right-censored 
@@ -944,209 +714,107 @@ Observations:
 
 Coefficients:
             Estimate Std. error t value Pr(> t)    
-(Intercept)     4.63       0.47     9.7  <2e-16 ***
+(Intercept)     4.63       0.47     9.8  <2e-16 ***
 x1              1.68       0.21     8.0   1e-15 ***
-x2              2.25       0.67     3.3   9e-04 ***
+x2              2.24       0.67     3.3   9e-04 ***
 logSigmaMu     -0.13       0.26    -0.5     0.6    
 logSigmaNu     -0.01       0.13    -0.1     0.9    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-BFGSR maximization, 76 iterations
-Return code 2: successive function values within tolerance limit
+Newton-Raphson maximisation, 5 iterations
+Return code 1: gradient close to zero
 Log-likelihood: -73.199 on 5 Df
 
-> round( coef( randEffAdd ), 2 )
-(Intercept)          x1          x2  logSigmaMu  logSigmaNu 
-       4.63        1.68        2.25       -0.13       -0.01 
-> round( coef( randEffAdd, logSigma = FALSE ), 2 )
-(Intercept)          x1          x2     sigmaMu     sigmaNu 
-       4.63        1.68        2.25        0.88        0.99 
-> round( vcov( randEffAdd ), 2 )
-            (Intercept)    x1    x2 logSigmaMu logSigmaNu
-(Intercept)        0.23 -0.02 -0.25      -0.02       0.00
-x1                -0.02  0.04  0.01       0.01       0.00
-x2                -0.25  0.01  0.45       0.02       0.00
-logSigmaMu        -0.02  0.01  0.02       0.07       0.00
-logSigmaNu         0.00  0.00  0.00       0.00       0.02
-> round( vcov( randEffAdd, logSigma = FALSE ), 2 )
-            (Intercept)    x1    x2 sigmaMu sigmaNu
-(Intercept)        0.23 -0.02 -0.25   -0.02    0.00
-x1                -0.02  0.04  0.01    0.01    0.00
-x2                -0.25  0.01  0.45    0.02    0.00
-sigmaMu           -0.02  0.01  0.02    0.05    0.00
-sigmaNu            0.00  0.00  0.00    0.00    0.02
-> logLik( randEffAdd )
-'log Lik.' -73.199 (df=5)
-> nobs( randEffAdd )
-[1] 60
-> extractAIC( randEffAdd )
-[1] -40.0 156.4
-> printAll( randEffAdd )
-$maximum
-[1] -73.199
 
-$estimate
-(Intercept)          x1          x2  logSigmaMu  logSigmaNu 
-       4.63        1.68        2.25       -0.13       -0.01 
+Call:
+censReg(formula = yAdd ~ x1 + x2, left = 5, data = pData)
 
-$gradient
-
-$hessian
-            (Intercept)    x1   x2 logSigmaMu logSigmaNu
-(Intercept)       -13.3  -4.1 -7.3       -2.1       -1.3
-x1                 -4.1 -26.1 -2.0        4.5        4.8
-x2                 -7.3  -2.0 -6.2       -0.6       -0.4
-logSigmaMu         -2.1   4.5 -0.6      -16.7       -3.7
-logSigmaNu         -1.3   4.8 -0.4       -3.7      -61.1
-
-$code
-[1] 2
-
-$message
-[1] "successive function values within tolerance limit"
-
-$last.step
-
-$fixed
-(Intercept)          x1          x2  logSigmaMu  logSigmaNu 
-      FALSE       FALSE       FALSE       FALSE       FALSE 
-
-$iterations
-[1] 76
-
-$type
-[1] "BFGSR maximization"
-
-$gradientObs
-      (Intercept)    x1    x2 logSigmaMu logSigmaNu
- [1,]       -0.85  0.22 -0.07      -0.14      -0.97
- [2,]       -1.70  0.05 -1.19       1.68      -1.01
- [3,]        1.75  0.33  1.73       1.84       1.80
- [4,]        0.16 -0.20 -0.43      -0.69      -1.43
- [5,]        0.13  0.98  0.69      -0.68      -0.56
- [6,]        0.33 -0.31  0.38      -0.49      -1.58
- [7,]       -0.08 -3.19 -0.24      -0.68       6.03
- [8,]       -0.27  0.38  0.06      -0.54      -1.11
- [9,]        1.15  0.59  0.30       0.13      -1.62
-[10,]       -0.43 -0.40 -0.15      -0.47      -1.94
-[11,]       -0.03  1.45 -0.64      -0.92       2.74
-[12,]        1.21  0.54  0.61       0.20      -1.73
-[13,]        0.54 -0.23  0.33      -0.37      -1.41
-[14,]       -1.81 -1.31 -0.92       1.96       2.58
-[15,]       -0.08  1.09 -0.46      -0.84       0.21
-
-$control
-A 'MaxControl' object with slots:
-tol = 1e-08 
-reltol = 1.4901e-08 
-gradtol = 1e-06 
-steptol = 1e-10 
-lambdatol = 1e-06 
-qrtol = 1e-10 
-qac = stephalving 
-marquardt_lambda0 = 0.01 
-marquardt_lambdaStep = 2 
-marquardt_maxLambda = 1e+12 
-nm_alpha = 1 
-nm_beta = 0.5 
-nm_gamma = 2 
-sann_cand = <default Gaussian Markov kernel>
-sann_temp = 10 
-sann_tmax = 10 
-sann_randomSeed = 123 
-iterlim = 150 
-printLevel = 0 
-
-$xMean
-(Intercept)          x1          x2 
-  1.0000000  -0.0051594   0.5041407 
-
-$call
-censReg(formula = yAdd ~ x1 + x2, left = 5, data = pData, method = "BFGSR")
-
-$terms
-yAdd ~ x1 + x2
-attr(,"variables")
-list(yAdd, x1, x2)
-attr(,"factors")
-     x1 x2
-yAdd  0  0
-x1    1  0
-x2    0  1
-attr(,"term.labels")
-[1] "x1" "x2"
-attr(,"order")
-[1] 1 1
-attr(,"intercept")
-[1] 1
-attr(,"response")
-[1] 1
-attr(,".Environment")
-<environment: R_GlobalEnv>
-attr(,"predvars")
-list(yAdd, x1, x2)
-attr(,"dataClasses")
-     yAdd        x1        x2 
-"numeric" "numeric" "numeric" 
-
-$nObs
+Observations:
          Total  Left-censored     Uncensored Right-censored 
             60             20             40              0 
 
-$df.residual
-[1] 55
+Coefficients:
+            Estimate Std. error t value Pr(> t)    
+(Intercept)      4.6        0.5      10  <2e-16 ***
+x1               1.7        0.2       8   1e-15 ***
+x2               2.2        0.7       3   9e-04 ***
+sigmaMu          0.9        0.2       4   1e-04 ***
+sigmaNu          1.0        0.1       8   1e-14 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-$start
-(Intercept)          x1          x2  logSigmaMu  logSigmaNu 
-   5.470351    1.011160    1.619183   -0.496251   -0.062096 
+Newton-Raphson maximisation, 5 iterations
+Return code 1: gradient close to zero
+Log-likelihood: -73.199 on 5 Df
 
-$left
-[1] 5
-
-$right
-[1] Inf
-
-class
-[1] "censReg" "maxLik"  "maxim"   "list"   
 > 
 > 
 > ## right-censoring
 > pData$yNeg <- - pData$y
-> randEffNeg <- censReg( yNeg ~ x1 + x2, data = pData, method = "BFGSR",
+> randEffNeg <- censReg( yNeg ~ x1 + x2, data = pData, 
 +    left = -Inf, right = 0 )
-> print( randEffNeg, digits = 1 )
+> printAll( "randEffNeg" )
+Comparing new object 'randEffNeg' to previously saved object...
+   comparing component 'maximum' ... OK
+   comparing component 'estimate' ... OK
+   comparing component 'hessian' ... OK
+   comparing component 'fixed' ... OK
+   comparing component 'type' ... OK
+   comparing component 'gradientObs' ... OK
+   comparing component 'control' ... OK
+   comparing component 'xMean' ... OK
+   comparing component 'call' ... OK
+   comparing component 'terms' ... OK
+   comparing component 'nObs' ... OK
+   comparing component 'df.residual' ... OK
+   comparing component 'start' ... OK
+   comparing component 'left' ... OK
+   comparing component 'right' ... OK
+   comparing method 'Coef' ... OK
+   comparing method 'CoefNoLs' ... OK
+   comparing method 'Vcov' ... OK
+   comparing method 'VcovNoLs' ... OK
+   comparing method 'CoefSum' ... OK
+   comparing method 'CoefSumNoLs' ... OK
+   comparing method 'LogLik' ... OK
+   comparing method 'Nobs' ... OK
+   comparing method 'ExtractAIC' ... OK
 
 Call:
-censReg(formula = yNeg ~ x1 + x2, left = -Inf, right = 0, data = pData, 
-    method = "BFGSR")
+censReg(formula = yNeg ~ x1 + x2, left = -Inf, right = 0, data = pData)
 
 Coefficients:
 (Intercept)          x1          x2  logSigmaMu  logSigmaNu 
-       0.37       -1.68       -2.25       -0.13       -0.01 
+       0.37       -1.68       -2.24       -0.13       -0.01 
 
-> print( maxLik:::summary.maxLik( randEffNeg ), digits = 1 )
+
+Call:
+censReg(formula = yNeg ~ x1 + x2, left = -Inf, right = 0, data = pData)
+
+Coefficients:
+(Intercept)          x1          x2     sigmaMu     sigmaNu 
+        0.4        -1.7        -2.2         0.9         1.0 
+
 --------------------------------------------
 Maximum Likelihood estimation
-BFGSR maximization, 77 iterations
-Return code 2: successive function values within tolerance limit
+Newton-Raphson maximisation, 5 iterations
+Return code 1: gradient close to zero
 Log-Likelihood: -73.199 
 5  free parameters
 Estimates:
             Estimate Std. error t value Pr(> t)    
 (Intercept)     0.37       0.47     0.8     0.4    
 x1             -1.68       0.21    -8.0   1e-15 ***
-x2             -2.25       0.67    -3.3   9e-04 ***
+x2             -2.24       0.67    -3.3   9e-04 ***
 logSigmaMu     -0.13       0.26    -0.5     0.6    
 logSigmaNu     -0.01       0.13    -0.1     0.9    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 --------------------------------------------
-> print( summary( randEffNeg ), digits = 1 )
 
 Call:
-censReg(formula = yNeg ~ x1 + x2, left = -Inf, right = 0, data = pData, 
-    method = "BFGSR")
+censReg(formula = yNeg ~ x1 + x2, left = -Inf, right = 0, data = pData)
 
 Observations:
          Total  Left-censored     Uncensored Right-censored 
@@ -1156,206 +824,108 @@ Coefficients:
             Estimate Std. error t value Pr(> t)    
 (Intercept)     0.37       0.47     0.8     0.4    
 x1             -1.68       0.21    -8.0   1e-15 ***
-x2             -2.25       0.67    -3.3   9e-04 ***
+x2             -2.24       0.67    -3.3   9e-04 ***
 logSigmaMu     -0.13       0.26    -0.5     0.6    
 logSigmaNu     -0.01       0.13    -0.1     0.9    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-BFGSR maximization, 77 iterations
-Return code 2: successive function values within tolerance limit
+Newton-Raphson maximisation, 5 iterations
+Return code 1: gradient close to zero
 Log-likelihood: -73.199 on 5 Df
 
-> round( coef( randEffNeg ), 2 )
-(Intercept)          x1          x2  logSigmaMu  logSigmaNu 
-       0.37       -1.68       -2.25       -0.13       -0.01 
-> round( coef( randEffNeg, logSigma = FALSE ), 2 )
-(Intercept)          x1          x2     sigmaMu     sigmaNu 
-       0.37       -1.68       -2.25        0.88        0.99 
-> round( vcov( randEffNeg ), 2 )
-            (Intercept)    x1    x2 logSigmaMu logSigmaNu
-(Intercept)        0.23 -0.02 -0.25       0.02       0.00
-x1                -0.02  0.04  0.01      -0.01       0.00
-x2                -0.25  0.01  0.45      -0.02       0.00
-logSigmaMu         0.02 -0.01 -0.02       0.07       0.00
-logSigmaNu         0.00  0.00  0.00       0.00       0.02
-> round( vcov( randEffNeg, logSigma = FALSE ), 2 )
-            (Intercept)    x1    x2 sigmaMu sigmaNu
-(Intercept)        0.23 -0.02 -0.25    0.02    0.00
-x1                -0.02  0.04  0.01   -0.01    0.00
-x2                -0.25  0.01  0.45   -0.02    0.00
-sigmaMu            0.02 -0.01 -0.02    0.05    0.00
-sigmaNu            0.00  0.00  0.00    0.00    0.02
-> logLik( randEffNeg )
-'log Lik.' -73.199 (df=5)
-> extractAIC( randEffNeg )
-[1] -40.0 156.4
-> printAll( randEffNeg )
-$maximum
-[1] -73.199
 
-$estimate
-(Intercept)          x1          x2  logSigmaMu  logSigmaNu 
-       0.37       -1.68       -2.25       -0.13       -0.01 
+Call:
+censReg(formula = yNeg ~ x1 + x2, left = -Inf, right = 0, data = pData)
 
-$gradient
-
-$hessian
-            (Intercept)    x1   x2 logSigmaMu logSigmaNu
-(Intercept)       -13.3  -4.1 -7.3        2.1        1.3
-x1                 -4.1 -26.1 -2.0       -4.5       -4.8
-x2                 -7.3  -2.0 -6.2        0.6        0.4
-logSigmaMu          2.1  -4.5  0.6      -16.7       -3.7
-logSigmaNu          1.3  -4.8  0.4       -3.7      -61.1
-
-$code
-[1] 2
-
-$message
-[1] "successive function values within tolerance limit"
-
-$last.step
-
-$fixed
-(Intercept)          x1          x2  logSigmaMu  logSigmaNu 
-      FALSE       FALSE       FALSE       FALSE       FALSE 
-
-$iterations
-[1] 77
-
-$type
-[1] "BFGSR maximization"
-
-$gradientObs
-      (Intercept)    x1    x2 logSigmaMu logSigmaNu
- [1,]        0.85 -0.22  0.07      -0.14      -0.97
- [2,]        1.70 -0.05  1.19       1.68      -1.01
- [3,]       -1.75 -0.33 -1.72       1.84       1.80
- [4,]       -0.16  0.20  0.43      -0.69      -1.43
- [5,]       -0.13 -0.98 -0.69      -0.68      -0.56
- [6,]       -0.33  0.31 -0.38      -0.49      -1.58
- [7,]        0.08  3.19  0.24      -0.68       6.03
- [8,]        0.27 -0.38 -0.06      -0.54      -1.11
- [9,]       -1.15 -0.59 -0.30       0.13      -1.62
-[10,]        0.43  0.40  0.15      -0.47      -1.94
-[11,]        0.03 -1.45  0.64      -0.92       2.74
-[12,]       -1.21 -0.54 -0.61       0.20      -1.73
-[13,]       -0.54  0.23 -0.33      -0.37      -1.41
-[14,]        1.81  1.31  0.92       1.96       2.58
-[15,]        0.08 -1.09  0.46      -0.84       0.21
-
-$control
-A 'MaxControl' object with slots:
-tol = 1e-08 
-reltol = 1.4901e-08 
-gradtol = 1e-06 
-steptol = 1e-10 
-lambdatol = 1e-06 
-qrtol = 1e-10 
-qac = stephalving 
-marquardt_lambda0 = 0.01 
-marquardt_lambdaStep = 2 
-marquardt_maxLambda = 1e+12 
-nm_alpha = 1 
-nm_beta = 0.5 
-nm_gamma = 2 
-sann_cand = <default Gaussian Markov kernel>
-sann_temp = 10 
-sann_tmax = 10 
-sann_randomSeed = 123 
-iterlim = 150 
-printLevel = 0 
-
-$xMean
-(Intercept)          x1          x2 
-  1.0000000  -0.0051594   0.5041407 
-
-$call
-censReg(formula = yNeg ~ x1 + x2, left = -Inf, right = 0, data = pData, 
-    method = "BFGSR")
-
-$terms
-yNeg ~ x1 + x2
-attr(,"variables")
-list(yNeg, x1, x2)
-attr(,"factors")
-     x1 x2
-yNeg  0  0
-x1    1  0
-x2    0  1
-attr(,"term.labels")
-[1] "x1" "x2"
-attr(,"order")
-[1] 1 1
-attr(,"intercept")
-[1] 1
-attr(,"response")
-[1] 1
-attr(,".Environment")
-<environment: R_GlobalEnv>
-attr(,"predvars")
-list(yNeg, x1, x2)
-attr(,"dataClasses")
-     yNeg        x1        x2 
-"numeric" "numeric" "numeric" 
-
-$nObs
+Observations:
          Total  Left-censored     Uncensored Right-censored 
             60              0             40             20 
 
-$df.residual
-[1] 55
+Coefficients:
+            Estimate Std. error t value Pr(> t)    
+(Intercept)      0.4        0.5     0.8     0.4    
+x1              -1.7        0.2    -8.0   1e-15 ***
+x2              -2.2        0.7    -3.3   9e-04 ***
+sigmaMu          0.9        0.2     3.9   1e-04 ***
+sigmaNu          1.0        0.1     7.7   1e-14 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-$start
-(Intercept)          x1          x2  logSigmaMu  logSigmaNu 
-  -0.470351   -1.011160   -1.619183   -0.496251   -0.062096 
+Newton-Raphson maximisation, 5 iterations
+Return code 1: gradient close to zero
+Log-likelihood: -73.199 on 5 Df
 
-$left
-[1] -Inf
-
-$right
-[1] 0
-
-class
-[1] "censReg" "maxLik"  "maxim"   "list"   
 > 
 > 
 > ## right-censoring at -5
 > pData$yAddNeg <- - pData$yAdd
-> randEffAddNeg <- censReg( yAddNeg ~ x1 + x2, data = pData, method = "BFGSR",
+> randEffAddNeg <- censReg( yAddNeg ~ x1 + x2, data = pData, 
 +    left = -Inf, right = -5 )
-> print( randEffAddNeg, digits = 1 )
+> printAll( "randEffAddNeg" )
+Comparing new object 'randEffAddNeg' to previously saved object...
+   comparing component 'maximum' ... OK
+   comparing component 'estimate' ... OK
+   comparing component 'hessian' ... OK
+   comparing component 'fixed' ... OK
+   comparing component 'type' ... OK
+   comparing component 'gradientObs' ... OK
+   comparing component 'control' ... OK
+   comparing component 'xMean' ... OK
+   comparing component 'call' ... OK
+   comparing component 'terms' ... OK
+   comparing component 'nObs' ... OK
+   comparing component 'df.residual' ... OK
+   comparing component 'start' ... OK
+   comparing component 'left' ... OK
+   comparing component 'right' ... OK
+   comparing method 'Coef' ... OK
+   comparing method 'CoefNoLs' ... OK
+   comparing method 'Vcov' ... OK
+   comparing method 'VcovNoLs' ... OK
+   comparing method 'CoefSum' ... OK
+   comparing method 'CoefSumNoLs' ... OK
+   comparing method 'LogLik' ... OK
+   comparing method 'Nobs' ... OK
+   comparing method 'ExtractAIC' ... OK
 
 Call:
 censReg(formula = yAddNeg ~ x1 + x2, left = -Inf, right = -5, 
-    data = pData, method = "BFGSR")
+    data = pData)
 
 Coefficients:
 (Intercept)          x1          x2  logSigmaMu  logSigmaNu 
-      -4.63       -1.68       -2.25       -0.13       -0.01 
+      -4.63       -1.68       -2.24       -0.13       -0.01 
 
-> print( maxLik:::summary.maxLik( randEffAddNeg ), digits = 1 )
+
+Call:
+censReg(formula = yAddNeg ~ x1 + x2, left = -Inf, right = -5, 
+    data = pData)
+
+Coefficients:
+(Intercept)          x1          x2     sigmaMu     sigmaNu 
+       -4.6        -1.7        -2.2         0.9         1.0 
+
 --------------------------------------------
 Maximum Likelihood estimation
-BFGSR maximization, 76 iterations
-Return code 2: successive function values within tolerance limit
+Newton-Raphson maximisation, 5 iterations
+Return code 1: gradient close to zero
 Log-Likelihood: -73.199 
 5  free parameters
 Estimates:
             Estimate Std. error t value Pr(> t)    
-(Intercept)    -4.63       0.47    -9.7  <2e-16 ***
+(Intercept)    -4.63       0.47    -9.8  <2e-16 ***
 x1             -1.68       0.21    -8.0   1e-15 ***
-x2             -2.25       0.67    -3.3   9e-04 ***
+x2             -2.24       0.67    -3.3   9e-04 ***
 logSigmaMu     -0.13       0.26    -0.5     0.6    
 logSigmaNu     -0.01       0.13    -0.1     0.9    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 --------------------------------------------
-> print( summary( randEffAddNeg ), digits = 1 )
 
 Call:
 censReg(formula = yAddNeg ~ x1 + x2, left = -Inf, right = -5, 
-    data = pData, method = "BFGSR")
+    data = pData)
 
 Observations:
          Total  Left-censored     Uncensored Right-censored 
@@ -1363,208 +933,108 @@ Observations:
 
 Coefficients:
             Estimate Std. error t value Pr(> t)    
-(Intercept)    -4.63       0.47    -9.7  <2e-16 ***
+(Intercept)    -4.63       0.47    -9.8  <2e-16 ***
 x1             -1.68       0.21    -8.0   1e-15 ***
-x2             -2.25       0.67    -3.3   9e-04 ***
+x2             -2.24       0.67    -3.3   9e-04 ***
 logSigmaMu     -0.13       0.26    -0.5     0.6    
 logSigmaNu     -0.01       0.13    -0.1     0.9    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-BFGSR maximization, 76 iterations
-Return code 2: successive function values within tolerance limit
+Newton-Raphson maximisation, 5 iterations
+Return code 1: gradient close to zero
 Log-likelihood: -73.199 on 5 Df
 
-> round( coef( randEffAddNeg ), 2 )
-(Intercept)          x1          x2  logSigmaMu  logSigmaNu 
-      -4.63       -1.68       -2.25       -0.13       -0.01 
-> round( coef( randEffAddNeg, logSigma = FALSE ), 2 )
-(Intercept)          x1          x2     sigmaMu     sigmaNu 
-      -4.63       -1.68       -2.25        0.88        0.99 
-> round( vcov( randEffAddNeg ), 2 )
-            (Intercept)    x1    x2 logSigmaMu logSigmaNu
-(Intercept)        0.23 -0.02 -0.25       0.02       0.00
-x1                -0.02  0.04  0.01      -0.01       0.00
-x2                -0.25  0.01  0.45      -0.02       0.00
-logSigmaMu         0.02 -0.01 -0.02       0.07       0.00
-logSigmaNu         0.00  0.00  0.00       0.00       0.02
-> round( vcov( randEffAddNeg, logSigma = FALSE ), 2 )
-            (Intercept)    x1    x2 sigmaMu sigmaNu
-(Intercept)        0.23 -0.02 -0.25    0.02    0.00
-x1                -0.02  0.04  0.01   -0.01    0.00
-x2                -0.25  0.01  0.45   -0.02    0.00
-sigmaMu            0.02 -0.01 -0.02    0.05    0.00
-sigmaNu            0.00  0.00  0.00    0.00    0.02
-> logLik( randEffAddNeg )
-'log Lik.' -73.199 (df=5)
-> extractAIC( randEffAddNeg )
-[1] -40.0 156.4
-> printAll( randEffAddNeg )
-$maximum
-[1] -73.199
 
-$estimate
-(Intercept)          x1          x2  logSigmaMu  logSigmaNu 
-      -4.63       -1.68       -2.25       -0.13       -0.01 
-
-$gradient
-
-$hessian
-            (Intercept)    x1   x2 logSigmaMu logSigmaNu
-(Intercept)       -13.3  -4.1 -7.3        2.1        1.3
-x1                 -4.1 -26.1 -2.0       -4.5       -4.8
-x2                 -7.3  -2.0 -6.2        0.6        0.4
-logSigmaMu          2.1  -4.5  0.6      -16.7       -3.7
-logSigmaNu          1.3  -4.8  0.4       -3.7      -61.1
-
-$code
-[1] 2
-
-$message
-[1] "successive function values within tolerance limit"
-
-$last.step
-
-$fixed
-(Intercept)          x1          x2  logSigmaMu  logSigmaNu 
-      FALSE       FALSE       FALSE       FALSE       FALSE 
-
-$iterations
-[1] 76
-
-$type
-[1] "BFGSR maximization"
-
-$gradientObs
-      (Intercept)    x1    x2 logSigmaMu logSigmaNu
- [1,]        0.85 -0.22  0.07      -0.14      -0.97
- [2,]        1.70 -0.05  1.19       1.68      -1.01
- [3,]       -1.75 -0.33 -1.73       1.84       1.80
- [4,]       -0.16  0.20  0.43      -0.69      -1.43
- [5,]       -0.13 -0.98 -0.69      -0.68      -0.56
- [6,]       -0.33  0.31 -0.38      -0.49      -1.58
- [7,]        0.08  3.19  0.24      -0.68       6.03
- [8,]        0.27 -0.38 -0.06      -0.54      -1.11
- [9,]       -1.15 -0.59 -0.30       0.13      -1.62
-[10,]        0.43  0.40  0.15      -0.47      -1.94
-[11,]        0.03 -1.45  0.64      -0.92       2.74
-[12,]       -1.21 -0.54 -0.61       0.20      -1.73
-[13,]       -0.54  0.23 -0.33      -0.37      -1.41
-[14,]        1.81  1.31  0.92       1.96       2.58
-[15,]        0.08 -1.09  0.46      -0.84       0.21
-
-$control
-A 'MaxControl' object with slots:
-tol = 1e-08 
-reltol = 1.4901e-08 
-gradtol = 1e-06 
-steptol = 1e-10 
-lambdatol = 1e-06 
-qrtol = 1e-10 
-qac = stephalving 
-marquardt_lambda0 = 0.01 
-marquardt_lambdaStep = 2 
-marquardt_maxLambda = 1e+12 
-nm_alpha = 1 
-nm_beta = 0.5 
-nm_gamma = 2 
-sann_cand = <default Gaussian Markov kernel>
-sann_temp = 10 
-sann_tmax = 10 
-sann_randomSeed = 123 
-iterlim = 150 
-printLevel = 0 
-
-$xMean
-(Intercept)          x1          x2 
-  1.0000000  -0.0051594   0.5041407 
-
-$call
+Call:
 censReg(formula = yAddNeg ~ x1 + x2, left = -Inf, right = -5, 
-    data = pData, method = "BFGSR")
+    data = pData)
 
-$terms
-yAddNeg ~ x1 + x2
-attr(,"variables")
-list(yAddNeg, x1, x2)
-attr(,"factors")
-        x1 x2
-yAddNeg  0  0
-x1       1  0
-x2       0  1
-attr(,"term.labels")
-[1] "x1" "x2"
-attr(,"order")
-[1] 1 1
-attr(,"intercept")
-[1] 1
-attr(,"response")
-[1] 1
-attr(,".Environment")
-<environment: R_GlobalEnv>
-attr(,"predvars")
-list(yAddNeg, x1, x2)
-attr(,"dataClasses")
-  yAddNeg        x1        x2 
-"numeric" "numeric" "numeric" 
-
-$nObs
+Observations:
          Total  Left-censored     Uncensored Right-censored 
             60              0             40             20 
 
-$df.residual
-[1] 55
+Coefficients:
+            Estimate Std. error t value Pr(> t)    
+(Intercept)     -4.6        0.5     -10  <2e-16 ***
+x1              -1.7        0.2      -8   1e-15 ***
+x2              -2.2        0.7      -3   9e-04 ***
+sigmaMu          0.9        0.2       4   1e-04 ***
+sigmaNu          1.0        0.1       8   1e-14 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-$start
-(Intercept)          x1          x2  logSigmaMu  logSigmaNu 
-  -5.470351   -1.011160   -1.619183   -0.496251   -0.062096 
+Newton-Raphson maximisation, 5 iterations
+Return code 1: gradient close to zero
+Log-likelihood: -73.199 on 5 Df
 
-$left
-[1] -Inf
-
-$right
-[1] -5
-
-class
-[1] "censReg" "maxLik"  "maxim"   "list"   
 > 
 > 
 > ## both right and left censoring
 > pData$yBoth <- ifelse( pData$y < 3, pData$y, 3 )
-> randEffBoth <- censReg( yBoth ~ x1 + x2, data = pData, method = "BFGSR",
+> randEffBoth <- censReg( yBoth ~ x1 + x2, data = pData, 
 +    left = 0, right = 3 )
-> print( randEffBoth, digits = 1 )
+> printAll( "randEffBoth" )
+Comparing new object 'randEffBoth' to previously saved object...
+   comparing component 'maximum' ... OK
+   comparing component 'estimate' ... OK
+   comparing component 'hessian' ... OK
+   comparing component 'fixed' ... OK
+   comparing component 'type' ... OK
+   comparing component 'gradientObs' ... OK
+   comparing component 'control' ... OK
+   comparing component 'xMean' ... OK
+   comparing component 'call' ... OK
+   comparing component 'terms' ... OK
+   comparing component 'nObs' ... OK
+   comparing component 'df.residual' ... OK
+   comparing component 'start' ... OK
+   comparing component 'left' ... OK
+   comparing component 'right' ... OK
+   comparing method 'Coef' ... OK
+   comparing method 'CoefNoLs' ... OK
+   comparing method 'Vcov' ... OK
+   comparing method 'VcovNoLs' ... OK
+   comparing method 'CoefSum' ... OK
+   comparing method 'CoefSumNoLs' ... OK
+   comparing method 'LogLik' ... OK
+   comparing method 'Nobs' ... OK
+   comparing method 'ExtractAIC' ... OK
 
 Call:
-censReg(formula = yBoth ~ x1 + x2, left = 0, right = 3, data = pData, 
-    method = "BFGSR")
+censReg(formula = yBoth ~ x1 + x2, left = 0, right = 3, data = pData)
 
 Coefficients:
 (Intercept)          x1          x2  logSigmaMu  logSigmaNu 
-     -0.234       1.893       1.969       0.002       0.053 
+     -0.236       1.893       1.972       0.002       0.053 
 
-> print( maxLik:::summary.maxLik( randEffBoth ), digits = 1 )
+
+Call:
+censReg(formula = yBoth ~ x1 + x2, left = 0, right = 3, data = pData)
+
+Coefficients:
+(Intercept)          x1          x2     sigmaMu     sigmaNu 
+       -0.2         1.9         2.0         1.0         1.1 
+
 --------------------------------------------
 Maximum Likelihood estimation
-BFGSR maximization, 99 iterations
-Return code 2: successive function values within tolerance limit
+Newton-Raphson maximisation, 6 iterations
+Return code 1: gradient close to zero
 Log-Likelihood: -64.313 
 5  free parameters
 Estimates:
             Estimate Std. error t value Pr(> t)    
-(Intercept)   -0.234      0.548    -0.4    0.67    
+(Intercept)   -0.236      0.549    -0.4    0.67    
 x1             1.893      0.301     6.3   3e-10 ***
-x2             1.969      0.819     2.4    0.02 *  
-logSigmaMu     0.002      0.278     0.0    1.00    
+x2             1.972      0.819     2.4    0.02 *  
+logSigmaMu     0.002      0.278     0.0    0.99    
 logSigmaNu     0.053      0.163     0.3    0.75    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 --------------------------------------------
-> print( summary( randEffBoth ), digits = 1 )
 
 Call:
-censReg(formula = yBoth ~ x1 + x2, left = 0, right = 3, data = pData, 
-    method = "BFGSR")
+censReg(formula = yBoth ~ x1 + x2, left = 0, right = 3, data = pData)
 
 Observations:
          Total  Left-censored     Uncensored Right-censored 
@@ -1572,23 +1042,21 @@ Observations:
 
 Coefficients:
             Estimate Std. error t value Pr(> t)    
-(Intercept)   -0.234      0.548    -0.4    0.67    
+(Intercept)   -0.236      0.549    -0.4    0.67    
 x1             1.893      0.301     6.3   3e-10 ***
-x2             1.969      0.819     2.4    0.02 *  
-logSigmaMu     0.002      0.278     0.0    1.00    
+x2             1.972      0.819     2.4    0.02 *  
+logSigmaMu     0.002      0.278     0.0    0.99    
 logSigmaNu     0.053      0.163     0.3    0.75    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-BFGSR maximization, 99 iterations
-Return code 2: successive function values within tolerance limit
+Newton-Raphson maximisation, 6 iterations
+Return code 1: gradient close to zero
 Log-likelihood: -64.313 on 5 Df
 
-> print( summary( randEffBoth ), logSigma = FALSE , digits = 1 )
 
 Call:
-censReg(formula = yBoth ~ x1 + x2, left = 0, right = 3, data = pData, 
-    method = "BFGSR")
+censReg(formula = yBoth ~ x1 + x2, left = 0, right = 3, data = pData)
 
 Observations:
          Total  Left-censored     Uncensored Right-censored 
@@ -1604,178 +1072,10 @@ sigmaNu          1.1        0.2     6.1   9e-10 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-BFGSR maximization, 99 iterations
-Return code 2: successive function values within tolerance limit
+Newton-Raphson maximisation, 6 iterations
+Return code 1: gradient close to zero
 Log-likelihood: -64.313 on 5 Df
 
-> round( coef( randEffBoth ), 2 )
-(Intercept)          x1          x2  logSigmaMu  logSigmaNu 
-      -0.23        1.89        1.97        0.00        0.05 
-> round( coef( randEffBoth, logSigma = FALSE ), 2 )
-(Intercept)          x1          x2     sigmaMu     sigmaNu 
-      -0.23        1.89        1.97        1.00        1.05 
-> round( vcov( randEffBoth ), 2 )
-            (Intercept)    x1    x2 logSigmaMu logSigmaNu
-(Intercept)        0.30 -0.03 -0.36      -0.02      -0.02
-x1                -0.03  0.09  0.03       0.04       0.02
-x2                -0.36  0.03  0.67       0.02       0.02
-logSigmaMu        -0.02  0.04  0.02       0.08       0.00
-logSigmaNu        -0.02  0.02  0.02       0.00       0.03
-> round( vcov( randEffBoth, logSigma = FALSE ), 2 )
-            (Intercept)    x1    x2 sigmaMu sigmaNu
-(Intercept)        0.30 -0.03 -0.36   -0.02   -0.02
-x1                -0.03  0.09  0.03    0.04    0.02
-x2                -0.36  0.03  0.67    0.02    0.03
-sigmaMu           -0.02  0.04  0.02    0.08    0.00
-sigmaNu           -0.02  0.02  0.03    0.00    0.03
-> round( coef( summary( randEffBoth ) ), 2 )
-            Estimate Std. error t value Pr(> t)
-(Intercept)    -0.23       0.55   -0.43    0.67
-x1              1.89       0.30    6.29    0.00
-x2              1.97       0.82    2.41    0.02
-logSigmaMu      0.00       0.28    0.01    1.00
-logSigmaNu      0.05       0.16    0.32    0.75
-> round( coef( summary( randEffBoth ), logSigma = FALSE ), 2 )
-            Estimate Std. error t value Pr(> t)
-(Intercept)    -0.23       0.55   -0.43    0.67
-x1              1.89       0.30    6.29    0.00
-x2              1.97       0.82    2.41    0.02
-sigmaMu         1.00       0.28    3.60    0.00
-sigmaNu         1.05       0.17    6.14    0.00
-> logLik( randEffBoth )
-'log Lik.' -64.313 (df=5)
-> nobs( randEffBoth )
-[1] 60
-> extractAIC( randEffBoth )
-[1] -40.00 138.63
-> printAll( randEffBoth )
-$maximum
-[1] -64.313
-
-$estimate
-(Intercept)          x1          x2  logSigmaMu  logSigmaNu 
-      -0.23        1.89        1.97        0.00        0.05 
-
-$gradient
-
-$hessian
-            (Intercept)    x1   x2 logSigmaMu logSigmaNu
-(Intercept)        -9.9  -1.5 -5.3       -0.1       -0.3
-x1                 -1.5 -15.1 -0.5        6.3        7.6
-x2                 -5.3  -0.5 -4.4        0.2        1.1
-logSigmaMu         -0.1   6.3  0.2      -15.8       -1.4
-logSigmaNu         -0.3   7.6  1.1       -1.4      -43.2
-
-$code
-[1] 2
-
-$message
-[1] "successive function values within tolerance limit"
-
-$last.step
-
-$fixed
-(Intercept)          x1          x2  logSigmaMu  logSigmaNu 
-      FALSE       FALSE       FALSE       FALSE       FALSE 
-
-$iterations
-[1] 99
-
-$type
-[1] "BFGSR maximization"
-
-$gradientObs
-      (Intercept)    x1    x2 logSigmaMu logSigmaNu
- [1,]       -0.85 -0.11 -0.18      -0.02      -0.84
- [2,]       -1.42 -0.03 -0.97       1.46      -1.16
- [3,]        1.30  1.02  0.93       1.09       0.15
- [4,]        0.07 -0.25 -0.40      -0.70      -1.83
- [5,]        0.09  0.81  0.65      -0.69      -0.28
- [6,]        0.56  0.49  0.43      -0.29      -0.36
- [7,]       -0.12 -3.06 -0.24      -0.71       6.34
- [8,]       -0.21  0.34  0.08      -0.59      -1.03
- [9,]        1.03  0.66  0.29       0.20      -1.30
-[10,]       -0.43 -0.59 -0.12      -0.40      -1.80
-[11,]       -0.04  1.10 -0.51      -0.87       2.00
-[12,]        1.14  0.51  0.83       0.59      -0.74
-[13,]        0.53 -0.28  0.35      -0.29      -1.43
-[14,]       -1.64 -1.35 -0.84       2.12       2.76
-[15,]       -0.02  0.74 -0.30      -0.89      -0.48
-
-$control
-A 'MaxControl' object with slots:
-tol = 1e-08 
-reltol = 1.4901e-08 
-gradtol = 1e-06 
-steptol = 1e-10 
-lambdatol = 1e-06 
-qrtol = 1e-10 
-qac = stephalving 
-marquardt_lambda0 = 0.01 
-marquardt_lambdaStep = 2 
-marquardt_maxLambda = 1e+12 
-nm_alpha = 1 
-nm_beta = 0.5 
-nm_gamma = 2 
-sann_cand = <default Gaussian Markov kernel>
-sann_temp = 10 
-sann_tmax = 10 
-sann_randomSeed = 123 
-iterlim = 150 
-printLevel = 0 
-
-$xMean
-(Intercept)          x1          x2 
-  1.0000000  -0.0051594   0.5041407 
-
-$call
-censReg(formula = yBoth ~ x1 + x2, left = 0, right = 3, data = pData, 
-    method = "BFGSR")
-
-$terms
-yBoth ~ x1 + x2
-attr(,"variables")
-list(yBoth, x1, x2)
-attr(,"factors")
-      x1 x2
-yBoth  0  0
-x1     1  0
-x2     0  1
-attr(,"term.labels")
-[1] "x1" "x2"
-attr(,"order")
-[1] 1 1
-attr(,"intercept")
-[1] 1
-attr(,"response")
-[1] 1
-attr(,".Environment")
-<environment: R_GlobalEnv>
-attr(,"predvars")
-list(yBoth, x1, x2)
-attr(,"dataClasses")
-    yBoth        x1        x2 
-"numeric" "numeric" "numeric" 
-
-$nObs
-         Total  Left-censored     Uncensored Right-censored 
-            60             20             28             12 
-
-$df.residual
-[1] 55
-
-$start
-(Intercept)          x1          x2  logSigmaMu  logSigmaNu 
-    0.60564     0.81130     1.00240    -0.75456    -0.27481 
-
-$left
-[1] 0
-
-$right
-[1] 3
-
-class
-[1] "censReg" "maxLik"  "maxim"   "list"   
 > 
 > 
 > ## re-order observations/individuals
@@ -1788,36 +1088,36 @@ class
 +       paste( "G", perm[ i ], sep = "_" )
 + }
 > pData2 <- pdata.frame( nData2, c( "id", "time" ) )
-> randEffBfgsr2 <- censReg( y ~ x1 + x2, data = pData2, method = "BFGSR" )
-> all.equal( randEffBfgsr2[ -c(3,5,6,7,9,11,14) ],
-+    randEffBfgsr[ -c(3,5,6,7,9,11,14) ], tolerance = 1e-2 )
+> randEff2 <- censReg( y ~ x1 + x2, data = pData2 )
+> all.equal( randEff2[ -c(3,5,6,7,9,11,14) ],
++    randEff[ -c(3,5,6,7,9,11,14) ], tolerance = 1e-2 )
 [1] TRUE
 > 
 > # check if the order of observations/individuals influences the likelihood values
-> d1c1 <- censReg( y ~ x1 + x2, data = pData, method = "BFGSR", start = coef(randEffBfgsr),
+> d1c1 <- censReg( y ~ x1 + x2, data = pData, start = coef(randEff),
 +    iterlim = 0 )
-> all.equal( d1c1[-c(5,6,7,9,12,14,18)], randEffBfgsr[-c(5,6,7,9,12,14,18)] )
+> all.equal( d1c1[-c(5,6,7,9,12,14,18)], randEff[-c(5,6,7,9,12,14,18)] )
 [1] TRUE
-> d1c1$maximum -  randEffBfgsr$maximum
+> d1c1$maximum -  randEff$maximum
 [1] 0
 > 
-> d2c2 <- censReg( y ~ x1 + x2, data = pData2, method = "BFGSR", start = coef(randEffBfgsr2),
+> d2c2 <- censReg( y ~ x1 + x2, data = pData2, start = coef(randEff2),
 +    iterlim = 0 )
-> all.equal( d2c2[-c(5,6,7,9,12,14,18)], randEffBfgsr2[-c(5,6,7,9,12,14,18)] )
+> all.equal( d2c2[-c(5,6,7,9,12,14,18)], randEff2[-c(5,6,7,9,12,14,18)] )
 [1] TRUE
-> d2c2$maximum -  randEffBfgsr2$maximum
+> d2c2$maximum -  randEff2$maximum
 [1] 0
 > 
-> d1c2 <- censReg( y ~ x1 + x2, data = pData, method = "BFGSR", 
-+    start = coef(randEffBfgsr2), iterlim = 0 )
+> d1c2 <- censReg( y ~ x1 + x2, data = pData,  
++    start = coef(randEff2), iterlim = 0 )
 > d2c2$maximum - d1c2$maximum
 [1] 0
 > d2c2$gradient - d1c2$gradient
 (Intercept)          x1          x2  logSigmaMu  logSigmaNu 
           0           0           0           0           0 
 > 
-> d2c1 <- censReg( y ~ x1 + x2, data = pData2, method = "BFGSR", 
-+    start = coef(randEffBfgsr), iterlim = 0 )
+> d2c1 <- censReg( y ~ x1 + x2, data = pData2, 
++    start = coef(randEff), iterlim = 0 )
 > d1c1$maximum - d2c1$maximum
 [1] 0
 > d1c1$gradient - d2c1$gradient
@@ -1829,10 +1129,10 @@ class
 > round( d1c1$maximum - d1c2$maximum, 3 )
 [1] 0
 > 
-> d1cS <- censReg( y ~ x1 + x2, data = pData, method = "BFGSR", 
-+    start = randEffBfgsr$start, iterlim = 0 )
-> d2cS <- censReg( y ~ x1 + x2, data = pData2, method = "BFGSR", 
-+    start = randEffBfgsr$start, iterlim = 0 )
+> d1cS <- censReg( y ~ x1 + x2, data = pData, 
++    start = randEff$start, iterlim = 0 )
+> d2cS <- censReg( y ~ x1 + x2, data = pData2, 
++    start = randEff$start, iterlim = 0 )
 > d1cS$maximum - d2cS$maximum
 [1] 0
 > d1cS$gradient - d2cS$gradient
@@ -1843,37 +1143,68 @@ class
 > ## unbalanced panel data
 > nDataUnb <- nData[ -c( 2, 5, 6, 8 ), ]
 > pDataUnb <- pdata.frame( nDataUnb, c( "id", "time" ) )
-> randEffBfgsrUnb <- censReg( y ~ x1 + x2, data = pDataUnb, method = "BFGSR" )
-> print( randEffBfgsrUnb, digits = 1 )
+> randEffUnb <- censReg( y ~ x1 + x2, data = pDataUnb )
+> printAll( "randEffUnb" )
+Comparing new object 'randEffUnb' to previously saved object...
+   comparing component 'maximum' ... OK
+   comparing component 'estimate' ... OK
+   comparing component 'hessian' ... OK
+   comparing component 'fixed' ... OK
+   comparing component 'type' ... OK
+   comparing component 'gradientObs' ... OK
+   comparing component 'control' ... OK
+   comparing component 'xMean' ... OK
+   comparing component 'call' ... OK
+   comparing component 'terms' ... OK
+   comparing component 'nObs' ... OK
+   comparing component 'df.residual' ... OK
+   comparing component 'start' ... OK
+   comparing component 'left' ... OK
+   comparing component 'right' ... OK
+   comparing method 'Coef' ... OK
+   comparing method 'CoefNoLs' ... OK
+   comparing method 'Vcov' ... OK
+   comparing method 'VcovNoLs' ... OK
+   comparing method 'CoefSum' ... OK
+   comparing method 'CoefSumNoLs' ... OK
+   comparing method 'LogLik' ... OK
+   comparing method 'Nobs' ... OK
+   comparing method 'ExtractAIC' ... OK
 
 Call:
-censReg(formula = y ~ x1 + x2, data = pDataUnb, method = "BFGSR")
+censReg(formula = y ~ x1 + x2, data = pDataUnb)
 
 Coefficients:
 (Intercept)          x1          x2  logSigmaMu  logSigmaNu 
-     -0.222       1.640       2.108      -0.167      -0.001 
+     -0.225       1.641       2.112      -0.167      -0.001 
 
-> print( maxLik:::summary.maxLik( randEffBfgsrUnb ), digits = 1 )
+
+Call:
+censReg(formula = y ~ x1 + x2, data = pDataUnb)
+
+Coefficients:
+(Intercept)          x1          x2     sigmaMu     sigmaNu 
+       -0.2         1.6         2.1         0.8         1.0 
+
 --------------------------------------------
 Maximum Likelihood estimation
-BFGSR maximization, 77 iterations
-Return code 2: successive function values within tolerance limit
+Newton-Raphson maximisation, 5 iterations
+Return code 1: gradient close to zero
 Log-Likelihood: -71.193 
 5  free parameters
 Estimates:
             Estimate Std. error t value Pr(> t)    
-(Intercept)   -0.222      0.472    -0.5   0.638    
-x1             1.640      0.211     7.8   8e-15 ***
-x2             2.108      0.685     3.1   0.002 ** 
+(Intercept)   -0.225      0.473    -0.5   0.634    
+x1             1.641      0.211     7.8   8e-15 ***
+x2             2.112      0.685     3.1   0.002 ** 
 logSigmaMu    -0.167      0.271    -0.6   0.538    
 logSigmaNu    -0.001      0.132     0.0   0.993    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 --------------------------------------------
-> print( summary( randEffBfgsrUnb ), digits = 1 )
 
 Call:
-censReg(formula = y ~ x1 + x2, data = pDataUnb, method = "BFGSR")
+censReg(formula = y ~ x1 + x2, data = pDataUnb)
 
 Observations:
          Total  Left-censored     Uncensored Right-censored 
@@ -1881,149 +1212,40 @@ Observations:
 
 Coefficients:
             Estimate Std. error t value Pr(> t)    
-(Intercept)   -0.222      0.472    -0.5   0.638    
-x1             1.640      0.211     7.8   8e-15 ***
-x2             2.108      0.685     3.1   0.002 ** 
+(Intercept)   -0.225      0.473    -0.5   0.634    
+x1             1.641      0.211     7.8   8e-15 ***
+x2             2.112      0.685     3.1   0.002 ** 
 logSigmaMu    -0.167      0.271    -0.6   0.538    
 logSigmaNu    -0.001      0.132     0.0   0.993    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-BFGSR maximization, 77 iterations
-Return code 2: successive function values within tolerance limit
+Newton-Raphson maximisation, 5 iterations
+Return code 1: gradient close to zero
 Log-likelihood: -71.193 on 5 Df
 
-> logLik( randEffBfgsrUnb )
-'log Lik.' -71.193 (df=5)
-> extractAIC( randEffBfgsrUnb )
-[1] -36.00 152.39
-> printAll( randEffBfgsrUnb )
-$maximum
-[1] -71.193
 
-$estimate
-(Intercept)          x1          x2  logSigmaMu  logSigmaNu 
-      -0.22        1.64        2.11       -0.17        0.00 
+Call:
+censReg(formula = y ~ x1 + x2, data = pDataUnb)
 
-$gradient
-
-$hessian
-            (Intercept)    x1   x2 logSigmaMu logSigmaNu
-(Intercept)       -13.8  -4.3 -7.5       -1.1       -1.9
-x1                 -4.3 -25.8 -2.1        4.7        4.1
-x2                 -7.5  -2.1 -6.3       -0.1       -1.1
-logSigmaMu         -1.1   4.7 -0.1      -14.9       -3.8
-logSigmaNu         -1.9   4.1 -1.1       -3.8      -58.8
-
-$code
-[1] 2
-
-$message
-[1] "successive function values within tolerance limit"
-
-$last.step
-
-$fixed
-(Intercept)          x1          x2  logSigmaMu  logSigmaNu 
-      FALSE       FALSE       FALSE       FALSE       FALSE 
-
-$iterations
-[1] 77
-
-$type
-[1] "BFGSR maximization"
-
-$gradientObs
-      (Intercept)    x1    x2 logSigmaMu logSigmaNu
- [1,]       -0.51  0.09  0.10      -0.39      -0.53
- [2,]       -1.82  0.07 -1.25       1.80      -0.96
- [3,]        1.78  0.48  1.77       1.73       1.90
- [4,]        0.15 -0.16 -0.40      -0.74      -1.59
- [5,]        0.08  1.04  0.70      -0.68      -0.45
- [6,]        0.33 -0.23  0.37      -0.54      -1.57
- [7,]       -0.18 -3.03 -0.25      -0.62       5.48
- [8,]        0.02  0.00  0.01      -0.42      -0.58
- [9,]        1.12  0.67  0.30       0.06      -1.69
-[10,]       -0.54 -0.42 -0.20      -0.41      -1.97
-[11,]       -0.08  1.38 -0.65      -0.82       2.50
-[12,]        1.26  0.53  0.67       0.23      -1.79
-[13,]        0.45 -0.16  0.29      -0.47      -1.45
-[14,]       -1.89 -1.29 -0.96       1.98       2.68
-[15,]       -0.17  1.04 -0.50      -0.72       0.03
-
-$control
-A 'MaxControl' object with slots:
-tol = 1e-08 
-reltol = 1.4901e-08 
-gradtol = 1e-06 
-steptol = 1e-10 
-lambdatol = 1e-06 
-qrtol = 1e-10 
-qac = stephalving 
-marquardt_lambda0 = 0.01 
-marquardt_lambdaStep = 2 
-marquardt_maxLambda = 1e+12 
-nm_alpha = 1 
-nm_beta = 0.5 
-nm_gamma = 2 
-sann_cand = <default Gaussian Markov kernel>
-sann_temp = 10 
-sann_tmax = 10 
-sann_randomSeed = 123 
-iterlim = 150 
-printLevel = 0 
-
-$xMean
-(Intercept)          x1          x2 
-   1.000000    0.031414    0.518445 
-
-$call
-censReg(formula = y ~ x1 + x2, data = pDataUnb, method = "BFGSR")
-
-$terms
-y ~ x1 + x2
-attr(,"variables")
-list(y, x1, x2)
-attr(,"factors")
-   x1 x2
-y   0  0
-x1  1  0
-x2  0  1
-attr(,"term.labels")
-[1] "x1" "x2"
-attr(,"order")
-[1] 1 1
-attr(,"intercept")
-[1] 1
-attr(,"response")
-[1] 1
-attr(,".Environment")
-<environment: R_GlobalEnv>
-attr(,"predvars")
-list(y, x1, x2)
-attr(,"dataClasses")
-        y        x1        x2 
-"numeric" "numeric" "numeric" 
-
-$nObs
+Observations:
          Total  Left-censored     Uncensored Right-censored 
             56             17             39              0 
 
-$df.residual
-[1] 51
+Coefficients:
+            Estimate Std. error t value Pr(> t)    
+(Intercept)     -0.2        0.5    -0.5   0.634    
+x1               1.6        0.2     7.8   8e-15 ***
+x2               2.1        0.7     3.1   0.002 ** 
+sigmaMu          0.8        0.2     3.7   2e-04 ***
+sigmaNu          1.0        0.1     7.6   4e-14 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-$start
-(Intercept)          x1          x2  logSigmaMu  logSigmaNu 
-   0.483171    1.029986    1.634417   -0.479802   -0.049889 
+Newton-Raphson maximisation, 5 iterations
+Return code 1: gradient close to zero
+Log-likelihood: -71.193 on 5 Df
 
-$left
-[1] 0
-
-$right
-[1] Inf
-
-class
-[1] "censReg" "maxLik"  "maxim"   "list"   
 > 
 > 
 > ## NAs in data
@@ -2032,8 +1254,8 @@ class
 > pDataNa$y[ obsNa[ 1:2 ] ] <- NA
 > pDataNa$x1[ obsNa[ 3 ] ] <- NA
 > pDataNa$x2[ obsNa[ c( 1, 2, 4 ) ] ] <- NA
-> randEffBfgsrNa <- censReg( y ~ x1 + x2, data = pDataNa, method = "BFGSR" )
-> all.equal( randEffBfgsrNa[ -14 ], randEffBfgsrUnb[ -14 ] )
+> randEffNa <- censReg( y ~ x1 + x2, data = pDataNa )
+> all.equal( randEffNa[ -14 ], randEffUnb[ -14 ] )
 [1] TRUE
 > 
 > 
@@ -2085,8 +1307,12 @@ attr(,"gradient")
 [15,] -0.03  1.06 -0.42 -0.92  0.20
 > 
 > 
+> # save all objectives that were produced in this script
+> # (in order to compare them with objects created by this script in the future)
+> rm( saved )
+> save.image( "censRegPanelTest.RData" )
 > 
 > 
 > proc.time()
    user  system elapsed 
- 27.720   0.224  27.944 
+  7.876   0.104   7.991 

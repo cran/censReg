@@ -1,5 +1,12 @@
 \name{NEWS}
 \title{News for Package 'censReg'}
+\section{Changes in censReg version 0.5-26 (2017-03-21)}{
+  \itemize{
+    \item some minor internal improvements and modifications,
+      e.g. to make the 'censReg' package
+      compatible with future versions of the 'plm' package
+  }
+}
 \section{Changes in censReg version 0.5-22 (2016-08-19)}{
   \itemize{
     \item added argument 'xValues' to the \code{margEff()} method so that the user can specify

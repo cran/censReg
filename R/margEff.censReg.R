@@ -33,7 +33,7 @@ margEff.censReg <- function( object, xValues = NULL,
       names( xValues ) <- names( object$xMean )
    }
    
-   xBeta <- crossprod( xValues, beta )
+   xBeta <- drop( crossprod( xValues, beta ) )
    zRight <- ( object$right - xBeta ) / sigma
    zLeft <- ( object$left - xBeta ) / sigma
    result <- beta[ ! names( beta ) %in% c( "(Intercept)" ) ] * 

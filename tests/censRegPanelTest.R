@@ -1,23 +1,135 @@
 library( "censReg" )
 library( "plm" )
 
+# load outputs that were previously produced by this script 
+saved <- new.env()
+load( "censRegPanelTest.RData.save", envir = saved )
+
 options( digits = 5 )
 
-printAll <- function( x ) {
-   for( n in names( x ) ) {
-      cat( "$", n, "\n", sep = "" )
-      if( n %in% c( "estimate", "gradientObs" ) ) {
-         print( round( x[[ n ]], 2 ) )
-      } else if( n %in% c( "hessian" ) ) {
-         print( round( x[[ n ]], 1 ) )
-      } else if( n %in% c( "gradient" ) ) {
-      } else if( ! n %in% c( "last.step" ) ) {
-         print( x[[ n ]] )
+printAll <- function( objName, what = "print" ) {
+   cat( "Comparing new object '", objName, "' to previously saved object...",
+      sep = "" )
+   x <- get( objName )
+   if( !exists( objName, envir = saved, inherits = FALSE ) ) {
+      cat( " previously saved object not found\n" )
+   } else {
+      xSaved <- get( objName, envir = saved, inherits = FALSE )
+      if( !isTRUE( all.equal( class( x ), class( xSaved ) ) ) ) {
+         cat( " different classes:\n" )
+         cat( "new:\n" )
+         print( class( x ) )
+         cat( "saved:\n" )
+         print( class( xSaved ) )
+      } else if( !isTRUE( all.equal( names( x ), names( xSaved ) ) ) ) {
+         cat( " different names:\n" )
+         cat( "new:\n" )
+         print( names( x ) )
+         cat( "saved:\n" )
+         print( names( xSaved ) )
+      } else {
+         cat( "\n" )
       }
-      cat( "\n" )
+      for( n in names( x ) ) {
+         if( ! n %in% c( "code", "gradient", "iterations", "last.step",
+               "message" ) ) {
+            cat( "   comparing component '", n, "' ...", sep = "" )
+            testRes <-  all.equal( x[[ n ]], xSaved[[ n ]], tol = 5e-3 )
+            if( isTRUE( testRes ) ) {
+               cat( " OK\n" )
+            } else {
+               cat( " different\n" )
+               print( testRes )
+               cat( "new:\n" )
+               print( x[[ n ]] )
+               cat( "saved:\n" )
+               print( xSaved[[ n ]] )
+            }
+         }
+      }
    }
-   cat( "class\n" )
-   print( class( x ) )
+   
+   for( mName in c( "Coef", "CoefNoLs", "Vcov", "VcovNoLs",
+         "CoefSum", "CoefSumNoLs", "LogLik", "Nobs", "ExtractAIC" ) ) {
+      cat( "   comparing method '", mName, "' ...", sep = "" )
+      if( mName == "Coef" ) {
+         xm <- coef( x )
+      } else if( mName == "CoefNoLs" ) {
+         xm <- coef( x, logSigma = FALSE )
+      } else if( mName == "Vcov" ) {
+         xm <- vcov( x )
+      } else if( mName == "VcovNoLs" ) {
+         xm <- vcov( x, logSigma = FALSE )
+      } else if( mName == "CoefSum" ) {
+         xm <- coef( summary( x ) )
+      } else if( mName == "CoefSumNoLs" ) {
+         xm <- coef( summary( x ), logSigma = FALSE )
+      } else if( mName == "LogLik" ) {
+         xm <- logLik( x )
+      } else if( mName == "Nobs" ) {
+         xm <- nobs( x )
+      } else if( mName == "ExtractAIC" ) {
+         xm <- extractAIC( x )
+      } else {
+         stop( "unknown value of 'mName': ", mName )
+      }
+      methodObjName <- paste0( objName, mName )
+      if( !exists( methodObjName, envir = saved, inherits = FALSE ) ) {
+         cat( " previously saved object not found\n" )
+      } else {
+         xmSaved <- get( methodObjName, envir = saved, inherits = FALSE )
+         testRes <- all.equal( xm, xmSaved, tol = 5e-3 )
+         if( isTRUE( testRes ) ) {
+            cat( " OK\n" )
+         } else {
+            cat( " different\n" )
+            print( testRes )
+            cat( "new:\n" )
+            print( xm )
+            cat( "saved:\n" )
+            print( xmSaved )
+         }
+      }
+      # assign to parent frame so that it will be included in the saved workspace
+      assign( methodObjName, xm, envir = parent.frame() )
+   }
+      
+   if( what %in% c( "print", "methods", "all" ) ) {
+      print( x, digits = 1 )
+      print( x, logSigma = FALSE , digits = 1 )
+      print( maxLik:::summary.maxLik( x ), digits = 1 )
+      print( summary( x ), digits = 1 )
+      print( summary( x ), logSigma = FALSE , digits = 1 )
+   }
+   if( what %in% c( "methods", "all" ) ) {
+      print( round( coef( x ), 2 ) )
+      print( round( coef( x, logSigma = FALSE ), 2 ) )
+      print( round( vcov( x ), 2 ) )
+      print( round( vcov( x, logSigma = FALSE ), 2 ) )
+      print( round( coef( summary( x ) ), 2 ) )
+      print( round( coef( summary( x ), logSigma = FALSE ), 2 ) )
+      try( margEff( x ) )
+      print( logLik( x ) )
+      print( nobs( x ) )
+      print( extractAIC( x ) )
+   }
+   
+   if( what == "all" ) {
+      for( n in names( x ) ) {
+         cat( "$", n, "\n", sep = "" )
+         if( n %in% c( "estimate", "gradientObs" ) ) {
+            print( round( x[[ n ]], 2 ) )
+         } else if( n %in% c( "hessian" ) ) {
+            print( round( x[[ n ]], 1 ) )
+         } else if( n %in% c( "gradient" ) ) {
+         } else if( ! n %in% c( "last.step" ) ) {
+            print( x[[ n ]] )
+         }
+         cat( "\n" )
+      }
+      cat( "class\n" )
+      print( class( x ) )
+   }
 }
 
 nId <- 15
@@ -38,122 +150,56 @@ pData <- pdata.frame( pData, c( "id", "time" ) )
 
 ## Newton-Raphson method
 randEff <- censReg( y ~ x1 + x2, data = pData )
-print( randEff, digits = 1 )
-print( randEff, logSigma = FALSE , digits = 1 )
-print( maxLik:::summary.maxLik( randEff ), digits = 1 )
-print( summary( randEff ), digits = 1 )
-print( summary( randEff ), logSigma = FALSE , digits = 1 )
-round( coef( randEff ), 2 )
-round( coef( randEff, logSigma = FALSE ), 2 )
-round( vcov( randEff ), 2 )
-round( vcov( randEff, logSigma = FALSE ), 2 )
-round( coef( summary( randEff ) ), 2 )
-round( coef( summary( randEff ), logSigma = FALSE ), 2 )
+printAll( "randEff" )
 try( margEff( randEff ) )
-logLik( randEff )
-nobs( randEff )
-extractAIC( randEff )
-printAll( randEff )
 
 
 ## BHHH method
 randEffBhhh <- censReg( y ~ x1 + x2, data = pData, method = "BHHH" )
-print( randEffBhhh, digits = 1 )
-print( maxLik:::summary.maxLik( randEffBhhh ), digits = 1 )
-print( summary( randEffBhhh ), digits = 1 )
-printAll( randEffBhhh )
+printAll( "randEffBhhh" )
 
 
 ## BFGS method (optim)
 randEffBfgs <- censReg( y ~ x1 + x2, data = pData, method = "BFGS" )
-print( randEffBfgs, digits = 1 )
-print( maxLik:::summary.maxLik( randEffBfgs ), digits = 1 )
-print( summary( randEffBfgs ), digits = 1 )
-printAll( randEffBfgs )
+printAll( "randEffBfgs" )
 
 
 ## BFGS method (R)
 randEffBfgsr <- censReg( y ~ x1 + x2, data = pData, method = "BFGSR" )
-print( randEffBfgsr, digits = 1 )
-print( maxLik:::summary.maxLik( randEffBfgsr ), digits = 1 )
-print( summary( randEffBfgsr ), digits = 1 )
-printAll( randEffBfgsr )
+printAll( "randEffBfgsr", what = "none" )
 
 
 ## BHHH with starting values
 randEffBhhhStart <- censReg( y ~ x1 + x2, data = pData, method = "BHHH",
    start = c( -0.4, 1.7, 2.2, -0.1, -0.01 ) )
-print( randEffBhhhStart, digits = 1 )
-print( summary( randEffBhhhStart ), digits = 1 )
-nobs( randEffBhhhStart )
+printAll( "randEffBhhhStart" )
 
 
 ## left-censoring at 5
 pData$yAdd <- pData$y + 5
-randEffAdd <- censReg( yAdd ~ x1 + x2, data = pData, method = "BFGSR", left = 5 )
-print( randEffAdd, digits = 1 )
-print( maxLik:::summary.maxLik( randEffAdd ), digits = 1 )
-print( summary( randEffAdd ), digits = 1 )
-round( coef( randEffAdd ), 2 )
-round( coef( randEffAdd, logSigma = FALSE ), 2 )
-round( vcov( randEffAdd ), 2 )
-round( vcov( randEffAdd, logSigma = FALSE ), 2 )
-logLik( randEffAdd )
-nobs( randEffAdd )
-extractAIC( randEffAdd )
-printAll( randEffAdd )
+randEffAdd <- censReg( yAdd ~ x1 + x2, data = pData, left = 5 )
+printAll( "randEffAdd" )
 
 
 ## right-censoring
 pData$yNeg <- - pData$y
-randEffNeg <- censReg( yNeg ~ x1 + x2, data = pData, method = "BFGSR",
+randEffNeg <- censReg( yNeg ~ x1 + x2, data = pData, 
    left = -Inf, right = 0 )
-print( randEffNeg, digits = 1 )
-print( maxLik:::summary.maxLik( randEffNeg ), digits = 1 )
-print( summary( randEffNeg ), digits = 1 )
-round( coef( randEffNeg ), 2 )
-round( coef( randEffNeg, logSigma = FALSE ), 2 )
-round( vcov( randEffNeg ), 2 )
-round( vcov( randEffNeg, logSigma = FALSE ), 2 )
-logLik( randEffNeg )
-extractAIC( randEffNeg )
-printAll( randEffNeg )
+printAll( "randEffNeg" )
 
 
 ## right-censoring at -5
 pData$yAddNeg <- - pData$yAdd
-randEffAddNeg <- censReg( yAddNeg ~ x1 + x2, data = pData, method = "BFGSR",
+randEffAddNeg <- censReg( yAddNeg ~ x1 + x2, data = pData, 
    left = -Inf, right = -5 )
-print( randEffAddNeg, digits = 1 )
-print( maxLik:::summary.maxLik( randEffAddNeg ), digits = 1 )
-print( summary( randEffAddNeg ), digits = 1 )
-round( coef( randEffAddNeg ), 2 )
-round( coef( randEffAddNeg, logSigma = FALSE ), 2 )
-round( vcov( randEffAddNeg ), 2 )
-round( vcov( randEffAddNeg, logSigma = FALSE ), 2 )
-logLik( randEffAddNeg )
-extractAIC( randEffAddNeg )
-printAll( randEffAddNeg )
+printAll( "randEffAddNeg" )
 
 
 ## both right and left censoring
 pData$yBoth <- ifelse( pData$y < 3, pData$y, 3 )
-randEffBoth <- censReg( yBoth ~ x1 + x2, data = pData, method = "BFGSR",
+randEffBoth <- censReg( yBoth ~ x1 + x2, data = pData, 
    left = 0, right = 3 )
-print( randEffBoth, digits = 1 )
-print( maxLik:::summary.maxLik( randEffBoth ), digits = 1 )
-print( summary( randEffBoth ), digits = 1 )
-print( summary( randEffBoth ), logSigma = FALSE , digits = 1 )
-round( coef( randEffBoth ), 2 )
-round( coef( randEffBoth, logSigma = FALSE ), 2 )
-round( vcov( randEffBoth ), 2 )
-round( vcov( randEffBoth, logSigma = FALSE ), 2 )
-round( coef( summary( randEffBoth ) ), 2 )
-round( coef( summary( randEffBoth ), logSigma = FALSE ), 2 )
-logLik( randEffBoth )
-nobs( randEffBoth )
-extractAIC( randEffBoth )
-printAll( randEffBoth )
+printAll( "randEffBoth" )
 
 
 ## re-order observations/individuals
@@ -166,38 +212,38 @@ for( i in 1:nId ) {
       paste( "G", perm[ i ], sep = "_" )
 }
 pData2 <- pdata.frame( nData2, c( "id", "time" ) )
-randEffBfgsr2 <- censReg( y ~ x1 + x2, data = pData2, method = "BFGSR" )
-all.equal( randEffBfgsr2[ -c(3,5,6,7,9,11,14) ],
-   randEffBfgsr[ -c(3,5,6,7,9,11,14) ], tolerance = 1e-2 )
+randEff2 <- censReg( y ~ x1 + x2, data = pData2 )
+all.equal( randEff2[ -c(3,5,6,7,9,11,14) ],
+   randEff[ -c(3,5,6,7,9,11,14) ], tolerance = 1e-2 )
 
 # check if the order of observations/individuals influences the likelihood values
-d1c1 <- censReg( y ~ x1 + x2, data = pData, method = "BFGSR", start = coef(randEffBfgsr),
+d1c1 <- censReg( y ~ x1 + x2, data = pData, start = coef(randEff),
    iterlim = 0 )
-all.equal( d1c1[-c(5,6,7,9,12,14,18)], randEffBfgsr[-c(5,6,7,9,12,14,18)] )
-d1c1$maximum -  randEffBfgsr$maximum
+all.equal( d1c1[-c(5,6,7,9,12,14,18)], randEff[-c(5,6,7,9,12,14,18)] )
+d1c1$maximum -  randEff$maximum
 
-d2c2 <- censReg( y ~ x1 + x2, data = pData2, method = "BFGSR", start = coef(randEffBfgsr2),
+d2c2 <- censReg( y ~ x1 + x2, data = pData2, start = coef(randEff2),
    iterlim = 0 )
-all.equal( d2c2[-c(5,6,7,9,12,14,18)], randEffBfgsr2[-c(5,6,7,9,12,14,18)] )
-d2c2$maximum -  randEffBfgsr2$maximum
+all.equal( d2c2[-c(5,6,7,9,12,14,18)], randEff2[-c(5,6,7,9,12,14,18)] )
+d2c2$maximum -  randEff2$maximum
 
-d1c2 <- censReg( y ~ x1 + x2, data = pData, method = "BFGSR", 
-   start = coef(randEffBfgsr2), iterlim = 0 )
+d1c2 <- censReg( y ~ x1 + x2, data = pData,  
+   start = coef(randEff2), iterlim = 0 )
 d2c2$maximum - d1c2$maximum
 d2c2$gradient - d1c2$gradient
 
-d2c1 <- censReg( y ~ x1 + x2, data = pData2, method = "BFGSR", 
-   start = coef(randEffBfgsr), iterlim = 0 )
+d2c1 <- censReg( y ~ x1 + x2, data = pData2, 
+   start = coef(randEff), iterlim = 0 )
 d1c1$maximum - d2c1$maximum
 d1c1$gradient - d2c1$gradient
 
 round( d2c2$maximum - d2c1$maximum, 3 )
 round( d1c1$maximum - d1c2$maximum, 3 )
 
-d1cS <- censReg( y ~ x1 + x2, data = pData, method = "BFGSR", 
-   start = randEffBfgsr$start, iterlim = 0 )
-d2cS <- censReg( y ~ x1 + x2, data = pData2, method = "BFGSR", 
-   start = randEffBfgsr$start, iterlim = 0 )
+d1cS <- censReg( y ~ x1 + x2, data = pData, 
+   start = randEff$start, iterlim = 0 )
+d2cS <- censReg( y ~ x1 + x2, data = pData2, 
+   start = randEff$start, iterlim = 0 )
 d1cS$maximum - d2cS$maximum
 d1cS$gradient - d2cS$gradient
 
@@ -205,13 +251,8 @@ d1cS$gradient - d2cS$gradient
 ## unbalanced panel data
 nDataUnb <- nData[ -c( 2, 5, 6, 8 ), ]
 pDataUnb <- pdata.frame( nDataUnb, c( "id", "time" ) )
-randEffBfgsrUnb <- censReg( y ~ x1 + x2, data = pDataUnb, method = "BFGSR" )
-print( randEffBfgsrUnb, digits = 1 )
-print( maxLik:::summary.maxLik( randEffBfgsrUnb ), digits = 1 )
-print( summary( randEffBfgsrUnb ), digits = 1 )
-logLik( randEffBfgsrUnb )
-extractAIC( randEffBfgsrUnb )
-printAll( randEffBfgsrUnb )
+randEffUnb <- censReg( y ~ x1 + x2, data = pDataUnb )
+printAll( "randEffUnb" )
 
 
 ## NAs in data
@@ -220,8 +261,8 @@ obsNa <- which( ! rownames( pData ) %in% rownames( pDataUnb ) )
 pDataNa$y[ obsNa[ 1:2 ] ] <- NA
 pDataNa$x1[ obsNa[ 3 ] ] <- NA
 pDataNa$x2[ obsNa[ c( 1, 2, 4 ) ] ] <- NA
-randEffBfgsrNa <- censReg( y ~ x1 + x2, data = pDataNa, method = "BFGSR" )
-all.equal( randEffBfgsrNa[ -14 ], randEffBfgsrUnb[ -14 ] )
+randEffNa <- censReg( y ~ x1 + x2, data = pDataNa )
+all.equal( randEffNa[ -14 ], randEffUnb[ -14 ] )
 
 
 # returning log-likelihood contributions only (no estimations)
@@ -235,4 +276,8 @@ print( round( c( logLikStart ), 3 ) )
 print( round( attr( logLikStart, "gradient" ), 2 ) )
 
 
+# save all objectives that were produced in this script
+# (in order to compare them with objects created by this script in the future)
+rm( saved )
+save.image( "censRegPanelTest.RData" )
 
