@@ -4,20 +4,59 @@ library( "sandwich" )
 
 options( digits = 5 )
 
-printAll <- function( x ) {
+printAll <- function( x, logSigmaFalse = FALSE, sDigits = 2, 
+      meCalcVCov = TRUE, meReturnJacobian = FALSE,
+      sumMeCalcVCov = TRUE, sumMeReturnJacobian = FALSE ) {
    for( n in names( x ) ) {
-      cat( "$", n, "\n", sep = "" )
-      if( n %in% c( "estimate", "hessian", "gradientObs" ) ) {
-         print( round( x[[ n ]], 2 ) )
-      } else if( n %in% c( "gradient" ) ) {
-         print( round( x[[ n ]], 3 ) )
-      } else {
-         print( x[[ n ]] )
+      if( ! n %in% c( "code", "message", "iterations" ) ) {
+         cat( "$", n, "\n", sep = "" )
+         if( n %in% c( "estimate", "hessian", "gradientObs" ) ) {
+            print( round( x[[ n ]], 2 ) )
+         } else if( n %in% c( "gradient" ) ) {
+            print( round( x[[ n ]], 3 ) )
+         } else {
+            print( x[[ n ]] )
+         }
+         cat( "\n" )
       }
-      cat( "\n" )
    }
    cat( "class\n" )
    print( class( x ) )
+   
+   cat( "print( x, digits = 2 )\n" )
+   print( x, digits = 2 )
+   
+   if( logSigmaFalse ) {
+      cat( "print( x, logSigma = FALSE, digits = 2 )\n" )
+      print( x, logSigma = FALSE, digits = 2 )
+   }
+   
+   cat( "print( round( margEff( x ), digits = 2 ) )\n" )
+   print( round( margEff( x, calcVCov = meCalcVCov, 
+      returnJacobian = meReturnJacobian ), 2 ) )
+   
+   cat( "printME( margEff( x ) )\n" )
+   printME( margEff( x, calcVCov = meCalcVCov,
+      returnJacobian = meReturnJacobian ) )
+   
+   cat( "print( summary( margEff( x ) ), digits = sDigits )\n" )
+   print( summary( margEff( x, calcVCov = sumMeCalcVCov, 
+      returnJacobian = sumMeReturnJacobian ) ), digits = sDigits )
+   
+   x$code <- 0
+   x$message <- "removed message"
+   x$iterations <- 0
+   
+   cat( "print( maxLik:::summary.maxLik( x ), sDigits )\n" )
+   print( maxLik:::summary.maxLik( x ), digits = sDigits )
+   
+   cat( "print( summary( x ), digits = sDigits )\n" )
+   print( summary( x ), digits = sDigits )
+   
+   if( logSigmaFalse ) {
+      cat( "print( summary( x ), logSigma = FALSE, digits = sDigits )\n" )
+      print( summary( x ), logSigma = FALSE, digits = sDigits )
+   }
 }
 
 printME <- function( x ) {
@@ -43,21 +82,13 @@ affairsFormula <- affairs ~ age + yearsmarried + religiousness +
 
 ## usual tobit estimation
 estResult <- censReg( affairsFormula, data = Affairs )
-printAll( estResult )
-print( estResult, digits = 2 )
-print( estResult, logSigma = FALSE, digits = 2 )
-print( maxLik:::summary.maxLik( estResult ), digits = 1 )
-print( summary( estResult ), digits = 1 )
-print( summary( estResult ), logSigma = FALSE, digits = 1 )
+printAll( estResult, logSigmaFalse = TRUE, sDigits = 1 )
 round( coef( estResult ), 2 )
 round( coef( estResult, logSigma = FALSE ), 2 )
 round( vcov( estResult ), 2 )
 round( vcov( estResult, logSigma = FALSE ), 2 )
 round( coef( summary( estResult ) ), 2 )
 round( coef( summary( estResult ), logSigma = FALSE ), 2 )
-round( margEff( estResult ), 2 )
-printME( margEff( estResult ) )
-summary( margEff( estResult ) )
 all.equal( margEff( estResult ),
    margEff( estResult, xValues = estResult$xMean ) )
 round( margEff( estResult, xValues = c( 1, 40, 4, 2, 4, 4 ) ), 2 )
@@ -70,7 +101,7 @@ extractAIC( estResult )
 formula( estResult )
 model.frame( estResult )
 round( estfun( estResult )[ 20 * c(1:30), ], 2 )
-meat( estResult )
+round( meat( estResult ), 2 )
 round( bread( estResult ), 2 )
 round( sandwich( estResult ), 2 )
 # all.equal( sandwich( estResult ), vcov( estResult ) )
@@ -79,59 +110,27 @@ waldtest( estResult, . ~ . - age, vcov = sandwich( estResult ) )
 
 ## usual tobit estimation, BHHH method
 estResultBhhh <- censReg( affairsFormula, data = Affairs, method = "BHHH" )
-printAll( estResultBhhh )
-print( estResultBhhh, digits = 2 )
-round( margEff( estResultBhhh, returnJacobian = TRUE ), 2 )
-printME( margEff( estResultBhhh, returnJacobian = TRUE ) )
-print( summary( margEff( estResultBhhh ) ), digits = 2 )
-print( maxLik:::summary.maxLik( estResultBhhh ), digits = 2 )
-print( summary( estResultBhhh ), digits = 2 )
+printAll( estResultBhhh, meReturnJacobian = TRUE )
 all.equal( -crossprod( estfun( estResultBhhh ) ), 
    hessian( estResultBhhh ), check.attributes = FALSE )
 all.equal( sandwich( estResultBhhh ), vcov( estResultBhhh ) )
 
 ## usual tobit estimation, BFGS method
 estResultBfgs <- censReg( affairsFormula, data = Affairs, method = "BFGS" )
-printAll( estResultBfgs )
-print( estResultBfgs, digits = 2 )
-round( margEff( estResultBfgs, calcVCov = FALSE ), 2 )
-printME( margEff( estResultBfgs, calcVCov = FALSE ) )
-print( summary( margEff( estResultBfgs ) ), digits = 2 )
-print( maxLik:::summary.maxLik( estResultBfgs ), 2 )
-print( summary( estResultBfgs ), digits = 2 )
+printAll( estResultBfgs, meCalcVCov = FALSE )
 
 ## usual tobit estimation, NM method
 estResultNm <- censReg( affairsFormula, data = Affairs, method = "NM" )
 printAll( estResultNm )
-print( estResultNm, digits = 2 )
-round( margEff( estResultNm ), 2 )
-printME( margEff( estResultNm ) )
-print( summary( margEff( estResultNm ) ), digits = 2 )
-print( maxLik:::summary.maxLik( estResultNm ), digits = 2 )
-print( summary( estResultNm ), digits = 2 )
 
 ## usual tobit estimation, SANN method
 estResultSann <- censReg( affairsFormula, data = Affairs, method = "SANN" )
 printAll( estResultSann )
-print( estResultSann, digits = 2 )
-round( margEff( estResultSann ), 2 )
-printME( margEff( estResultSann ) )
-print( summary( margEff( estResultSann ) ), digits = 2 )
-print( maxLik:::summary.maxLik( estResultSann ), digits = 2 )
-print( summary( estResultSann ), digits = 2 )
 
 ## usual tobit estimation with user-defined starting values
 estResultStart <- censReg( affairsFormula, data = Affairs,
    start = c( 8.17, -0.18, 0.55, -1.69, 0.33, -2.3, 2.13 ) )
-printAll( estResultStart )
-print( estResultStart, digits = 2 )
-round( margEff( estResultStart ), 2 )
-printME( margEff( estResultStart ) )
-print( summary(
-   margEff( estResultStart, calcVCov = FALSE, returnJacobian = TRUE ) ),
-   digits = 2 )
-print( maxLik:::summary.maxLik( estResultStart ), digits = 2 )
-print( summary( estResultStart ), digits = 2 )
+printAll( estResultStart, sumMeCalcVCov = FALSE, sumMeReturnJacobian = TRUE )
 logLik( estResultStart )
 nobs( estResultStart )
 formula( estResultStart )
@@ -140,13 +139,7 @@ formula( estResultStart )
 Affairs$affairsAdd <- Affairs$affairs + 5
 estResultAdd <- censReg( affairsAdd ~ age + yearsmarried + religiousness +
    occupation + rating, data = Affairs, left = 5 )
-printAll( estResultAdd )
-print( estResultAdd, digits = 2 )
-round( margEff( estResultAdd ), 2 )
-printME( margEff( estResultAdd ) )
-print( summary( margEff( estResultAdd, returnJacobian = TRUE ) ), digits = 2 )
-print( maxLik:::summary.maxLik( estResultAdd ), digits = 2 )
-print( summary( estResultAdd ), digits = 2 )
+printAll( estResultAdd, sumMeReturnJacobian = TRUE )
 round( coef( estResultAdd ), 2 )
 round( coef( estResultAdd, logSigma = FALSE ), 2 )
 round( vcov( estResultAdd ), 2 )
@@ -159,13 +152,7 @@ extractAIC( estResultAdd )
 Affairs$affairsNeg <- - Affairs$affairs
 estResultNeg <- censReg( affairsNeg ~ age + yearsmarried + religiousness +
    occupation + rating, data = Affairs, left = -Inf, right = 0 )
-printAll( estResultNeg )
-print( estResultNeg, digits = 2 )
-round( margEff( estResultNeg, calcVCov = FALSE, returnJacobian = TRUE ), 2 )
-printME( margEff( estResultNeg, calcVCov = FALSE, returnJacobian = TRUE ) )
-print( summary( margEff( estResultNeg ) ), digits = 2 )
-print( maxLik:::summary.maxLik( estResultNeg ), digits = 2 )
-print( summary( estResultNeg ), digits = 2 )
+printAll( estResultNeg, meCalcVCov = FALSE, meReturnJacobian = TRUE )
 round( coef( estResultNeg ), 2 )
 round( coef( estResultNeg, logSigma = FALSE ), 2 )
 round( vcov( estResultNeg ), 2 )
@@ -179,13 +166,7 @@ model.frame( estResultNeg )
 Affairs$affairsAddNeg <- - Affairs$affairsAdd
 estResultAddNeg <- censReg( affairsAddNeg ~ age + yearsmarried + religiousness +
    occupation + rating, data = Affairs, left = -Inf, right = -5 )
-printAll( estResultAddNeg )
-print( estResultAddNeg, digits = 2 )
-round( margEff( estResultAddNeg ), 2 )
-printME( margEff( estResultAddNeg ) )
-print( summary( margEff( estResultAddNeg, calcVCov = FALSE ) ), digits = 2 )
-print( maxLik:::summary.maxLik( estResultAddNeg ), digits = 2 )
-print( summary( estResultAddNeg ), digits = 2 )
+printAll( estResultAddNeg, sumMeCalcVCov = FALSE )
 round( coef( estResultAddNeg ), 2 )
 round( coef( estResultAddNeg, logSigma = FALSE ), 2 )
 round( vcov( estResultAddNeg ), 2 )
@@ -196,14 +177,7 @@ extractAIC( estResultAddNeg )
 
 ## estimation with left and right censoring
 estResultBoth <- censReg( affairsFormula, data = Affairs, right = 4 )
-printAll( estResultBoth )
-print( estResultBoth, digits = 2 )
-round( margEff( estResultBoth ), 2 )
-printME( margEff( estResultBoth ) )
-print( summary( margEff( estResultBoth ) ), digits = 2 )
-print( maxLik:::summary.maxLik( estResultBoth ), digits = 2 )
-print( summary( estResultBoth ), digits = 2 )
-print( summary( estResultBoth ), logSigma = FALSE, digits = 2 )
+printAll( estResultBoth, logSigmaFalse = TRUE )
 round( coef( estResultBoth ), 2 )
 round( coef( estResultBoth, logSigma = FALSE ), 2 )
 round( vcov( estResultBoth ), 2 )
@@ -227,18 +201,13 @@ Affairs2$religiousness <- as.factor( Affairs2$religiousness )
 Affairs2 <- Affairs2[ Affairs2$religiousness != "5", ]
 estResultEmpty <- censReg( affairsFormula, data = Affairs2 )
 printAll( estResultEmpty )
-print( estResultEmpty, digits = 2 )
-print( summary( estResultEmpty ), digits = 2 )
 round( coef( estResultEmpty ), 2 )
 round( vcov( estResultEmpty ), 2 )
-round( margEff( estResultEmpty ), 2 )
-printME( margEff( estResultEmpty ) )
-print( summary( margEff( estResultEmpty ) ), 2 )
 formula( estResultEmpty )
 model.frame( estResultEmpty )
 round( estfun( estResultEmpty )[ 20 * c(1:26), ], 2 )
 round( meat( estResultEmpty ), 2 )
-round( bread( estResultEmpty ), 2 )
+round( bread( estResultEmpty ), 1 )
 round( sandwich( estResultEmpty ), 2 )
 # all.equal( sandwich( estResultEmpty ), vcov( estResultEmpty ) )
 waldtest( estResultEmpty, . ~ . - age )

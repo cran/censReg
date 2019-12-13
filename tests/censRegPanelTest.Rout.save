@@ -1,6 +1,6 @@
 
-R version 3.3.3 (2017-03-06) -- "Another Canoe"
-Copyright (C) 2017 The R Foundation for Statistical Computing
+R version 3.6.1 (2019-07-05) -- "Action of the Toes"
+Copyright (C) 2019 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -31,7 +31,6 @@ Henningsen, Arne (2017). censReg: Censored Regression (Tobit) Models. R package 
 If you have questions, suggestions, or comments regarding the 'censReg' package, please use a forum or 'tracker' at the R-Forge site of the 'sampleSelection' project:
 https://r-forge.r-project.org/projects/sampleselection/
 > library( "plm" )
-Loading required package: Formula
 > 
 > # load outputs that were previously produced by this script 
 > saved <- new.env()
@@ -66,7 +65,14 @@ Loading required package: Formula
 +          if( ! n %in% c( "code", "gradient", "iterations", "last.step",
 +                "message" ) ) {
 +             cat( "   comparing component '", n, "' ...", sep = "" )
-+             testRes <-  all.equal( x[[ n ]], xSaved[[ n ]], tol = 5e-3 )
++             if( n == "vcov" ) {
++                tol <- 5e-1
++             } else if( n == "estimate" ) {
++                tol <- 5e-2
++             } else {
++                tol <- 5e-3
++             }
++             testRes <-  all.equal( x[[ n ]], xSaved[[ n ]], tol = tol )
 +             if( isTRUE( testRes ) ) {
 +                cat( " OK\n" )
 +             } else {
@@ -84,18 +90,25 @@ Loading required package: Formula
 +    for( mName in c( "Coef", "CoefNoLs", "Vcov", "VcovNoLs",
 +          "CoefSum", "CoefSumNoLs", "LogLik", "Nobs", "ExtractAIC" ) ) {
 +       cat( "   comparing method '", mName, "' ...", sep = "" )
++       tol <- 5e-3
 +       if( mName == "Coef" ) {
 +          xm <- coef( x )
++          tol <- 5e-2
 +       } else if( mName == "CoefNoLs" ) {
 +          xm <- coef( x, logSigma = FALSE )
++          tol <- 5e-2
 +       } else if( mName == "Vcov" ) {
 +          xm <- vcov( x )
++          tol <- 5e-1
 +       } else if( mName == "VcovNoLs" ) {
 +          xm <- vcov( x, logSigma = FALSE )
++          tol <- 5e-1
 +       } else if( mName == "CoefSum" ) {
 +          xm <- coef( summary( x ) )
++          tol <- 5e-2
 +       } else if( mName == "CoefSumNoLs" ) {
 +          xm <- coef( summary( x ), logSigma = FALSE )
++          tol <- 5e-2
 +       } else if( mName == "LogLik" ) {
 +          xm <- logLik( x )
 +       } else if( mName == "Nobs" ) {
@@ -110,7 +123,7 @@ Loading required package: Formula
 +          cat( " previously saved object not found\n" )
 +       } else {
 +          xmSaved <- get( methodObjName, envir = saved, inherits = FALSE )
-+          testRes <- all.equal( xm, xmSaved, tol = 5e-3 )
++          testRes <- all.equal( xm, xmSaved, tol = tol )
 +          if( isTRUE( testRes ) ) {
 +             cat( " OK\n" )
 +          } else {
@@ -191,6 +204,7 @@ Comparing new object 'randEff' to previously saved object...
    comparing component 'type' ... OK
    comparing component 'gradientObs' ... OK
    comparing component 'control' ... OK
+   comparing component 'objectiveFn' ... OK
    comparing component 'xMean' ... OK
    comparing component 'call' ... OK
    comparing component 'terms' ... OK
@@ -287,7 +301,143 @@ Log-likelihood: -73.199 on 5 Df
 > try( margEff( randEff ) )
 Error in margEff.censReg(randEff) : 
   the margEff() method for objects of class 'censReg' can not yet be used for panel data models
-> 
+> # only intercept
+> randEffOnlyInt <- censReg( y ~ 1, data = pData )
+> printAll( "randEffOnlyInt", what = "diff" )
+Comparing new object 'randEffOnlyInt' to previously saved object...
+   comparing component 'maximum' ... OK
+   comparing component 'estimate' ... OK
+   comparing component 'hessian' ... OK
+   comparing component 'fixed' ... OK
+   comparing component 'type' ... OK
+   comparing component 'gradientObs' ... OK
+   comparing component 'control' ... OK
+   comparing component 'objectiveFn' ... OK
+   comparing component 'xMean' ... OK
+   comparing component 'call' ... OK
+   comparing component 'terms' ... OK
+   comparing component 'nObs' ... OK
+   comparing component 'df.residual' ... OK
+   comparing component 'start' ... OK
+   comparing component 'left' ... OK
+   comparing component 'right' ... OK
+   comparing method 'Coef' ... OK
+   comparing method 'CoefNoLs' ... OK
+   comparing method 'Vcov' ... OK
+   comparing method 'VcovNoLs' ... OK
+   comparing method 'CoefSum' ... OK
+   comparing method 'CoefSumNoLs' ... OK
+   comparing method 'LogLik' ... OK
+   comparing method 'Nobs' ... OK
+   comparing method 'ExtractAIC' ... OK
+Warning messages:
+1: In sqrt(diag(vc)) : NaNs produced
+2: In sqrt(diag(vc)) : NaNs produced
+3: In sqrt(diag(vc)) : NaNs produced
+4: In sqrt(diag(vc)) : NaNs produced
+> # no intercept
+> randEffNoInt <- censReg( y ~ x1 -1, data = pData )
+> printAll( "randEffNoInt" )
+Comparing new object 'randEffNoInt' to previously saved object...
+   comparing component 'maximum' ... OK
+   comparing component 'estimate' ... OK
+   comparing component 'hessian' ... OK
+   comparing component 'fixed' ... OK
+   comparing component 'type' ... OK
+   comparing component 'gradientObs' ... OK
+   comparing component 'control' ... OK
+   comparing component 'objectiveFn' ... OK
+   comparing component 'xMean' ... OK
+   comparing component 'call' ... OK
+   comparing component 'terms' ... OK
+   comparing component 'nObs' ... OK
+   comparing component 'df.residual' ... OK
+   comparing component 'start' ... OK
+   comparing component 'left' ... OK
+   comparing component 'right' ... OK
+   comparing method 'Coef' ... OK
+   comparing method 'CoefNoLs' ... OK
+   comparing method 'Vcov' ... OK
+   comparing method 'VcovNoLs' ... OK
+   comparing method 'CoefSum' ... OK
+   comparing method 'CoefSumNoLs' ... OK
+   comparing method 'LogLik' ... OK
+   comparing method 'Nobs' ... OK
+   comparing method 'ExtractAIC' ... OK
+
+Call:
+censReg(formula = y ~ x1 - 1, data = pData)
+
+Coefficients:
+        x1 logSigmaMu logSigmaNu 
+       1.9        0.1        0.2 
+
+
+Call:
+censReg(formula = y ~ x1 - 1, data = pData)
+
+Coefficients:
+     x1 sigmaMu sigmaNu 
+      2       1       1 
+
+--------------------------------------------
+Maximum Likelihood estimation
+Newton-Raphson maximisation, 5 iterations
+Return code 1: gradient close to zero
+Log-Likelihood: -81.186 
+3  free parameters
+Estimates:
+           Estimate Std. error t value Pr(> t)    
+x1              1.9        0.3     7.3   2e-13 ***
+logSigmaMu      0.1        0.2     0.5     0.6    
+logSigmaNu      0.2        0.1     1.6     0.1    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+--------------------------------------------
+
+Call:
+censReg(formula = y ~ x1 - 1, data = pData)
+
+Observations:
+         Total  Left-censored     Uncensored Right-censored 
+            60             20             40              0 
+
+Coefficients:
+           Estimate Std. error t value Pr(> t)    
+x1              1.9        0.3     7.3   2e-13 ***
+logSigmaMu      0.1        0.2     0.5     0.6    
+logSigmaNu      0.2        0.1     1.6     0.1    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Newton-Raphson maximisation, 5 iterations
+Return code 1: gradient close to zero
+Log-likelihood: -81.186 on 3 Df
+
+
+Call:
+censReg(formula = y ~ x1 - 1, data = pData)
+
+Observations:
+         Total  Left-censored     Uncensored Right-censored 
+            60             20             40              0 
+
+Coefficients:
+        Estimate Std. error t value Pr(> t)    
+x1           1.9        0.3       7   2e-13 ***
+sigmaMu      1.1        0.3       4   6e-05 ***
+sigmaNu      1.2        0.2       8   2e-14 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Newton-Raphson maximisation, 5 iterations
+Return code 1: gradient close to zero
+Log-likelihood: -81.186 on 3 Df
+
+> # neither intercept nor explanatory variables
+> try( censReg( y ~ -1, data = pData ) )
+Error in censReg(y ~ -1, data = pData) : 
+  argument 'formula' seems to have neither an intercept nor any explanatory variables
 > 
 > ## BHHH method
 > randEffBhhh <- censReg( y ~ x1 + x2, data = pData, method = "BHHH" )
@@ -300,6 +450,7 @@ Comparing new object 'randEffBhhh' to previously saved object...
    comparing component 'type' ... OK
    comparing component 'gradientObs' ... OK
    comparing component 'control' ... OK
+   comparing component 'objectiveFn' ... OK
    comparing component 'xMean' ... OK
    comparing component 'call' ... OK
    comparing component 'terms' ... OK
@@ -407,6 +558,7 @@ Comparing new object 'randEffBfgs' to previously saved object...
    comparing component 'constraints' ... OK
    comparing component 'gradientObs' ... OK
    comparing component 'control' ... OK
+   comparing component 'objectiveFn' ... OK
    comparing component 'xMean' ... OK
    comparing component 'call' ... OK
    comparing component 'terms' ... OK
@@ -513,6 +665,7 @@ Comparing new object 'randEffBfgsr' to previously saved object...
    comparing component 'type' ... OK
    comparing component 'gradientObs' ... OK
    comparing component 'control' ... OK
+   comparing component 'objectiveFn' ... OK
    comparing component 'xMean' ... OK
    comparing component 'call' ... OK
    comparing component 'terms' ... OK
@@ -544,6 +697,7 @@ Comparing new object 'randEffBhhhStart' to previously saved object...
    comparing component 'type' ... OK
    comparing component 'gradientObs' ... OK
    comparing component 'control' ... OK
+   comparing component 'objectiveFn' ... OK
    comparing component 'xMean' ... OK
    comparing component 'call' ... OK
    comparing component 'terms' ... OK
@@ -655,6 +809,7 @@ Comparing new object 'randEffAdd' to previously saved object...
    comparing component 'type' ... OK
    comparing component 'gradientObs' ... OK
    comparing component 'control' ... OK
+   comparing component 'objectiveFn' ... OK
    comparing component 'xMean' ... OK
    comparing component 'call' ... OK
    comparing component 'terms' ... OK
@@ -763,6 +918,7 @@ Comparing new object 'randEffNeg' to previously saved object...
    comparing component 'type' ... OK
    comparing component 'gradientObs' ... OK
    comparing component 'control' ... OK
+   comparing component 'objectiveFn' ... OK
    comparing component 'xMean' ... OK
    comparing component 'call' ... OK
    comparing component 'terms' ... OK
@@ -871,6 +1027,7 @@ Comparing new object 'randEffAddNeg' to previously saved object...
    comparing component 'type' ... OK
    comparing component 'gradientObs' ... OK
    comparing component 'control' ... OK
+   comparing component 'objectiveFn' ... OK
    comparing component 'xMean' ... OK
    comparing component 'call' ... OK
    comparing component 'terms' ... OK
@@ -983,6 +1140,7 @@ Comparing new object 'randEffBoth' to previously saved object...
    comparing component 'type' ... OK
    comparing component 'gradientObs' ... OK
    comparing component 'control' ... OK
+   comparing component 'objectiveFn' ... OK
    comparing component 'xMean' ... OK
    comparing component 'call' ... OK
    comparing component 'terms' ... OK
@@ -1089,38 +1247,38 @@ Log-likelihood: -64.313 on 5 Df
 + }
 > pData2 <- pdata.frame( nData2, c( "id", "time" ) )
 > randEff2 <- censReg( y ~ x1 + x2, data = pData2 )
-> all.equal( randEff2[ -c(3,5,6,7,9,11,14) ],
-+    randEff[ -c(3,5,6,7,9,11,14) ], tolerance = 1e-2 )
+> all.equal( randEff2[ -c(3,5,6,7,9,11,15) ],
++    randEff[ -c(3,5,6,7,9,11,15) ], tolerance = 1e-2 )
 [1] TRUE
 > 
 > # check if the order of observations/individuals influences the likelihood values
 > d1c1 <- censReg( y ~ x1 + x2, data = pData, start = coef(randEff),
 +    iterlim = 0 )
-> all.equal( d1c1[-c(5,6,7,9,12,14,18)], randEff[-c(5,6,7,9,12,14,18)] )
+> all.equal( d1c1[-c(5,6,7,9,12,15,19)], randEff[-c(5,6,7,9,12,15,19)] )
 [1] TRUE
-> d1c1$maximum -  randEff$maximum
+> round( d1c1$maximum -  randEff$maximum, 12 )
 [1] 0
 > 
 > d2c2 <- censReg( y ~ x1 + x2, data = pData2, start = coef(randEff2),
 +    iterlim = 0 )
-> all.equal( d2c2[-c(5,6,7,9,12,14,18)], randEff2[-c(5,6,7,9,12,14,18)] )
+> all.equal( d2c2[-c(5,6,7,9,12,15,19)], randEff2[-c(5,6,7,9,12,15,19)] )
 [1] TRUE
-> d2c2$maximum -  randEff2$maximum
+> round( d2c2$maximum -  randEff2$maximum, 12 )
 [1] 0
 > 
 > d1c2 <- censReg( y ~ x1 + x2, data = pData,  
 +    start = coef(randEff2), iterlim = 0 )
-> d2c2$maximum - d1c2$maximum
+> round( d2c2$maximum - d1c2$maximum, 12 )
 [1] 0
-> d2c2$gradient - d1c2$gradient
+> round( d2c2$gradient - d1c2$gradient, 12 )
 (Intercept)          x1          x2  logSigmaMu  logSigmaNu 
           0           0           0           0           0 
 > 
 > d2c1 <- censReg( y ~ x1 + x2, data = pData2, 
 +    start = coef(randEff), iterlim = 0 )
-> d1c1$maximum - d2c1$maximum
+> round( d1c1$maximum - d2c1$maximum, 12 )
 [1] 0
-> d1c1$gradient - d2c1$gradient
+> round( d1c1$gradient - d2c1$gradient, 12 )
 (Intercept)          x1          x2  logSigmaMu  logSigmaNu 
           0           0           0           0           0 
 > 
@@ -1133,9 +1291,9 @@ Log-likelihood: -64.313 on 5 Df
 +    start = randEff$start, iterlim = 0 )
 > d2cS <- censReg( y ~ x1 + x2, data = pData2, 
 +    start = randEff$start, iterlim = 0 )
-> d1cS$maximum - d2cS$maximum
+> round( d1cS$maximum - d2cS$maximum, 12 )
 [1] 0
-> d1cS$gradient - d2cS$gradient
+> round( d1cS$gradient - d2cS$gradient, 12 )
 (Intercept)          x1          x2  logSigmaMu  logSigmaNu 
           0           0           0           0           0 
 > 
@@ -1153,6 +1311,7 @@ Comparing new object 'randEffUnb' to previously saved object...
    comparing component 'type' ... OK
    comparing component 'gradientObs' ... OK
    comparing component 'control' ... OK
+   comparing component 'objectiveFn' ... OK
    comparing component 'xMean' ... OK
    comparing component 'call' ... OK
    comparing component 'terms' ... OK
@@ -1255,7 +1414,7 @@ Log-likelihood: -71.193 on 5 Df
 > pDataNa$x1[ obsNa[ 3 ] ] <- NA
 > pDataNa$x2[ obsNa[ c( 1, 2, 4 ) ] ] <- NA
 > randEffNa <- censReg( y ~ x1 + x2, data = pDataNa )
-> all.equal( randEffNa[ -14 ], randEffUnb[ -14 ] )
+> all.equal( randEffNa[ -15 ], randEffUnb[ -15 ] )
 [1] TRUE
 > 
 > 
@@ -1315,4 +1474,4 @@ attr(,"gradient")
 > 
 > proc.time()
    user  system elapsed 
-  7.876   0.104   7.991 
+  3.401   0.053   3.448 

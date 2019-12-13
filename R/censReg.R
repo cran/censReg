@@ -122,12 +122,20 @@ censReg <- function( formula, left = 0, right = Inf,
    if( is.null( start ) ) {
       if( isPanel ) {
          assign( "validObs2", validObs, inherits = TRUE )
-         # Random effects panel model estimation for starting values
-         rEff <- plm( formula, data = data, subset = validObs2,
-            effect = "individual", model = "random" )
-         start <- c( coef( rEff ),
-            0.5 * log( rEff$ercomp$sigma2[[ "id" ]] ),
-            0.5 * log( rEff$ercomp$sigma2[[ "idios" ]] ) )
+         if( length( attr( terms( formula ), "term.labels" ) ) > 0 ) {
+            # Random effects panel model estimation for starting values
+            rEff <- plm( formula, data = data, subset = validObs2,
+               effect = "individual", model = "random" )
+            start <- c( coef( rEff ),
+               0.5 * log( rEff$ercomp$sigma2[[ "id" ]] ),
+               0.5 * log( rEff$ercomp$sigma2[[ "idios" ]] ) )
+         } else if( has.intercept( formula ) ) {
+            start <- c( mean( yVec[ validObs ] ),
+               rep( log( var( yVec[ validObs ] ) / 2 ), 2 ) )
+         } else {
+            stop( "argument 'formula' seems to have neither an intercept",
+               " nor any explanatory variables" )
+         }
       } else {
          # OLS estimation for starting values
          ols <- lm.fit( xMat, yVec )
