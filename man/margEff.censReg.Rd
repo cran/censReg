@@ -12,7 +12,7 @@
 }
 
 \usage{
-\method{margEff}{censReg}( object, xValues = NULL,
+\method{margEff}{censReg}( object, xValues = NULL, vcov = NULL,
    calcVCov = TRUE, returnJacobian = FALSE, ... )
 
 \method{summary}{margEff.censReg}( object, ... )
@@ -34,6 +34,13 @@
       If this argument is \code{NULL} (or not specified),
       argument \code{xValues} is set to the mean values
       of the explanatory variables.}
+   \item{vcov}{a symmetric matrix that specifies the variance covariance
+      matrix of the estimated coefficients (without \code{logSigma})
+      that should be used to calculate the variance covariance matrix
+      and the standard errors of the marginal effects.
+      If this argument is \code{NULL} (the default),
+      the variance covariance matix is obtained by
+      \code{vcov( object, logSigma = FALSE )}.} 
    \item{calcVCov}{logical. If \code{TRUE}, 
      the approximate variance covariance matrices of the marginal effects 
      is calculated and returned as an attribute (see below).}

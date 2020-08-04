@@ -8,7 +8,7 @@
 
 \usage{
 censReg( formula, left = 0, right = Inf, data = sys.frame( sys.parent()),
-   start = NULL, nGHQ = 8, logLikOnly = FALSE, ... )
+   subset = NULL, start = NULL, nGHQ = 8, logLikOnly = FALSE, ... )
 
 \method{print}{censReg}( x, logSigma = TRUE, digits = 4, ... )
 }
@@ -25,6 +25,8 @@ censReg( formula, left = 0, right = Inf, data = sys.frame( sys.parent()),
    \item{data}{an optional data frame.
       If argument \code{data} is of class \code{"pdata.frame"},
       a panel-model is estimated.}
+   \item{subset}{an optional vector specifying a subset of observations 
+      to be used in the fitting process.}
    \item{start}{an optional vector of initial parameters for the ML estimation
       (intercept, slope parameters, logarithm of the standard deviation
       of the individual effects (only for random-effects panel data models), 

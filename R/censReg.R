@@ -1,7 +1,7 @@
 if( getRversion() >= "2.15.1" ) globalVariables( "validObs2" )
 
 censReg <- function( formula, left = 0, right = Inf,
-      data = sys.frame( sys.parent() ), start = NULL,
+      data = sys.frame( sys.parent() ), subset = NULL, start = NULL,
       nGHQ = 8, logLikOnly = FALSE, ... ) {
 
    ## checking formula
@@ -42,7 +42,7 @@ censReg <- function( formula, left = 0, right = Inf,
 
    ## preparing model matrix and model response
    mc <- match.call( expand.dots = FALSE )
-   m <- match( "data", names( mc ), 0 )
+   m <- match( c( "data", "subset" ), names( mc ), 0 )
    mf <- mc[ c( 1, m ) ]
    mf$formula <- formula
    attributes( mf$formula ) <- NULL

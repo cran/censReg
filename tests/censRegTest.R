@@ -135,6 +135,20 @@ logLik( estResultStart )
 nobs( estResultStart )
 formula( estResultStart )
 
+## usual tobit estimation using a "subset" of the data set
+estResultSub <- censReg( affairsFormula, data = Affairs, subset = 3:600 )
+estResultSubMan <- censReg( affairsFormula, data = Affairs[ 3:600, ] )
+all.equal( estResultSub[ names( estResultSub ) != "call" ], 
+   estResultSubMan[ names( estResultSubMan ) != "call" ] )
+
+# usual tobit estimation: margEff() with argument "vcov"
+me0 <- margEff( estResult ) 
+me2 <- margEff( estResult, vcov = 2 * vcov( estResult, logSigma = FALSE ) ) 
+all.equal( me0, me2, check.attributes = FALSE )
+all.equal( attr( me0, "vcov" ), attr( me2, "vcov" ) / 2 )
+all.equal( summary( me0 )[ , 2 ], summary( me2 )[ , 2 ] / sqrt( 2 ) )
+all.equal( summary( me0 )[ , 3 ], summary( me2 )[ , 3 ] * sqrt( 2 ) )
+
 ## estimation with left-censoring at 5
 Affairs$affairsAdd <- Affairs$affairs + 5
 estResultAdd <- censReg( affairsAdd ~ age + yearsmarried + religiousness +

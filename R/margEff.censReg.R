@@ -1,4 +1,4 @@
-margEff.censReg <- function( object, xValues = NULL,
+margEff.censReg <- function( object, xValues = NULL, vcov = NULL,
     calcVCov = TRUE, returnJacobian = FALSE, ... ) {
    ## calculate marginal effects on E[y] at the mean explanatory variables
    allPar <- coef( object, logSigma = FALSE )
@@ -64,8 +64,21 @@ margEff.censReg <- function( object, xValues = NULL,
          }
       }
       if( calcVCov ) {
-         attr( result, "vcov" ) <- 
-            jac %*% vcov( object, logSigma = FALSE ) %*% t( jac )
+         if( is.null( vcov ) ) {
+            vcov <- vcov( object, logSigma = FALSE )
+         } else {
+            errMsg <- paste0( "argument 'vcov' must be a symmetric ",
+               ncol( jac ), " x ", ncol( jac ), " matrix" )
+            if( !is.matrix( vcov ) ) {
+               stop( errMsg )
+            } else if( !isSymmetric( vcov ) ) {
+               stop( errMsg )
+            } else if( nrow( vcov ) != ncol( jac ) || 
+                  nrow( vcov ) != ncol( jac ) ) {
+               stop( errMsg )
+            }
+         }
+         attr( result, "vcov" ) <- jac %*% vcov %*% t( jac )
       }
       if( returnJacobian ) {
          attr( result, "jacobian" ) <- jac

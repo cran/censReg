@@ -1,6 +1,6 @@
 
-R version 3.6.1 (2019-07-05) -- "Action of the Toes"
-Copyright (C) 2019 The R Foundation for Statistical Computing
+R version 4.0.2 (2020-06-22) -- "Taking Off Again"
+Copyright (C) 2020 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -81,7 +81,7 @@ https://r-forge.r-project.org/projects/sampleselection/
 +                cat( "new:\n" )
 +                print( x[[ n ]] )
 +                cat( "saved:\n" )
-+                print( xSaved[[ n ]] )
++                try( print( xSaved[[ n ]] ) )
 +             }
 +          }
 +       }
@@ -1474,4 +1474,4 @@ attr(,"gradient")
 > 
 > proc.time()
    user  system elapsed 
-  3.401   0.053   3.448 
+  3.682   0.055   3.730 

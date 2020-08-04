@@ -1,6 +1,6 @@
 
-R version 3.6.1 (2019-07-05) -- "Action of the Toes"
-Copyright (C) 2019 The R Foundation for Statistical Computing
+R version 4.0.2 (2020-06-22) -- "Taking Off Again"
+Copyright (C) 2020 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -790,8 +790,20 @@ sann_cand = <default Gaussian Markov kernel>
 sann_temp = 10 
 sann_tmax = 10 
 sann_randomSeed = 123 
+SGA_momentum = 0 
+Adam_momentum1 = 0.9 
+Adam_momentum2 = 0.999 
+SG_patience = 
+SG_patienceStep = 1 
+SG_learningRate = 0.1 
+SG_batchSize = 
+SG_clip = 
 iterlim = 150 
+max.rows = 20 
+max.cols = 7 
 printLevel = 0 
+storeValues = FALSE 
+storeParameters = FALSE 
 
 $objectiveFn
 function (beta, yVec, xMat, left, right, obsBelow, obsBetween, 
@@ -819,7 +831,7 @@ function (beta, yVec, xMat, left, right, obsBelow, obsBetween,
     attr(ll, "gradient") <- grad
     return(ll)
 }
-<bytecode: 0x55f091e450f0>
+<bytecode: 0x5637746da608>
 <environment: namespace:censReg>
 
 $xMean
@@ -2481,8 +2493,20 @@ sann_cand = <default Gaussian Markov kernel>
 sann_temp = 10 
 sann_tmax = 10 
 sann_randomSeed = 123 
+SGA_momentum = 0 
+Adam_momentum1 = 0.9 
+Adam_momentum2 = 0.999 
+SG_patience = 
+SG_patienceStep = 1 
+SG_learningRate = 0.1 
+SG_batchSize = 
+SG_clip = 
 iterlim = 150 
+max.rows = 20 
+max.cols = 7 
 printLevel = 0 
+storeValues = FALSE 
+storeParameters = FALSE 
 
 $objectiveFn
 function (beta, yVec, xMat, left, right, obsBelow, obsBetween, 
@@ -2510,7 +2534,7 @@ function (beta, yVec, xMat, left, right, obsBelow, obsBetween,
     attr(ll, "gradient") <- grad
     return(ll)
 }
-<bytecode: 0x55f091e450f0>
+<bytecode: 0x5637746da608>
 <environment: namespace:censReg>
 
 $xMean
@@ -3348,8 +3372,20 @@ sann_cand = <default Gaussian Markov kernel>
 sann_temp = 10 
 sann_tmax = 10 
 sann_randomSeed = 123 
+SGA_momentum = 0 
+Adam_momentum1 = 0.9 
+Adam_momentum2 = 0.999 
+SG_patience = 
+SG_patienceStep = 1 
+SG_learningRate = 0.1 
+SG_batchSize = 
+SG_clip = 
 iterlim = 200 
+max.rows = 20 
+max.cols = 7 
 printLevel = 0 
+storeValues = FALSE 
+storeParameters = FALSE 
 
 $objectiveFn
 function (beta, yVec, xMat, left, right, obsBelow, obsBetween, 
@@ -3377,7 +3413,7 @@ function (beta, yVec, xMat, left, right, obsBelow, obsBetween,
     attr(ll, "gradient") <- grad
     return(ll)
 }
-<bytecode: 0x55f091e450f0>
+<bytecode: 0x5637746da608>
 <environment: namespace:censReg>
 
 $xMean
@@ -4190,8 +4226,20 @@ sann_cand = <default Gaussian Markov kernel>
 sann_temp = 10 
 sann_tmax = 10 
 sann_randomSeed = 123 
+SGA_momentum = 0 
+Adam_momentum1 = 0.9 
+Adam_momentum2 = 0.999 
+SG_patience = 
+SG_patienceStep = 1 
+SG_learningRate = 0.1 
+SG_batchSize = 
+SG_clip = 
 iterlim = 500 
+max.rows = 20 
+max.cols = 7 
 printLevel = 0 
+storeValues = FALSE 
+storeParameters = FALSE 
 
 $objectiveFn
 function (beta, yVec, xMat, left, right, obsBelow, obsBetween, 
@@ -4219,7 +4267,7 @@ function (beta, yVec, xMat, left, right, obsBelow, obsBetween,
     attr(ll, "gradient") <- grad
     return(ll)
 }
-<bytecode: 0x55f091e450f0>
+<bytecode: 0x5637746da608>
 <environment: namespace:censReg>
 
 $xMean
@@ -5039,8 +5087,20 @@ sann_cand = <default Gaussian Markov kernel>
 sann_temp = 10 
 sann_tmax = 10 
 sann_randomSeed = 123 
+SGA_momentum = 0 
+Adam_momentum1 = 0.9 
+Adam_momentum2 = 0.999 
+SG_patience = 
+SG_patienceStep = 1 
+SG_learningRate = 0.1 
+SG_batchSize = 
+SG_clip = 
 iterlim = 10000 
+max.rows = 20 
+max.cols = 7 
 printLevel = 0 
+storeValues = FALSE 
+storeParameters = FALSE 
 
 $objectiveFn
 function (beta, yVec, xMat, left, right, obsBelow, obsBetween, 
@@ -5068,7 +5128,7 @@ function (beta, yVec, xMat, left, right, obsBelow, obsBetween,
     attr(ll, "gradient") <- grad
     return(ll)
 }
-<bytecode: 0x55f091e450f0>
+<bytecode: 0x5637746da608>
 <environment: namespace:censReg>
 
 $xMean
@@ -5886,8 +5946,20 @@ sann_cand = <default Gaussian Markov kernel>
 sann_temp = 10 
 sann_tmax = 10 
 sann_randomSeed = 123 
+SGA_momentum = 0 
+Adam_momentum1 = 0.9 
+Adam_momentum2 = 0.999 
+SG_patience = 
+SG_patienceStep = 1 
+SG_learningRate = 0.1 
+SG_batchSize = 
+SG_clip = 
 iterlim = 150 
+max.rows = 20 
+max.cols = 7 
 printLevel = 0 
+storeValues = FALSE 
+storeParameters = FALSE 
 
 $objectiveFn
 function (beta, yVec, xMat, left, right, obsBelow, obsBetween, 
@@ -5915,7 +5987,7 @@ function (beta, yVec, xMat, left, right, obsBelow, obsBetween,
     attr(ll, "gradient") <- grad
     return(ll)
 }
-<bytecode: 0x55f091e450f0>
+<bytecode: 0x5637746da608>
 <environment: namespace:censReg>
 
 $xMean
@@ -6070,6 +6142,25 @@ In summary.margEff.censReg(margEff(x, calcVCov = sumMeCalcVCov,  :
 [1] 601
 > formula( estResultStart )
 affairs ~ age + yearsmarried + religiousness + occupation + rating
+> 
+> ## usual tobit estimation using a "subset" of the data set
+> estResultSub <- censReg( affairsFormula, data = Affairs, subset = 3:600 )
+> estResultSubMan <- censReg( affairsFormula, data = Affairs[ 3:600, ] )
+> all.equal( estResultSub[ names( estResultSub ) != "call" ], 
++    estResultSubMan[ names( estResultSubMan ) != "call" ] )
+[1] TRUE
+> 
+> # usual tobit estimation: margEff() with argument "vcov"
+> me0 <- margEff( estResult ) 
+> me2 <- margEff( estResult, vcov = 2 * vcov( estResult, logSigma = FALSE ) ) 
+> all.equal( me0, me2, check.attributes = FALSE )
+[1] TRUE
+> all.equal( attr( me0, "vcov" ), attr( me2, "vcov" ) / 2 )
+[1] TRUE
+> all.equal( summary( me0 )[ , 2 ], summary( me2 )[ , 2 ] / sqrt( 2 ) )
+[1] TRUE
+> all.equal( summary( me0 )[ , 3 ], summary( me2 )[ , 3 ] * sqrt( 2 ) )
+[1] TRUE
 > 
 > ## estimation with left-censoring at 5
 > Affairs$affairsAdd <- Affairs$affairs + 5
@@ -6744,8 +6835,20 @@ sann_cand = <default Gaussian Markov kernel>
 sann_temp = 10 
 sann_tmax = 10 
 sann_randomSeed = 123 
+SGA_momentum = 0 
+Adam_momentum1 = 0.9 
+Adam_momentum2 = 0.999 
+SG_patience = 
+SG_patienceStep = 1 
+SG_learningRate = 0.1 
+SG_batchSize = 
+SG_clip = 
 iterlim = 150 
+max.rows = 20 
+max.cols = 7 
 printLevel = 0 
+storeValues = FALSE 
+storeParameters = FALSE 
 
 $objectiveFn
 function (beta, yVec, xMat, left, right, obsBelow, obsBetween, 
@@ -6773,7 +6876,7 @@ function (beta, yVec, xMat, left, right, obsBelow, obsBetween,
     attr(ll, "gradient") <- grad
     return(ll)
 }
-<bytecode: 0x55f091e450f0>
+<bytecode: 0x5637746da608>
 <environment: namespace:censReg>
 
 $xMean
@@ -7648,8 +7751,20 @@ sann_cand = <default Gaussian Markov kernel>
 sann_temp = 10 
 sann_tmax = 10 
 sann_randomSeed = 123 
+SGA_momentum = 0 
+Adam_momentum1 = 0.9 
+Adam_momentum2 = 0.999 
+SG_patience = 
+SG_patienceStep = 1 
+SG_learningRate = 0.1 
+SG_batchSize = 
+SG_clip = 
 iterlim = 150 
+max.rows = 20 
+max.cols = 7 
 printLevel = 0 
+storeValues = FALSE 
+storeParameters = FALSE 
 
 $objectiveFn
 function (beta, yVec, xMat, left, right, obsBelow, obsBetween, 
@@ -7677,7 +7792,7 @@ function (beta, yVec, xMat, left, right, obsBelow, obsBetween,
     attr(ll, "gradient") <- grad
     return(ll)
 }
-<bytecode: 0x55f091e450f0>
+<bytecode: 0x5637746da608>
 <environment: namespace:censReg>
 
 $xMean
@@ -9161,8 +9276,20 @@ sann_cand = <default Gaussian Markov kernel>
 sann_temp = 10 
 sann_tmax = 10 
 sann_randomSeed = 123 
+SGA_momentum = 0 
+Adam_momentum1 = 0.9 
+Adam_momentum2 = 0.999 
+SG_patience = 
+SG_patienceStep = 1 
+SG_learningRate = 0.1 
+SG_batchSize = 
+SG_clip = 
 iterlim = 150 
+max.rows = 20 
+max.cols = 7 
 printLevel = 0 
+storeValues = FALSE 
+storeParameters = FALSE 
 
 $objectiveFn
 function (beta, yVec, xMat, left, right, obsBelow, obsBetween, 
@@ -9190,7 +9317,7 @@ function (beta, yVec, xMat, left, right, obsBelow, obsBetween,
     attr(ll, "gradient") <- grad
     return(ll)
 }
-<bytecode: 0x55f091e450f0>
+<bytecode: 0x5637746da608>
 <environment: namespace:censReg>
 
 $xMean
@@ -10067,8 +10194,20 @@ sann_cand = <default Gaussian Markov kernel>
 sann_temp = 10 
 sann_tmax = 10 
 sann_randomSeed = 123 
+SGA_momentum = 0 
+Adam_momentum1 = 0.9 
+Adam_momentum2 = 0.999 
+SG_patience = 
+SG_patienceStep = 1 
+SG_learningRate = 0.1 
+SG_batchSize = 
+SG_clip = 
 iterlim = 150 
+max.rows = 20 
+max.cols = 7 
 printLevel = 0 
+storeValues = FALSE 
+storeParameters = FALSE 
 
 $objectiveFn
 function (beta, yVec, xMat, left, right, obsBelow, obsBetween, 
@@ -10096,7 +10235,7 @@ function (beta, yVec, xMat, left, right, obsBelow, obsBetween,
     attr(ll, "gradient") <- grad
     return(ll)
 }
-<bytecode: 0x55f091e450f0>
+<bytecode: 0x5637746da608>
 <environment: namespace:censReg>
 
 $xMean
@@ -11596,8 +11735,20 @@ sann_cand = <default Gaussian Markov kernel>
 sann_temp = 10 
 sann_tmax = 10 
 sann_randomSeed = 123 
+SGA_momentum = 0 
+Adam_momentum1 = 0.9 
+Adam_momentum2 = 0.999 
+SG_patience = 
+SG_patienceStep = 1 
+SG_learningRate = 0.1 
+SG_batchSize = 
+SG_clip = 
 iterlim = 150 
+max.rows = 20 
+max.cols = 7 
 printLevel = 0 
+storeValues = FALSE 
+storeParameters = FALSE 
 
 $objectiveFn
 function (beta, yVec, xMat, left, right, obsBelow, obsBetween, 
@@ -11625,7 +11776,7 @@ function (beta, yVec, xMat, left, right, obsBelow, obsBetween,
     attr(ll, "gradient") <- grad
     return(ll)
 }
-<bytecode: 0x55f091e450f0>
+<bytecode: 0x5637746da608>
 <environment: namespace:censReg>
 
 $xMean
@@ -13814,4 +13965,4 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 > 
 > proc.time()
    user  system elapsed 
-  3.304   0.297   3.594 
+  3.793   0.373   4.158 

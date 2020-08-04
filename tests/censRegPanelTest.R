@@ -50,7 +50,7 @@ printAll <- function( objName, what = "print" ) {
                cat( "new:\n" )
                print( x[[ n ]] )
                cat( "saved:\n" )
-               print( xSaved[[ n ]] )
+               try( print( xSaved[[ n ]] ) )
             }
          }
       }
