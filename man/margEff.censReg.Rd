@@ -13,7 +13,7 @@
 
 \usage{
 \method{margEff}{censReg}( object, xValues = NULL, vcov = NULL,
-   calcVCov = TRUE, returnJacobian = FALSE, ... )
+   calcVCov = TRUE, returnJacobian = FALSE, vcovLogSigma = TRUE, ... )
 
 \method{summary}{margEff.censReg}( object, ... )
 }
@@ -35,18 +35,26 @@
       argument \code{xValues} is set to the mean values
       of the explanatory variables.}
    \item{vcov}{a symmetric matrix that specifies the variance covariance
-      matrix of the estimated coefficients (without \code{logSigma})
+      matrix of the estimated coefficients
       that should be used to calculate the variance covariance matrix
       and the standard errors of the marginal effects.
       If this argument is \code{NULL} (the default),
       the variance covariance matix is obtained by
-      \code{vcov( object, logSigma = FALSE )}.} 
+      \code{vcov( object )}.} 
    \item{calcVCov}{logical. If \code{TRUE}, 
      the approximate variance covariance matrices of the marginal effects 
      is calculated and returned as an attribute (see below).}
    \item{returnJacobian}{logical. If \code{TRUE}, 
       the Jacobian of the marginal effects with respect to the coefficients 
       is returned as an attribute (see below).}
+   \item{vcovLogSigma}{logical. \code{TRUE} (the default) indicates 
+      that the last row and last column of the variance covariance matrix 
+      provided by argument \code{vcov} 
+      indicate the (co)variances of the logarithm of the sigma coefficient,
+      while \code{FALSE} indicates that this row and this column indicate 
+      the (co)variances of the (non-logarithic) sigma coefficient.
+      If argument \code{vcov} is \code{NULL}, 
+      argument \code{vcovLogSigma} is ignored.}
    \item{\dots}{currently not used.}
 }
 

@@ -1,6 +1,6 @@
 
-R version 4.0.2 (2020-06-22) -- "Taking Off Again"
-Copyright (C) 2020 The R Foundation for Statistical Computing
+R version 4.1.2 (2021-11-01) -- "Bird Hippie"
+Copyright (C) 2021 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -190,7 +190,7 @@ https://r-forge.r-project.org/projects/sampleselection/
 > pData$ys <- -1 + pData$ui + 2 * pData$x1 + 3 * pData$x2 + rnorm( nId * nTime )
 > pData$y <- ifelse( pData$ys > 0, pData$ys, 0 )
 > nData <- pData # save data set without information on panel structure
-> pData <- pdata.frame( pData, c( "id", "time" ) )
+> pData <- pdata.frame( pData, c( "id", "time" ), stringsAsFactors = FALSE )
 > 
 > 
 > ## Newton-Raphson method
@@ -241,7 +241,7 @@ Coefficients:
 --------------------------------------------
 Maximum Likelihood estimation
 Newton-Raphson maximisation, 5 iterations
-Return code 1: gradient close to zero
+Return code 1: gradient close to zero (gradtol)
 Log-Likelihood: -73.199 
 5  free parameters
 Estimates:
@@ -273,7 +273,7 @@ logSigmaNu     -0.01       0.13    -0.1     0.9
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 Newton-Raphson maximisation, 5 iterations
-Return code 1: gradient close to zero
+Return code 1: gradient close to zero (gradtol)
 Log-likelihood: -73.199 on 5 Df
 
 
@@ -295,7 +295,7 @@ sigmaNu          1.0        0.1     7.7   1e-14 ***
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 Newton-Raphson maximisation, 5 iterations
-Return code 1: gradient close to zero
+Return code 1: gradient close to zero (gradtol)
 Log-likelihood: -73.199 on 5 Df
 
 > try( margEff( randEff ) )
@@ -383,7 +383,7 @@ Coefficients:
 --------------------------------------------
 Maximum Likelihood estimation
 Newton-Raphson maximisation, 5 iterations
-Return code 1: gradient close to zero
+Return code 1: gradient close to zero (gradtol)
 Log-Likelihood: -81.186 
 3  free parameters
 Estimates:
@@ -411,7 +411,7 @@ logSigmaNu      0.2        0.1     1.6     0.1
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 Newton-Raphson maximisation, 5 iterations
-Return code 1: gradient close to zero
+Return code 1: gradient close to zero (gradtol)
 Log-likelihood: -81.186 on 3 Df
 
 
@@ -431,7 +431,7 @@ sigmaNu      1.2        0.2       8   2e-14 ***
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 Newton-Raphson maximisation, 5 iterations
-Return code 1: gradient close to zero
+Return code 1: gradient close to zero (gradtol)
 Log-likelihood: -81.186 on 3 Df
 
 > # neither intercept nor explanatory variables
@@ -487,7 +487,7 @@ Coefficients:
 --------------------------------------------
 Maximum Likelihood estimation
 BHHH maximisation, 14 iterations
-Return code 2: successive function values within tolerance limit
+Return code 8: successive function values within relative tolerance limit (reltol)
 Log-Likelihood: -73.199 
 5  free parameters
 Estimates:
@@ -519,7 +519,7 @@ logSigmaNu     -0.01       0.14    -0.1   0.930
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 BHHH maximisation, 14 iterations
-Return code 2: successive function values within tolerance limit
+Return code 8: successive function values within relative tolerance limit (reltol)
 Log-likelihood: -73.199 on 5 Df
 
 
@@ -541,7 +541,7 @@ sigmaNu          1.0        0.1     7.1   1e-12 ***
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 BHHH maximisation, 14 iterations
-Return code 2: successive function values within tolerance limit
+Return code 8: successive function values within relative tolerance limit (reltol)
 Log-likelihood: -73.199 on 5 Df
 
 > 
@@ -736,7 +736,7 @@ Coefficients:
 --------------------------------------------
 Maximum Likelihood estimation
 BHHH maximisation, 7 iterations
-Return code 2: successive function values within tolerance limit
+Return code 8: successive function values within relative tolerance limit (reltol)
 Log-Likelihood: -73.199 
 5  free parameters
 Estimates:
@@ -769,7 +769,7 @@ logSigmaNu     -0.01       0.14    -0.1   0.929
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 BHHH maximisation, 7 iterations
-Return code 2: successive function values within tolerance limit
+Return code 8: successive function values within relative tolerance limit (reltol)
 Log-likelihood: -73.199 on 5 Df
 
 
@@ -792,7 +792,7 @@ sigmaNu          1.0        0.1     7.1   1e-12 ***
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 BHHH maximisation, 7 iterations
-Return code 2: successive function values within tolerance limit
+Return code 8: successive function values within relative tolerance limit (reltol)
 Log-likelihood: -73.199 on 5 Df
 
 > 
@@ -846,7 +846,7 @@ Coefficients:
 --------------------------------------------
 Maximum Likelihood estimation
 Newton-Raphson maximisation, 5 iterations
-Return code 1: gradient close to zero
+Return code 1: gradient close to zero (gradtol)
 Log-Likelihood: -73.199 
 5  free parameters
 Estimates:
@@ -878,7 +878,7 @@ logSigmaNu     -0.01       0.13    -0.1     0.9
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 Newton-Raphson maximisation, 5 iterations
-Return code 1: gradient close to zero
+Return code 1: gradient close to zero (gradtol)
 Log-likelihood: -73.199 on 5 Df
 
 
@@ -900,7 +900,7 @@ sigmaNu          1.0        0.1       8   1e-14 ***
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 Newton-Raphson maximisation, 5 iterations
-Return code 1: gradient close to zero
+Return code 1: gradient close to zero (gradtol)
 Log-likelihood: -73.199 on 5 Df
 
 > 
@@ -955,7 +955,7 @@ Coefficients:
 --------------------------------------------
 Maximum Likelihood estimation
 Newton-Raphson maximisation, 5 iterations
-Return code 1: gradient close to zero
+Return code 1: gradient close to zero (gradtol)
 Log-Likelihood: -73.199 
 5  free parameters
 Estimates:
@@ -987,7 +987,7 @@ logSigmaNu     -0.01       0.13    -0.1     0.9
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 Newton-Raphson maximisation, 5 iterations
-Return code 1: gradient close to zero
+Return code 1: gradient close to zero (gradtol)
 Log-likelihood: -73.199 on 5 Df
 
 
@@ -1009,7 +1009,7 @@ sigmaNu          1.0        0.1     7.7   1e-14 ***
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 Newton-Raphson maximisation, 5 iterations
-Return code 1: gradient close to zero
+Return code 1: gradient close to zero (gradtol)
 Log-likelihood: -73.199 on 5 Df
 
 > 
@@ -1066,7 +1066,7 @@ Coefficients:
 --------------------------------------------
 Maximum Likelihood estimation
 Newton-Raphson maximisation, 5 iterations
-Return code 1: gradient close to zero
+Return code 1: gradient close to zero (gradtol)
 Log-Likelihood: -73.199 
 5  free parameters
 Estimates:
@@ -1099,7 +1099,7 @@ logSigmaNu     -0.01       0.13    -0.1     0.9
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 Newton-Raphson maximisation, 5 iterations
-Return code 1: gradient close to zero
+Return code 1: gradient close to zero (gradtol)
 Log-likelihood: -73.199 on 5 Df
 
 
@@ -1122,7 +1122,7 @@ sigmaNu          1.0        0.1       8   1e-14 ***
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 Newton-Raphson maximisation, 5 iterations
-Return code 1: gradient close to zero
+Return code 1: gradient close to zero (gradtol)
 Log-likelihood: -73.199 on 5 Df
 
 > 
@@ -1177,7 +1177,7 @@ Coefficients:
 --------------------------------------------
 Maximum Likelihood estimation
 Newton-Raphson maximisation, 6 iterations
-Return code 1: gradient close to zero
+Return code 1: gradient close to zero (gradtol)
 Log-Likelihood: -64.313 
 5  free parameters
 Estimates:
@@ -1209,7 +1209,7 @@ logSigmaNu     0.053      0.163     0.3    0.75
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 Newton-Raphson maximisation, 6 iterations
-Return code 1: gradient close to zero
+Return code 1: gradient close to zero (gradtol)
 Log-likelihood: -64.313 on 5 Df
 
 
@@ -1231,7 +1231,7 @@ sigmaNu          1.1        0.2     6.1   9e-10 ***
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 Newton-Raphson maximisation, 6 iterations
-Return code 1: gradient close to zero
+Return code 1: gradient close to zero (gradtol)
 Log-likelihood: -64.313 on 5 Df
 
 > 
@@ -1245,7 +1245,7 @@ Log-likelihood: -64.313 on 5 Df
 +    nData2$id[ nData$id == paste( "F", i, sep = "_" ) ] <-
 +       paste( "G", perm[ i ], sep = "_" )
 + }
-> pData2 <- pdata.frame( nData2, c( "id", "time" ) )
+> pData2 <- pdata.frame( nData2, c( "id", "time" ), stringsAsFactors = FALSE )
 > randEff2 <- censReg( y ~ x1 + x2, data = pData2 )
 > all.equal( randEff2[ -c(3,5,6,7,9,11,15) ],
 +    randEff[ -c(3,5,6,7,9,11,15) ], tolerance = 1e-2 )
@@ -1300,7 +1300,7 @@ Log-likelihood: -64.313 on 5 Df
 > 
 > ## unbalanced panel data
 > nDataUnb <- nData[ -c( 2, 5, 6, 8 ), ]
-> pDataUnb <- pdata.frame( nDataUnb, c( "id", "time" ) )
+> pDataUnb <- pdata.frame( nDataUnb, c( "id", "time" ), stringsAsFactors = FALSE )
 > randEffUnb <- censReg( y ~ x1 + x2, data = pDataUnb )
 > printAll( "randEffUnb" )
 Comparing new object 'randEffUnb' to previously saved object...
@@ -1348,7 +1348,7 @@ Coefficients:
 --------------------------------------------
 Maximum Likelihood estimation
 Newton-Raphson maximisation, 5 iterations
-Return code 1: gradient close to zero
+Return code 1: gradient close to zero (gradtol)
 Log-Likelihood: -71.193 
 5  free parameters
 Estimates:
@@ -1380,7 +1380,7 @@ logSigmaNu    -0.001      0.132     0.0   0.993
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 Newton-Raphson maximisation, 5 iterations
-Return code 1: gradient close to zero
+Return code 1: gradient close to zero (gradtol)
 Log-likelihood: -71.193 on 5 Df
 
 
@@ -1402,7 +1402,7 @@ sigmaNu          1.0        0.1     7.6   4e-14 ***
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 Newton-Raphson maximisation, 5 iterations
-Return code 1: gradient close to zero
+Return code 1: gradient close to zero (gradtol)
 Log-likelihood: -71.193 on 5 Df
 
 > 
@@ -1474,4 +1474,4 @@ attr(,"gradient")
 > 
 > proc.time()
    user  system elapsed 
-  3.682   0.055   3.730 
+  3.719   0.047   3.760 

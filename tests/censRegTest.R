@@ -143,11 +143,15 @@ all.equal( estResultSub[ names( estResultSub ) != "call" ],
 
 # usual tobit estimation: margEff() with argument "vcov"
 me0 <- margEff( estResult ) 
-me2 <- margEff( estResult, vcov = 2 * vcov( estResult, logSigma = FALSE ) ) 
+me2 <- margEff( estResult, vcov = 2 * vcov( estResult ) ) 
 all.equal( me0, me2, check.attributes = FALSE )
 all.equal( attr( me0, "vcov" ), attr( me2, "vcov" ) / 2 )
 all.equal( summary( me0 )[ , 2 ], summary( me2 )[ , 2 ] / sqrt( 2 ) )
 all.equal( summary( me0 )[ , 3 ], summary( me2 )[ , 3 ] * sqrt( 2 ) )
+me3 <- margEff( estResult, vcov = 2 * vcov( estResult, logSigma = FALSE ),
+   vcovLogSigma = FALSE ) 
+all.equal( me2, me3 )
+all.equal( summary( me2 ), summary( me3 ) )
 
 ## estimation with left-censoring at 5
 Affairs$affairsAdd <- Affairs$affairs + 5

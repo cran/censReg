@@ -1,6 +1,6 @@
 
-R version 3.3.3 (2017-03-06) -- "Another Canoe"
-Copyright (C) 2017 The R Foundation for Statistical Computing
+R version 4.1.2 (2021-11-01) -- "Bird Hippie"
+Copyright (C) 2021 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -31,7 +31,6 @@ Henningsen, Arne (2017). censReg: Censored Regression (Tobit) Models. R package 
 If you have questions, suggestions, or comments regarding the 'censReg' package, please use a forum or 'tracker' at the R-Forge site of the 'sampleSelection' project:
 https://r-forge.r-project.org/projects/sampleselection/
 > library( "plm" )
-Loading required package: Formula
 > 
 > options( digits = 5 )
 > 
@@ -47,7 +46,7 @@ Loading required package: Formula
 > pData$x2 <- runif( nId * nTime )
 > pData$ys <- -1 + pData$ui + 2 * pData$x1 + 3 * pData$x2 + rnorm( nId * nTime )
 > pData$y <- ifelse( pData$ys > 0, pData$ys, 0 )
-> pData <- pdata.frame( pData, c( "id", "time" ) )
+> pData <- pdata.frame( pData, c( "id", "time" ), stringsAsFactors = FALSE )
 > 
 > 
 > # ## Newton-Raphson method
@@ -60,7 +59,7 @@ Loading required package: Formula
 --------------------------------------------
 Maximum Likelihood estimation
 BHHH maximisation, 11 iterations
-Return code 2: successive function values within tolerance limit
+Return code 8: successive function values within relative tolerance limit (reltol)
 Log-Likelihood: -330.52 
 5  free parameters
 Estimates:
@@ -100,7 +99,7 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 --------------------------------------------
 Maximum Likelihood estimation
 BFGSR maximization, 22 iterations
-Return code 2: successive function values within tolerance limit
+Return code 2: successive function values within tolerance limit (tol)
 Log-Likelihood: -330.52 
 5  free parameters
 Estimates:
@@ -117,4 +116,4 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 > 
 > proc.time()
    user  system elapsed 
-  3.260   0.056   3.315 
+  0.986   0.040   1.018 

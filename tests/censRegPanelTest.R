@@ -159,7 +159,7 @@ pData$x2 <- runif( nId * nTime )
 pData$ys <- -1 + pData$ui + 2 * pData$x1 + 3 * pData$x2 + rnorm( nId * nTime )
 pData$y <- ifelse( pData$ys > 0, pData$ys, 0 )
 nData <- pData # save data set without information on panel structure
-pData <- pdata.frame( pData, c( "id", "time" ) )
+pData <- pdata.frame( pData, c( "id", "time" ), stringsAsFactors = FALSE )
 
 
 ## Newton-Raphson method
@@ -232,7 +232,7 @@ for( i in 1:nId ) {
    nData2$id[ nData$id == paste( "F", i, sep = "_" ) ] <-
       paste( "G", perm[ i ], sep = "_" )
 }
-pData2 <- pdata.frame( nData2, c( "id", "time" ) )
+pData2 <- pdata.frame( nData2, c( "id", "time" ), stringsAsFactors = FALSE )
 randEff2 <- censReg( y ~ x1 + x2, data = pData2 )
 all.equal( randEff2[ -c(3,5,6,7,9,11,15) ],
    randEff[ -c(3,5,6,7,9,11,15) ], tolerance = 1e-2 )
@@ -271,7 +271,7 @@ round( d1cS$gradient - d2cS$gradient, 12 )
 
 ## unbalanced panel data
 nDataUnb <- nData[ -c( 2, 5, 6, 8 ), ]
-pDataUnb <- pdata.frame( nDataUnb, c( "id", "time" ) )
+pDataUnb <- pdata.frame( nDataUnb, c( "id", "time" ), stringsAsFactors = FALSE )
 randEffUnb <- censReg( y ~ x1 + x2, data = pDataUnb )
 printAll( "randEffUnb" )
 

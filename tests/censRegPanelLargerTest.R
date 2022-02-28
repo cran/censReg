@@ -15,7 +15,7 @@ pData$x1 <- rnorm( nId * nTime )
 pData$x2 <- runif( nId * nTime )
 pData$ys <- -1 + pData$ui + 2 * pData$x1 + 3 * pData$x2 + rnorm( nId * nTime )
 pData$y <- ifelse( pData$ys > 0, pData$ys, 0 )
-pData <- pdata.frame( pData, c( "id", "time" ) )
+pData <- pdata.frame( pData, c( "id", "time" ), stringsAsFactors = FALSE )
 
 
 # ## Newton-Raphson method

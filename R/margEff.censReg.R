@@ -1,5 +1,5 @@
 margEff.censReg <- function( object, xValues = NULL, vcov = NULL,
-    calcVCov = TRUE, returnJacobian = FALSE, ... ) {
+    calcVCov = TRUE, returnJacobian = FALSE, vcovLogSigma = TRUE, ... ) {
    ## calculate marginal effects on E[y] at the mean explanatory variables
    allPar <- coef( object, logSigma = FALSE )
 
@@ -76,6 +76,23 @@ margEff.censReg <- function( object, xValues = NULL, vcov = NULL,
             } else if( nrow( vcov ) != ncol( jac ) || 
                   nrow( vcov ) != ncol( jac ) ) {
                stop( errMsg )
+            }
+            if( vcovLogSigma ) {
+               if( "sigma" %in% c( rownames( vcov ), colnames( vcov ) ) ) {
+                  warning( "Please make sure that argument 'vcov' includes",
+                     " the covariances of 'log(sigma)' rather than those of 'sigma'",
+                     " or set argument 'vcovLogSigma' to 'FALSE'" )
+               }
+               vcov[ nrow( vcov ), ] <- vcov[ nrow( vcov ), ] * 
+                  allPar[ "sigma" ]
+               vcov[ , nrow( vcov ) ] <- vcov[ , nrow( vcov ) ] * 
+                  allPar[ "sigma" ]
+            } else {
+               if( "logSigma" %in% c( rownames( vcov ), colnames( vcov ) ) ) {
+                  warning( "Please make sure that argument 'vcov' includes",
+                     " the covariances of 'sigma' rather than those of 'log(sigma)'",
+                     " or set argument 'vcovLogSigma' to 'TRUE'" )
+               }
             }
          }
          attr( result, "vcov" ) <- jac %*% vcov %*% t( jac )

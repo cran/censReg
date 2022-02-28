@@ -1,6 +1,6 @@
 
-R version 4.0.2 (2020-06-22) -- "Taking Off Again"
-Copyright (C) 2020 The R Foundation for Statistical Computing
+R version 4.1.1 (2021-08-10) -- "Kick Things"
+Copyright (C) 2021 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -831,7 +831,7 @@ function (beta, yVec, xMat, left, right, obsBelow, obsBetween,
     attr(ll, "gradient") <- grad
     return(ll)
 }
-<bytecode: 0x5637746da608>
+<bytecode: 0x55c1e0a84738>
 <environment: namespace:censReg>
 
 $xMean
@@ -2534,7 +2534,7 @@ function (beta, yVec, xMat, left, right, obsBelow, obsBetween,
     attr(ll, "gradient") <- grad
     return(ll)
 }
-<bytecode: 0x5637746da608>
+<bytecode: 0x55c1e0a84738>
 <environment: namespace:censReg>
 
 $xMean
@@ -3413,7 +3413,7 @@ function (beta, yVec, xMat, left, right, obsBelow, obsBetween,
     attr(ll, "gradient") <- grad
     return(ll)
 }
-<bytecode: 0x5637746da608>
+<bytecode: 0x55c1e0a84738>
 <environment: namespace:censReg>
 
 $xMean
@@ -4267,7 +4267,7 @@ function (beta, yVec, xMat, left, right, obsBelow, obsBetween,
     attr(ll, "gradient") <- grad
     return(ll)
 }
-<bytecode: 0x5637746da608>
+<bytecode: 0x55c1e0a84738>
 <environment: namespace:censReg>
 
 $xMean
@@ -5128,7 +5128,7 @@ function (beta, yVec, xMat, left, right, obsBelow, obsBetween,
     attr(ll, "gradient") <- grad
     return(ll)
 }
-<bytecode: 0x5637746da608>
+<bytecode: 0x55c1e0a84738>
 <environment: namespace:censReg>
 
 $xMean
@@ -5987,7 +5987,7 @@ function (beta, yVec, xMat, left, right, obsBelow, obsBetween,
     attr(ll, "gradient") <- grad
     return(ll)
 }
-<bytecode: 0x5637746da608>
+<bytecode: 0x55c1e0a84738>
 <environment: namespace:censReg>
 
 $xMean
@@ -6152,7 +6152,7 @@ affairs ~ age + yearsmarried + religiousness + occupation + rating
 > 
 > # usual tobit estimation: margEff() with argument "vcov"
 > me0 <- margEff( estResult ) 
-> me2 <- margEff( estResult, vcov = 2 * vcov( estResult, logSigma = FALSE ) ) 
+> me2 <- margEff( estResult, vcov = 2 * vcov( estResult ) ) 
 > all.equal( me0, me2, check.attributes = FALSE )
 [1] TRUE
 > all.equal( attr( me0, "vcov" ), attr( me2, "vcov" ) / 2 )
@@ -6160,6 +6160,12 @@ affairs ~ age + yearsmarried + religiousness + occupation + rating
 > all.equal( summary( me0 )[ , 2 ], summary( me2 )[ , 2 ] / sqrt( 2 ) )
 [1] TRUE
 > all.equal( summary( me0 )[ , 3 ], summary( me2 )[ , 3 ] * sqrt( 2 ) )
+[1] TRUE
+> me3 <- margEff( estResult, vcov = 2 * vcov( estResult, logSigma = FALSE ),
++    vcovLogSigma = FALSE ) 
+> all.equal( me2, me3 )
+[1] TRUE
+> all.equal( summary( me2 ), summary( me3 ) )
 [1] TRUE
 > 
 > ## estimation with left-censoring at 5
@@ -6876,7 +6882,7 @@ function (beta, yVec, xMat, left, right, obsBelow, obsBetween,
     attr(ll, "gradient") <- grad
     return(ll)
 }
-<bytecode: 0x5637746da608>
+<bytecode: 0x55c1e0a84738>
 <environment: namespace:censReg>
 
 $xMean
@@ -7792,7 +7798,7 @@ function (beta, yVec, xMat, left, right, obsBelow, obsBetween,
     attr(ll, "gradient") <- grad
     return(ll)
 }
-<bytecode: 0x5637746da608>
+<bytecode: 0x55c1e0a84738>
 <environment: namespace:censReg>
 
 $xMean
@@ -9317,7 +9323,7 @@ function (beta, yVec, xMat, left, right, obsBelow, obsBetween,
     attr(ll, "gradient") <- grad
     return(ll)
 }
-<bytecode: 0x5637746da608>
+<bytecode: 0x55c1e0a84738>
 <environment: namespace:censReg>
 
 $xMean
@@ -10235,7 +10241,7 @@ function (beta, yVec, xMat, left, right, obsBelow, obsBetween,
     attr(ll, "gradient") <- grad
     return(ll)
 }
-<bytecode: 0x5637746da608>
+<bytecode: 0x55c1e0a84738>
 <environment: namespace:censReg>
 
 $xMean
@@ -11776,7 +11782,7 @@ function (beta, yVec, xMat, left, right, obsBelow, obsBetween,
     attr(ll, "gradient") <- grad
     return(ll)
 }
-<bytecode: 0x5637746da608>
+<bytecode: 0x55c1e0a84738>
 <environment: namespace:censReg>
 
 $xMean
@@ -13965,4 +13971,4 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 > 
 > proc.time()
    user  system elapsed 
-  3.793   0.373   4.158 
+  4.092   0.404   4.490 
