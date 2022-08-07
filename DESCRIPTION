@@ -1,6 +1,6 @@
 Package: censReg
-Version: 0.5-34
-Date: 2022-02-27
+Version: 0.5-36
+Date: 2022-08-03
 Title: Censored Regression (Tobit) Models
 Author: Arne Henningsen <arne.henningsen@gmail.com>
 Maintainer: Arne Henningsen <arne.henningsen@gmail.com>
@@ -15,6 +15,6 @@ Description: Maximum Likelihood estimation of censored regression (Tobit) models
 License: GPL (>= 2)
 URL: http://www.sampleSelection.org
 NeedsCompilation: no
-Packaged: 2022-02-27 10:57:31 UTC; gsl324
+Packaged: 2022-08-03 07:23:39 UTC; gsl324
 Repository: CRAN
-Date/Publication: 2022-02-28 09:40:07 UTC
+Date/Publication: 2022-08-07 06:20:02 UTC

@@ -10,7 +10,9 @@ printAll <- function( x, logSigmaFalse = FALSE, sDigits = 2,
    for( n in names( x ) ) {
       if( ! n %in% c( "code", "message", "iterations" ) ) {
          cat( "$", n, "\n", sep = "" )
-         if( n %in% c( "estimate", "hessian", "gradientObs" ) ) {
+         if( n %in% c( "hessian" ) ) {
+            print( round( x[[ n ]], 1 ) )
+         } else if( n %in% c( "estimate", "gradientObs" ) ) {
             print( round( x[[ n ]], 2 ) )
          } else if( n %in% c( "gradient" ) ) {
             print( round( x[[ n ]], 3 ) )

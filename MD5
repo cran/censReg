@@ -1,6 +1,6 @@
-69669baa60e9b9cd37b7787a32b137e0 *DESCRIPTION
+1fbf8808364b056bd0e92b87fb002b8a *DESCRIPTION
 810e2fd9f25ff4d4271e5a987302a946 *NAMESPACE
-dbda96084d8e424f6d79d326838b8996 *R/censReg.R
+a1b55f5e4fd667c193ead3ff6ea1170d *R/censReg.R
 ca79c158e27accc70c121c5dba18347f *R/coef.censReg.R
 e194495092971053d9570153749ad56d *R/coef.summary.censReg.R
 00d46c155cfad4b9c6fd0f50a4d8df67 *R/estfun.censReg.R
@@ -20,11 +20,11 @@ a5583dea7c53e310e05f0f49592ec2c9 *R/summary.censReg.R
 87b8fbf8b3d7ebc934398a167d7f3c30 *R/summary.margEff.censReg.R
 5862fb64410eaae05bb1cfacb8bd07a4 *R/vcov.censReg.R
 5acf7242bd79c6b90e6af7f25da4ffdd *R/zzz.R
-a3ae0ad63b00a2a86ae560e3090a094c *build/vignette.rds
-e05ac88ab6986451d418b4b4f76b54fd *inst/NEWS.Rd
+fc7df510a6d07812e9aa99357d808f47 *build/vignette.rds
+7e51ece029afd97ddaff1b9b2297030c *inst/NEWS.Rd
 1e141c524098fe4b785ff9fdba38fae2 *inst/doc/censReg.R
 9808b41ea52a025b968f4598527b71c1 *inst/doc/censReg.Rnw
-14086c303604a6ca357099fac4ec1975 *inst/doc/censReg.pdf
+6f2c10ef30ca7007758eda489def9d8d *inst/doc/censReg.pdf
 ddb6bf2574896040fb6e4f56583d4192 *man/censReg.Rd
 eceec3fbcdd192a08152fa98ff40096f *man/coef.censReg.Rd
 9123f26e013613face82b0721d9a6355 *man/coef.summary.censReg.Rd
@@ -37,8 +37,8 @@ c7a83a6027f513946e7b002e8633d5d4 *tests/censRegFail.Rout.save
 431a18a3b5fdd6a54e8153bef9fb8a10 *tests/censRegPanelTest.R
 ba78c8e240ee940ffd3cbfccc9f4640b *tests/censRegPanelTest.RData.save
 ade317f5e98c4d50935eee4e0eaa5fd7 *tests/censRegPanelTest.Rout.save
-ac15cb50ec91ac2e2316320d2340f84f *tests/censRegTest.R
-73cb3226bec9986bab97a86e2ae6ccfd *tests/censRegTest.Rout.save
+3103e3b234490d66f0edcdcd6bc388a4 *tests/censRegTest.R
+7dde3628cfebfab7a45b26f93794e02a *tests/censRegTest.Rout.save
 0b4b7e3fc46bf736dca5a2cd74c4e274 *vignettes/aux2bib_censReg.sh
 9808b41ea52a025b968f4598527b71c1 *vignettes/censReg.Rnw
 b4c68877da60e9e828305521cac0d5d1 *vignettes/censReg.Rnw.backup

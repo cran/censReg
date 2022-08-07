@@ -5,7 +5,7 @@ censReg <- function( formula, left = 0, right = Inf,
       nGHQ = 8, logLikOnly = FALSE, ... ) {
 
    ## checking formula
-   if( class( formula ) != "formula" ) {
+   if( !inherits( formula, "formula" ) ) {
       stop( "argument 'formula' must be a formula" )
    } else if( length( formula ) != 3 ) {
       stop( "argument 'formula' must be a 2-sided formula" )

@@ -1,5 +1,10 @@
 \name{NEWS}
 \title{News for Package 'censReg'}
+\section{Changes in censReg version 0.5-36 (2022-08-03)}{
+  \itemize{
+    \item a few minor internal improvements (no user-visible changes)
+  }
+}
 \section{Changes in censReg version 0.5-34 (2022-02-27)}{
   \itemize{
     \item the \code{margEff()} method for objects of class \code{censReg} 
