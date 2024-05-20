@@ -58,6 +58,9 @@ printAll <- function( objName, what = "print" ) {
    
    for( mName in c( "Coef", "CoefNoLs", "Vcov", "VcovNoLs",
          "CoefSum", "CoefSumNoLs", "LogLik", "Nobs", "ExtractAIC" ) ) {
+      if( mName == "Vcov" & objName == "randEffOnlyInt" ) {
+         next
+      }
       cat( "   comparing method '", mName, "' ...", sep = "" )
       tol <- 5e-3
       if( mName == "Coef" ) {

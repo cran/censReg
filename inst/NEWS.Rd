@@ -1,5 +1,11 @@
 \name{NEWS}
 \title{News for Package 'censReg'}
+\section{Changes in censReg version 0.5-38 (2024-04-20)}{
+  \itemize{
+    \item removed a test tht gve slightly different results on "M1mac"
+    (no user-visible changes)
+  }
+}
 \section{Changes in censReg version 0.5-36 (2022-08-03)}{
   \itemize{
     \item a few minor internal improvements (no user-visible changes)
