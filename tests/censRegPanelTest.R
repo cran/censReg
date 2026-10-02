@@ -1,5 +1,5 @@
-library( "censReg" )
-library( "plm" )
+suppressPackageStartupMessages( library( "censReg" ) )
+suppressPackageStartupMessages( library( "plm" ) )
 
 # load outputs that were previously produced by this script 
 saved <- new.env()
@@ -179,7 +179,7 @@ printAll( "randEffNoInt" )
 try( censReg( y ~ -1, data = pData ) )
 
 ## BHHH method
-randEffBhhh <- censReg( y ~ x1 + x2, data = pData, method = "BHHH" )
+randEffBhhh <- censReg( y ~ x1 + x2, data = pData, method = "BHHH", reltol = 1.4901e-08 )
 printAll( "randEffBhhh" )
 
 
@@ -195,7 +195,7 @@ printAll( "randEffBfgsr", what = "none" )
 
 ## BHHH with starting values
 randEffBhhhStart <- censReg( y ~ x1 + x2, data = pData, method = "BHHH",
-   start = c( -0.4, 1.7, 2.2, -0.1, -0.01 ) )
+   start = c( -0.4, 1.7, 2.2, -0.1, -0.01 ), reltol = 1.4901e-08 )
 printAll( "randEffBhhhStart" )
 
 

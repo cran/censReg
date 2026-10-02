@@ -79,5 +79,3 @@ for( i in 1:length (nGHQ ) ) {
 }
 names(results)<-nGHQ
 round( rbind(sapply( results, coef ),times),4)
-
-

@@ -1,7 +1,7 @@
 
-R version 4.2.1 (2022-06-23) -- "Funny-Looking Kid"
-Copyright (C) 2022 The R Foundation for Statistical Computing
-Platform: x86_64-pc-linux-gnu (64-bit)
+R version 4.6.1 (2026-06-24) -- "Happy Hop"
+Copyright (C) 2026 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -15,31 +15,9 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 'help.start()' for an HTML browser interface to help.
 Type 'q()' to quit R.
 
-> library( "censReg" )
-Loading required package: maxLik
-Loading required package: miscTools
-
-Please cite the 'maxLik' package as:
-Henningsen, Arne and Toomet, Ott (2011). maxLik: A package for maximum likelihood estimation in R. Computational Statistics 26(3), 443-458. DOI 10.1007/s00180-010-0217-1.
-
-If you have questions, suggestions, or comments regarding the 'maxLik' package, please use a forum or 'tracker' at maxLik's R-Forge site:
-https://r-forge.r-project.org/projects/maxlik/
-
-Please cite the 'censReg' package as:
-Henningsen, Arne (2017). censReg: Censored Regression (Tobit) Models. R package version 0.5. http://CRAN.R-Project.org/package=censReg.
-
-If you have questions, suggestions, or comments regarding the 'censReg' package, please use a forum or 'tracker' at the R-Forge site of the 'sampleSelection' project:
-https://r-forge.r-project.org/projects/sampleselection/
-> library( "lmtest" )
-Loading required package: zoo
-
-Attaching package: 'zoo'
-
-The following objects are masked from 'package:base':
-
-    as.Date, as.Date.numeric
-
-> library( "sandwich" )
+> suppressPackageStartupMessages( library( "censReg" ) )
+> suppressPackageStartupMessages( library( "lmtest" ) )
+> suppressPackageStartupMessages( library( "sandwich" ) )
 > 
 > options( digits = 5 )
 > 
@@ -55,6 +33,10 @@ The following objects are masked from 'package:base':
 +             print( round( x[[ n ]], 2 ) )
 +          } else if( n %in% c( "gradient" ) ) {
 +             print( round( x[[ n ]], 3 ) )
++          } else if( n %in% c( "control" ) ) {  # this part can be removed again once the new version of maxLik is out
++             temp <- x[[ n ]]
++             temp@reltol <- 1.4901e-08
++             print( temp )
 +          } else {
 +             print( x[[ n ]] )
 +          }
@@ -833,7 +815,7 @@ function (beta, yVec, xMat, left, right, obsBelow, obsBetween,
     attr(ll, "gradient") <- grad
     return(ll)
 }
-<bytecode: 0x55a598a360d0>
+<bytecode: 0x5e1ea90b49f0>
 <environment: namespace:censReg>
 
 $xMean
@@ -2536,7 +2518,7 @@ function (beta, yVec, xMat, left, right, obsBelow, obsBetween,
     attr(ll, "gradient") <- grad
     return(ll)
 }
-<bytecode: 0x55a598a360d0>
+<bytecode: 0x5e1ea90b49f0>
 <environment: namespace:censReg>
 
 $xMean
@@ -3415,7 +3397,7 @@ function (beta, yVec, xMat, left, right, obsBelow, obsBetween,
     attr(ll, "gradient") <- grad
     return(ll)
 }
-<bytecode: 0x55a598a360d0>
+<bytecode: 0x5e1ea90b49f0>
 <environment: namespace:censReg>
 
 $xMean
@@ -4269,7 +4251,7 @@ function (beta, yVec, xMat, left, right, obsBelow, obsBetween,
     attr(ll, "gradient") <- grad
     return(ll)
 }
-<bytecode: 0x55a598a360d0>
+<bytecode: 0x5e1ea90b49f0>
 <environment: namespace:censReg>
 
 $xMean
@@ -5130,7 +5112,7 @@ function (beta, yVec, xMat, left, right, obsBelow, obsBetween,
     attr(ll, "gradient") <- grad
     return(ll)
 }
-<bytecode: 0x55a598a360d0>
+<bytecode: 0x5e1ea90b49f0>
 <environment: namespace:censReg>
 
 $xMean
@@ -5989,7 +5971,7 @@ function (beta, yVec, xMat, left, right, obsBelow, obsBetween,
     attr(ll, "gradient") <- grad
     return(ll)
 }
-<bytecode: 0x55a598a360d0>
+<bytecode: 0x5e1ea90b49f0>
 <environment: namespace:censReg>
 
 $xMean
@@ -6884,7 +6866,7 @@ function (beta, yVec, xMat, left, right, obsBelow, obsBetween,
     attr(ll, "gradient") <- grad
     return(ll)
 }
-<bytecode: 0x55a598a360d0>
+<bytecode: 0x5e1ea90b49f0>
 <environment: namespace:censReg>
 
 $xMean
@@ -7800,7 +7782,7 @@ function (beta, yVec, xMat, left, right, obsBelow, obsBetween,
     attr(ll, "gradient") <- grad
     return(ll)
 }
-<bytecode: 0x55a598a360d0>
+<bytecode: 0x5e1ea90b49f0>
 <environment: namespace:censReg>
 
 $xMean
@@ -9325,7 +9307,7 @@ function (beta, yVec, xMat, left, right, obsBelow, obsBetween,
     attr(ll, "gradient") <- grad
     return(ll)
 }
-<bytecode: 0x55a598a360d0>
+<bytecode: 0x5e1ea90b49f0>
 <environment: namespace:censReg>
 
 $xMean
@@ -10243,7 +10225,7 @@ function (beta, yVec, xMat, left, right, obsBelow, obsBetween,
     attr(ll, "gradient") <- grad
     return(ll)
 }
-<bytecode: 0x55a598a360d0>
+<bytecode: 0x5e1ea90b49f0>
 <environment: namespace:censReg>
 
 $xMean
@@ -11784,7 +11766,7 @@ function (beta, yVec, xMat, left, right, obsBelow, obsBetween,
     attr(ll, "gradient") <- grad
     return(ll)
 }
-<bytecode: 0x55a598a360d0>
+<bytecode: 0x5e1ea90b49f0>
 <environment: namespace:censReg>
 
 $xMean
@@ -13973,4 +13955,4 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 > 
 > proc.time()
    user  system elapsed 
-  4.557   0.375   4.943 
+  4.569   0.483   4.471 

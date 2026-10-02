@@ -1,6 +1,6 @@
-library( "censReg" )
-library( "lmtest" )
-library( "sandwich" )
+suppressPackageStartupMessages( library( "censReg" ) )
+suppressPackageStartupMessages( library( "lmtest" ) )
+suppressPackageStartupMessages( library( "sandwich" ) )
 
 options( digits = 5 )
 
@@ -16,6 +16,10 @@ printAll <- function( x, logSigmaFalse = FALSE, sDigits = 2,
             print( round( x[[ n ]], 2 ) )
          } else if( n %in% c( "gradient" ) ) {
             print( round( x[[ n ]], 3 ) )
+         } else if( n %in% c( "control" ) ) {  # this part can be removed again once the new version of maxLik is out
+            temp <- x[[ n ]]
+            temp@reltol <- 1.4901e-08
+            print( temp )
          } else {
             print( x[[ n ]] )
          }

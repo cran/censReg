@@ -1,7 +1,7 @@
 
-R version 4.3.3 (2024-02-29) -- "Angel Food Cake"
-Copyright (C) 2024 The R Foundation for Statistical Computing
-Platform: x86_64-pc-linux-gnu (64-bit)
+R version 4.6.1 (2026-06-24) -- "Happy Hop"
+Copyright (C) 2026 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -15,22 +15,8 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 'help.start()' for an HTML browser interface to help.
 Type 'q()' to quit R.
 
-> library( "censReg" )
-Loading required package: maxLik
-Loading required package: miscTools
-
-Please cite the 'maxLik' package as:
-Henningsen, Arne and Toomet, Ott (2011). maxLik: A package for maximum likelihood estimation in R. Computational Statistics 26(3), 443-458. DOI 10.1007/s00180-010-0217-1.
-
-If you have questions, suggestions, or comments regarding the 'maxLik' package, please use a forum or 'tracker' at maxLik's R-Forge site:
-https://r-forge.r-project.org/projects/maxlik/
-
-Please cite the 'censReg' package as:
-Henningsen, Arne (2017). censReg: Censored Regression (Tobit) Models. R package version 0.5. http://CRAN.R-Project.org/package=censReg.
-
-If you have questions, suggestions, or comments regarding the 'censReg' package, please use a forum or 'tracker' at the R-Forge site of the 'sampleSelection' project:
-https://r-forge.r-project.org/projects/sampleselection/
-> library( "plm" )
+> suppressPackageStartupMessages( library( "censReg" ) )
+> suppressPackageStartupMessages( library( "plm" ) )
 > 
 > # load outputs that were previously produced by this script 
 > saved <- new.env()
@@ -442,7 +428,7 @@ Error in censReg(y ~ -1, data = pData) :
   argument 'formula' seems to have neither an intercept nor any explanatory variables
 > 
 > ## BHHH method
-> randEffBhhh <- censReg( y ~ x1 + x2, data = pData, method = "BHHH" )
+> randEffBhhh <- censReg( y ~ x1 + x2, data = pData, method = "BHHH", reltol = 1.4901e-08 )
 > printAll( "randEffBhhh" )
 Comparing new object 'randEffBhhh' to previously saved object...
    comparing component 'maximum' ... OK
@@ -472,7 +458,8 @@ Comparing new object 'randEffBhhh' to previously saved object...
    comparing method 'ExtractAIC' ... OK
 
 Call:
-censReg(formula = y ~ x1 + x2, data = pData, method = "BHHH")
+censReg(formula = y ~ x1 + x2, data = pData, method = "BHHH", 
+    reltol = 1.4901e-08)
 
 Coefficients:
 (Intercept)          x1          x2  logSigmaMu  logSigmaNu 
@@ -480,7 +467,8 @@ Coefficients:
 
 
 Call:
-censReg(formula = y ~ x1 + x2, data = pData, method = "BHHH")
+censReg(formula = y ~ x1 + x2, data = pData, method = "BHHH", 
+    reltol = 1.4901e-08)
 
 Coefficients:
 (Intercept)          x1          x2     sigmaMu     sigmaNu 
@@ -504,7 +492,8 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 --------------------------------------------
 
 Call:
-censReg(formula = y ~ x1 + x2, data = pData, method = "BHHH")
+censReg(formula = y ~ x1 + x2, data = pData, method = "BHHH", 
+    reltol = 1.4901e-08)
 
 Observations:
          Total  Left-censored     Uncensored Right-censored 
@@ -526,7 +515,8 @@ Log-likelihood: -73.199 on 5 Df
 
 
 Call:
-censReg(formula = y ~ x1 + x2, data = pData, method = "BHHH")
+censReg(formula = y ~ x1 + x2, data = pData, method = "BHHH", 
+    reltol = 1.4901e-08)
 
 Observations:
          Total  Left-censored     Uncensored Right-censored 
@@ -689,7 +679,7 @@ Comparing new object 'randEffBfgsr' to previously saved object...
 > 
 > ## BHHH with starting values
 > randEffBhhhStart <- censReg( y ~ x1 + x2, data = pData, method = "BHHH",
-+    start = c( -0.4, 1.7, 2.2, -0.1, -0.01 ) )
++    start = c( -0.4, 1.7, 2.2, -0.1, -0.01 ), reltol = 1.4901e-08 )
 > printAll( "randEffBhhhStart" )
 Comparing new object 'randEffBhhhStart' to previously saved object...
    comparing component 'maximum' ... OK
@@ -720,7 +710,7 @@ Comparing new object 'randEffBhhhStart' to previously saved object...
 
 Call:
 censReg(formula = y ~ x1 + x2, data = pData, start = c(-0.4, 
-    1.7, 2.2, -0.1, -0.01), method = "BHHH")
+    1.7, 2.2, -0.1, -0.01), method = "BHHH", reltol = 1.4901e-08)
 
 Coefficients:
 (Intercept)          x1          x2  logSigmaMu  logSigmaNu 
@@ -729,7 +719,7 @@ Coefficients:
 
 Call:
 censReg(formula = y ~ x1 + x2, data = pData, start = c(-0.4, 
-    1.7, 2.2, -0.1, -0.01), method = "BHHH")
+    1.7, 2.2, -0.1, -0.01), method = "BHHH", reltol = 1.4901e-08)
 
 Coefficients:
 (Intercept)          x1          x2     sigmaMu     sigmaNu 
@@ -754,7 +744,7 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 Call:
 censReg(formula = y ~ x1 + x2, data = pData, start = c(-0.4, 
-    1.7, 2.2, -0.1, -0.01), method = "BHHH")
+    1.7, 2.2, -0.1, -0.01), method = "BHHH", reltol = 1.4901e-08)
 
 Observations:
          Total  Left-censored     Uncensored Right-censored 
@@ -777,7 +767,7 @@ Log-likelihood: -73.199 on 5 Df
 
 Call:
 censReg(formula = y ~ x1 + x2, data = pData, start = c(-0.4, 
-    1.7, 2.2, -0.1, -0.01), method = "BHHH")
+    1.7, 2.2, -0.1, -0.01), method = "BHHH", reltol = 1.4901e-08)
 
 Observations:
          Total  Left-censored     Uncensored Right-censored 
@@ -1476,4 +1466,4 @@ attr(,"gradient")
 > 
 > proc.time()
    user  system elapsed 
-  4.310   0.059   4.361 
+  5.477   0.415   5.346 

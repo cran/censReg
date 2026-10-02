@@ -1,11 +1,14 @@
 Package: censReg
-Version: 0.5-38
-Date: 2024-04-20
+Version: 0.5-40
+Date: 2026-10-01
 Title: Censored Regression (Tobit) Models
-Author: Arne Henningsen <arne.henningsen@gmail.com>
-Maintainer: Arne Henningsen <arne.henningsen@gmail.com>
+Authors@R: person( given = "Arne",
+                    family = "Henningsen",
+                    role = c("aut", "cre"),
+                    email = "arne.henningsen@gmail.com",
+      comment = c( ORCID = "0000-0002-6720-0264" ) )
 BugReports: https://r-forge.r-project.org/projects/sampleselection/
-Depends: R (>= 2.4.0), maxLik (>= 0.7-3)
+Depends: R (>= 3.5.0), maxLik (>= 0.7-3)
 Imports: glmmML (>= 0.81-6), sandwich (>= 2.2-6), miscTools (>=
         0.6-11), stats (>= 2.15.0), plm
 Suggests: AER, lmtest (>= 0.9-27)
@@ -13,8 +16,11 @@ Enhances: sampleSelection
 Description: Maximum Likelihood estimation of censored regression (Tobit) models
    with cross-sectional and panel data.
 License: GPL (>= 2)
-URL: http://www.sampleSelection.org
+URL: https://r-forge.r-project.org/projects/sampleselection/
 NeedsCompilation: no
-Packaged: 2024-04-20 06:38:55 UTC; gsl324
+Packaged: 2026-10-01 12:14:51 UTC; gsl324
+Author: Arne Henningsen [aut, cre] (ORCID:
+    <https://orcid.org/0000-0002-6720-0264>)
+Maintainer: Arne Henningsen <arne.henningsen@gmail.com>
 Repository: CRAN
-Date/Publication: 2024-05-20 17:30:10 UTC
+Date/Publication: 2026-10-02 10:40:12 UTC

@@ -1,5 +1,5 @@
-library( "censReg" )
-library( "plm" )
+suppressPackageStartupMessages( library( "censReg" ) )
+suppressPackageStartupMessages( library( "plm" ) )
 
 options( digits = 5 )
 
@@ -23,7 +23,7 @@ pData <- pdata.frame( pData, c( "id", "time" ), stringsAsFactors = FALSE )
 # maxLik:::summary.maxLik( randEff )
 
 ## BHHH method
-randEffBhhh <- censReg( y ~ x1 + x2, data = pData, method = "BHHH" )
+randEffBhhh <- censReg( y ~ x1 + x2, data = pData, method = "BHHH", reltol = 1.4901e-08 )
 print( maxLik:::summary.maxLik( randEffBhhh ), digits = 2 )
 
 ## BFGS method (optim)
@@ -31,6 +31,6 @@ randEffBfgs <- censReg( y ~ x1 + x2, data = pData, method = "BFGS" )
 print( maxLik:::summary.maxLik( randEffBfgs ), digits = 2 )
 
 ## BFGS method (R)
-randEffBfgsr <- censReg( y ~ x1 + x2, data = pData, method = "BFGSR" )
+randEffBfgsr <- censReg( y ~ x1 + x2, data = pData, method = "BFGSR", reltol = 1.4901e-08, tol = 1.4901e-08 )
 print( maxLik:::summary.maxLik( randEffBfgsr ), digits = 2 )
 

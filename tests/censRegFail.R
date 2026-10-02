@@ -1,4 +1,4 @@
-library( "censReg" )
+suppressPackageStartupMessages( library( "censReg" ) )
 
 data( "Affairs", package = "AER" )
 
